@@ -1,4 +1,3 @@
-[submodule "Cubiomes"]
-	path = "Sources/Cubiomes"
+[submodule "Sources/Cubiomes"]
+	path = Sources/Cubiomes
 	url = https://github.com/Cubitect/cubiomes
-
