@@ -15,7 +15,10 @@ programmatically in your macOS, iOS, and iPadOS apps. It leverages the
 generation, searches, and rendering map images.
 
 CubiomesKit also supports integration with MapKit to display interactive
-maps, with support for AppKit/UIKit and SwiftUI.
+maps with markers, annotations and overlays, with support for AppKit/UIKit
+and SwiftUI.
+
+![A Minecraft map view in Alidade](Alidade)
 
 > Important: At this time, only worlds generated in Minecraft Java Edition
 > are supported.
@@ -23,6 +26,8 @@ maps, with support for AppKit/UIKit and SwiftUI.
 ## Topics
 
 ### Generating Minecraft Worlds
+
+Generate Minecraft worlds with a given version and seed.
 
 - ``MinecraftWorld``
 - ``MinecraftVersion``
