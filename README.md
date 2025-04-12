@@ -1,5 +1,7 @@
 # CubiomesKit
 
+<img align="right" width=128 src="Sources/CubiomesKit/CubiomesKit.docc/Resources/Icon.png" alt="CubiomesKit icon"/>
+
 Create, inspect, and view Minecraft worlds in your macOS, iOS, and iPadOS
 apps.
 
