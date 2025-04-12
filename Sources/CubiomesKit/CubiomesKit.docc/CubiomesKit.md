@@ -1,6 +1,7 @@
 # ``CubiomesKit``
 
 @Metadata {
+    @PageImage(purpose: icon, source: "Icon", alt: "The CubiomesKit logo")
     @PageColor(green)
 }
 
@@ -16,7 +17,7 @@ generation, searches, and rendering map images.
 CubiomesKit also supports integration with MapKit to display interactive
 maps, with support for AppKit/UIKit and SwiftUI.
 
-> Important: At this time, only words generated in Minecraft Java Edition
+> Important: At this time, only worlds generated in Minecraft Java Edition
 > are supported.
 
 ## Topics
