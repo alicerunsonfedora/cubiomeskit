@@ -21,6 +21,7 @@ let package = Package(
             targets: ["CubiomesKit"])
     ],
     dependencies: [
+        .package(url: "https://github.com/stadiamaps/mapkit-caching-tile-overlay", from: "1.0.4")
 //        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.18.0")
     ],
     targets: [
@@ -36,7 +37,10 @@ let package = Package(
             cSettings: [wrapIntegers, .unsafeFlags(ignoreCubiomes)]),
         .target(
             name: "CubiomesKit",
-            dependencies: ["Cubiomes", "CubiomesInternal"],
+            dependencies: [
+                "Cubiomes",
+                "CubiomesInternal",
+                .product(name: "CachingMapKitTileOverlay", package: "mapkit-caching-tile-overlay")],
             resources: [
                 .process("Resources")
             ]),

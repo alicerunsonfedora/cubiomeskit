@@ -6,6 +6,7 @@
 //
 
 import os
+import CachingMapKitTileOverlay
 import MapKit
 
 final class MinecraftRenderedTileOverlay: MKTileOverlay {
@@ -82,5 +83,11 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         if self.ephemeral {
             cache.flush()
         }
+    }
+}
+
+extension MinecraftRenderedTileOverlay: CachingTileOverlay {
+    func cachedData(at path: MKTileOverlayPath) -> Data? {
+        cache.getValue(forPath: path, in: self.dimension)
     }
 }

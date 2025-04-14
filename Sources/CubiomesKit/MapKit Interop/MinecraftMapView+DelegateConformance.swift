@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 14-04-2025.
 //
 
+import CachingMapKitTileOverlay
 import MapKit
 import Foundation
 
@@ -23,8 +24,8 @@ extension MinecraftMapView: MKMapViewDelegate {
 
     public func mapView(_ mapView: MKMapView, rendererFor overlay: any MKOverlay) -> MKOverlayRenderer {
         return switch overlay {
-        case let overlay as MKTileOverlay:
-            MKTileOverlayRenderer(overlay: overlay)
+        case let overlay as MinecraftRenderedTileOverlay:
+            CachingTileOverlayRenderer(overlay: overlay)
         default:
             MKOverlayRenderer(overlay: overlay)
         }
