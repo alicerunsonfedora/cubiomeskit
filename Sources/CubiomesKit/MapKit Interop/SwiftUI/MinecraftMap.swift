@@ -183,7 +183,6 @@ public struct MinecraftMap {
 
         public func updateNSView(_ nsView: MinecraftMapView, context: Context) {
             context.coordinator.parent = self
-            nsView.mcMapViewDelegate = context.coordinator
             updateMapView(nsView)
         }
     }
@@ -205,7 +204,6 @@ public struct MinecraftMap {
 
         public func updateUIView(_ uiView: MinecraftMapView, context: Context) {
             context.coordinator.parent = self
-            uiView.mcMapViewDelegate = context.coordinator
             updateMapView(uiView)
         }
     }
