@@ -111,6 +111,9 @@ public struct MinecraftMap {
     @MainActor
     func createMapView() -> MinecraftMapView {
         let mapView = MinecraftMapView(world: world, frame: .zero)
+        #if DEBUG
+            mapView.ephemeralRendering = true
+        #endif
         mapView.ornaments = ornaments
         mapView.dimension = dimension
         mapView.centerBlockCoordinate = centerCoordinate
