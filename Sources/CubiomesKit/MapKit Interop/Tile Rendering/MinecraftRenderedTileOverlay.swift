@@ -9,7 +9,9 @@ import os
 import MapKit
 
 final class MinecraftRenderedTileOverlay: MKTileOverlay {
-    var ephemeral: Bool = false
+    var ephemeral: Bool = false {
+        didSet { didChangeEphemeralRendering() }
+    }
     var world: MinecraftWorld
     var dimension: MinecraftWorld.Dimension = .overworld
     let renderer: MinecraftWorldRenderer
@@ -74,5 +76,11 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         logger.debug(
             "🗺️ [\(path.x), \(path.y) @ \(path.z)] -> 🍱 [\(chunk.origin.x), \(chunk.origin.z) @ \(blockPerTile)]")
         return chunk
+    }
+
+    private func didChangeEphemeralRendering() {
+        if self.ephemeral {
+            cache.flush()
+        }
     }
 }

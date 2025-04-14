@@ -65,11 +65,17 @@ public final class MinecraftMapView: MKMapView {
 
     /// Whether Minecraft map tiles should be rendered ephemerally (i.e., without caching).
     ///
-    /// This option can be used to debug rendering issues, at the cost of regenerating tiles. It is generally
-    /// recommended to keep this option enabled to improve performance of the map view.
+    /// By default, the tile overlay renderer will create and use a cache to store generated tiles to improve
+    /// performance, rather than regenerating the tile every time it is requested. However, this behavior can be
+    /// disabled for debugging purposes or for other reasons.
+    ///
+    /// - Note: This option will always return false in the ``MinecraftMap`` view. If you need the SwiftUI view to
+    ///   leverage ephemeral rendering, create a wrapper around ``MinecraftMapView``.
+    /// - Important: To improve performance in your apps, it is recommended to keep this option disabled.
     public var ephemeralRendering: Bool = false {
         didSet {
             minecraftOverlay?.ephemeral = ephemeralRendering
+            mcMapViewDelegate?.mapView(self, didChangeEphemeralRendering: ephemeralRendering)
         }
     }
     
@@ -163,64 +169,5 @@ public final class MinecraftMapView: MKMapView {
 extension CLLocationCoordinate2D: @retroactive Equatable {
     public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
         return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
-    }
-}
-
-// MARK: - Delegates
-
-/// A delegate used to handle interactions and events from a ``MinecraftMapView``.
-///
-/// This is intended to be used as a replacement for an `MKMapViewDelegate`, as ``MinecraftMapView``s already define a
-/// delegate to display Minecraft tiles.
-public protocol MinecraftMapViewDelegate: AnyObject {
-    /// An event that occurs when the view region has been changed.
-    ///
-    /// - Parameter mapView: The Minecraft map view that changed the region.
-    /// - Parameter animated: Whether the change was animated.
-    func mapView(_ mapView: MinecraftMapView, regionDidChangeAnimated animated: Bool)
-
-    /// An event that occurs when an annotation view has been selected.
-    ///
-    /// - Parameter mapView: The Minecraft map view that changed the region.
-    /// - Parameter view: The annotation view that was selected.
-    func mapView(_ mapView: MinecraftMapView, didSelect view: MKAnnotationView)
-}
-
-extension MinecraftMapViewDelegate {
-    public func mapView(_ mapView: MinecraftMapView, regionDidChangeAnimated animated: Bool) {}
-    public func mapView(_ mapView: MinecraftMapView, didSelect view: MKAnnotationView) {}
-}
-
-extension MinecraftMapView: MKMapViewDelegate {
-    public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        mcMapViewDelegate?.mapView(self, regionDidChangeAnimated: animated)
-    }
-
-    public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        mcMapViewDelegate?.mapView(self, didSelect: view)
-    }
-
-    public func mapView(_ mapView: MKMapView, rendererFor overlay: any MKOverlay) -> MKOverlayRenderer {
-        return switch overlay {
-        case let overlay as MKTileOverlay:
-            MKTileOverlayRenderer(overlay: overlay)
-        default:
-            MKOverlayRenderer(overlay: overlay)
-        }
-    }
-
-    public func mapView(_ mapView: MKMapView, viewFor annotation: any MKAnnotation) -> MKAnnotationView? {
-        guard let annotation = annotation as? MinecraftMapMarkerAnnotation else { return MKAnnotationView() }
-        guard
-            let view = mapView.dequeueReusableAnnotationView(
-                withIdentifier: "\(MKMarkerAnnotationView.self)",
-                for: annotation
-            ) as? MKMarkerAnnotationView
-        else {
-            return MKMarkerAnnotationView()
-        }
-
-        view.markerTintColor = annotation.color
-        return view
     }
 }

@@ -25,6 +25,10 @@ and SwiftUI.
 
 ## Topics
 
+### Getting Started
+
+- <doc:Changelog>
+
 ### Generating Minecraft Worlds
 
 Generate Minecraft worlds with a given version and seed.
