@@ -16,6 +16,7 @@ struct MinecraftRenderedTileOverlayTests {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let overlayPath = MKTileOverlayPath(x: 0, y: 0, z: 18, contentScaleFactor: 1)
         let overlay = MinecraftRenderedTileOverlay(world: mcWorld)
+        overlay.ephemeral = true
         let chunk = overlay.chunk(forOverlayPath: overlayPath)
 
         #expect(chunk.origin == MinecraftPoint(x: -33_554_432, y: 15, z: -33_554_432))
@@ -26,6 +27,7 @@ struct MinecraftRenderedTileOverlayTests {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let overlayPath = MKTileOverlayPath(x: 0, y: 0, z: 18, contentScaleFactor: 1)
         let overlay = MinecraftRenderedTileOverlay(world: mcWorld)
+        overlay.ephemeral = true
         await #expect(throws: Never.self) {
             try await overlay.loadTile(at: overlayPath)
         }

@@ -63,6 +63,16 @@ public final class MinecraftMapView: MKMapView {
         }
     }
 
+    /// Whether Minecraft map tiles should be rendered ephemerally (i.e., without caching).
+    ///
+    /// This option can be used to debug rendering issues, at the cost of regenerating tiles. It is generally
+    /// recommended to keep this option enabled to improve performance of the map view.
+    public var ephemeralRendering: Bool = false {
+        didSet {
+            minecraftOverlay?.ephemeral = ephemeralRendering
+        }
+    }
+    
     /// The rendering options to the map's renderer.
     public var renderOptions: MinecraftWorldRenderer.Options = [] {
         didSet {

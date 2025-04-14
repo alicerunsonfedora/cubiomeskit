@@ -5,18 +5,26 @@
 //  Created by Marquis Kurt on 03-04-2025.
 //
 
+import os
 import MapKit
 
 final class MinecraftRenderedTileOverlay: MKTileOverlay {
+    var ephemeral: Bool = false
     var world: MinecraftWorld
     var dimension: MinecraftWorld.Dimension = .overworld
     let renderer: MinecraftWorldRenderer
+
+    let cache: TileCache
+    let logger: Logger
 
     init(world: MinecraftWorld, dimension: MinecraftWorld.Dimension = .overworld) {
         self.world = world
         self.dimension = dimension
         self.renderer = MinecraftWorldRenderer(world: world)
         self.renderer.options = []
+        self.cache = TileCache()
+        self.logger = Logger()
+
         super.init(urlTemplate: nil)
         self.canReplaceMapContent = true
     }
@@ -30,7 +38,20 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
 
     override func loadTile(at path: MKTileOverlayPath, result: @escaping (Data?, (any Error)?) -> Void) {
         let chunk = chunk(forOverlayPath: path)
+
+        if !ephemeral, let data = cache.getValue(forPath: path, in: dimension) {
+            logger.debug("Tile cache hit for path (\(TileCache.key(forPath: path, in: self.dimension)))")
+            result(data, nil)
+            return
+        }
+
+        if ephemeral {
+            logger.warning("Tile renderer is ephemeral, which will always generate new tiles.")
+        } else {
+            logger.debug("Tile cache miss for path (\(TileCache.key(forPath: path, in: self.dimension)))")
+        }
         let data = renderer.render(inRegion: chunk, scale: 1, dimension: dimension)
+        if !ephemeral { cache.set(data, forPath: path, in: dimension) }
         result(data, nil)
     }
 
@@ -49,12 +70,9 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
             origin: MinecraftPoint(x: posX, y: 15, z: posZ),
             scale: MinecraftWorldRect.Size(squaring: Int32(blockPerTile)))
 
-        #if DEBUG
-            print("🔳 \(totalTilesOnAxis), 🧱 \(blockPerTile)")
-            print(
-                "🗺️ [\(path.x), \(path.y) @ \(path.z)] -> 🍱 [\(chunk.origin.x), \(chunk.origin.z) @ \(blockPerTile)]"
-            )
-        #endif
+        logger.debug("Mapping at current scale: 🔳 \(totalTilesOnAxis), 🧱 \(blockPerTile)")
+        logger.debug(
+            "🗺️ [\(path.x), \(path.y) @ \(path.z)] -> 🍱 [\(chunk.origin.x), \(chunk.origin.z) @ \(blockPerTile)]")
         return chunk
     }
 }
