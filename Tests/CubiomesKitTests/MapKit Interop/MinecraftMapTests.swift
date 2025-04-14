@@ -20,7 +20,7 @@ struct MinecraftMapTests {
         #expect(map.world.version == mcWorld.version)
         #expect(map.world.seed == mcWorld.seed)
         #expect(map.ornaments.isEmpty)
-        #expect(map.centerCoordinate == nil)
+        #expect(map.centerCoordinate == .zero)
         #expect(map.annotations.isEmpty)
         #expect(map.dimension == .overworld)
         #expect(map.preferNaturalColors == false)

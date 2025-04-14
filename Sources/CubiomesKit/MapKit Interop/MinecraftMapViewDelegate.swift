@@ -30,10 +30,16 @@ public protocol MinecraftMapViewDelegate: AnyObject {
     /// - Parameter mapView: The Minecraft map view that changed the ephemeral rendering.
     /// - Parameter ephemeral: Whether ephemeral rendering was enabled.
     func mapView(_ mapView: MinecraftMapView, didChangeEphemeralRendering ephemeral: Bool)
+
+    /// An event that occurs when the map's visible region has changed.
+    ///
+    /// - Parameter mapView: The Minecraft map view that had its visible region changed.
+    func mapViewDidChangeVisibleRegion(_ mapView: MinecraftMapView)
 }
 
 extension MinecraftMapViewDelegate {
     public func mapView(_ mapView: MinecraftMapView, regionDidChangeAnimated animated: Bool) {}
     public func mapView(_ mapView: MinecraftMapView, didSelect view: MKAnnotationView) {}
     public func mapView(_ mapView: MinecraftMapView, didChangeEphemeralRendering ephemeral: Bool) {}
+    public func mapViewDidChangeVisibleRegion(_ mapView: MinecraftMapView) {}
 }

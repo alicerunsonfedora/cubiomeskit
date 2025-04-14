@@ -33,9 +33,29 @@ public struct MinecraftMap {
         case natural
     }
 
+    /// The coordinator for this map.
+    ///
+    /// The coordinator is used to handle delegate events fired from the view's map delegate,
+    /// ``MinecraftMapViewDelegate``. It cannot be initialized outside of the ``MinecraftMap`` context. To directly
+    /// access delegate events, use the appropriate view modifiers.
+    public class Coordinator: @preconcurrency MinecraftMapViewDelegate {
+        var parent: MinecraftMap
+
+        init(parent: MinecraftMap) {
+            self.parent = parent
+        }
+
+        @MainActor
+        public func mapViewDidChangeVisibleRegion(_ mapView: MinecraftMapView) {
+            DispatchQueue.main.async { [self] in
+                parent.centerCoordinate = mapView.centerBlockCoordinate
+            }
+        }
+    }
+
+    @Binding var centerCoordinate: CGPoint
     var world: MinecraftWorld
 
-    var centerCoordinate: Binding<CGPoint>?
     var dimension: MinecraftWorld.Dimension = .overworld
     var ornaments: Ornaments = []
     var annotations: [any MinecraftMapContent] = []
@@ -52,7 +72,7 @@ public struct MinecraftMap {
     ) {
         self.world = world
         self.dimension = dimension
-        self.centerCoordinate = centerCoordinate
+        self._centerCoordinate = centerCoordinate ?? Binding.constant(.zero)
     }
 
     /// Create a Minecraft map view with additional annotations.
@@ -68,7 +88,7 @@ public struct MinecraftMap {
     ) {
         self.world = world
         self.dimension = dimension
-        self.centerCoordinate = centerCoordinate
+        self._centerCoordinate = centerCoordinate ?? Binding.constant(.zero)
         self.annotations = annotations()
     }
 
@@ -82,7 +102,7 @@ public struct MinecraftMap {
     ) {
         self.world = world
         self.ornaments = ornaments
-        self.centerCoordinate = centerCoordinate
+        self._centerCoordinate = centerCoordinate ?? Binding.constant(.zero)
         self.dimension = dimension
         self.annotations = annotations
         self.preferNaturalColors = preferNaturalColors
@@ -93,9 +113,7 @@ public struct MinecraftMap {
         let mapView = MinecraftMapView(world: world, frame: .zero)
         mapView.ornaments = ornaments
         mapView.dimension = dimension
-        if let centerBlockCoordinate = centerCoordinate?.wrappedValue {
-            mapView.centerBlockCoordinate = centerBlockCoordinate
-        }
+        mapView.centerBlockCoordinate = centerCoordinate
         mapView.addMapContents(annotations)
         if preferNaturalColors {
             mapView.renderOptions.insert(.naturalColors)
@@ -109,8 +127,8 @@ public struct MinecraftMap {
     func updateMapView(_ mapView: MinecraftMapView) {
         mapView.ornaments = ornaments
         mapView.dimension = dimension
-        if let centerBlockCoordinate = centerCoordinate?.wrappedValue {
-            mapView.centerBlockCoordinate = centerBlockCoordinate
+        if mapView.centerBlockCoordinate != centerCoordinate {
+            mapView.centerBlockCoordinate = centerCoordinate
         }
         mapView.resyncMapContent(annotations)
 
@@ -125,7 +143,7 @@ public struct MinecraftMap {
     public func ornaments(_ ornaments: Ornaments) -> MinecraftMap {
         MinecraftMap(
             world: self.world,
-            centerCoordinate: self.centerCoordinate,
+            centerCoordinate: self._centerCoordinate,
             ornaments: ornaments,
             annotations: self.annotations,
             dimension: self.dimension,
@@ -138,7 +156,7 @@ public struct MinecraftMap {
     public func mapColorScheme(_ colorScheme: MinecraftMap.ColorScheme) -> MinecraftMap {
         MinecraftMap(
             world: self.world,
-            centerCoordinate: self.centerCoordinate,
+            centerCoordinate: self._centerCoordinate,
             ornaments: self.ornaments,
             annotations: self.annotations,
             dimension: self.dimension,
@@ -153,11 +171,16 @@ public struct MinecraftMap {
     extension MinecraftMap: NSViewRepresentable {
         public typealias UIViewType = MinecraftMapView
 
+        public func makeCoordinator() -> Coordinator {
+            Coordinator(parent: self)
+        }
+
         public func makeNSView(context: Context) -> MinecraftMapView {
             createMapView()
         }
 
         public func updateNSView(_ nsView: MinecraftMapView, context: Context) {
+            context.coordinator.parent = self
             updateMapView(nsView)
         }
     }
@@ -167,11 +190,16 @@ public struct MinecraftMap {
     extension MinecraftMap: UIViewRepresentable {
         public typealias UIViewType = MinecraftMapView
 
+        public func makeCoordinator() -> Coordinator {
+            Coordinator(parent: self)
+        }
+
         public func makeUIView(context: Context) -> MinecraftMapView {
             createMapView()
         }
 
         public func updateUIView(_ uiView: MinecraftMapView, context: Context) {
+            context.coordinator.parent = self
             updateMapView(uiView)
         }
     }

@@ -11,6 +11,15 @@ Review the latest changes made to CubiomesKit.
 
 ### MapKit Integration
 
+- The `centerCoordinate` property of the ``MinecraftMap`` should now
+  properly relay changes made from the map view back, instead of being
+  unchanged.
+- The ``MinecraftMapViewDelegate`` exposes the
+  ``MinecraftMapViewDelegate/mapViewDidChangeVisibleRegion(_:)-36zql`` to
+  respond to the map view's visible region changes.
+
+#### Tile caching and ephemeral rendering
+
 - The ``MinecraftMapView`` and ``MinecraftMap`` will now automatically
   cache rendered tile data instead of re-calculating the data every time
   the renderer requests it. This can be disabled with the

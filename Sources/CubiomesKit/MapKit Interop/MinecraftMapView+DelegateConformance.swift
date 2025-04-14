@@ -17,6 +17,10 @@ extension MinecraftMapView: MKMapViewDelegate {
         mcMapViewDelegate?.mapView(self, didSelect: view)
     }
 
+    public func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+        mcMapViewDelegate?.mapViewDidChangeVisibleRegion(self)
+    }
+
     public func mapView(_ mapView: MKMapView, rendererFor overlay: any MKOverlay) -> MKOverlayRenderer {
         return switch overlay {
         case let overlay as MKTileOverlay:
