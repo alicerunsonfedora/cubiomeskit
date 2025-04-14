@@ -25,7 +25,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         self.dimension = dimension
         self.renderer = MinecraftWorldRenderer(world: world)
         self.renderer.options = []
-        self.cache = TileCache(max: 64)
+        self.cache = TileCache()
         self.logger = Logger()
 
         super.init(urlTemplate: nil)
