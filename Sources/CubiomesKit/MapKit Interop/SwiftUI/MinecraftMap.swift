@@ -176,11 +176,14 @@ public struct MinecraftMap {
         }
 
         public func makeNSView(context: Context) -> MinecraftMapView {
-            createMapView()
+            let mapView = createMapView()
+            mapView.mcMapViewDelegate = context.coordinator
+            return mapView
         }
 
         public func updateNSView(_ nsView: MinecraftMapView, context: Context) {
             context.coordinator.parent = self
+            nsView.mcMapViewDelegate = context.coordinator
             updateMapView(nsView)
         }
     }
@@ -195,11 +198,14 @@ public struct MinecraftMap {
         }
 
         public func makeUIView(context: Context) -> MinecraftMapView {
-            createMapView()
+            let mapView = createMapView()
+            mapView.mcMapViewDelegate = context.coordinator
+            return mapView
         }
 
         public func updateUIView(_ uiView: MinecraftMapView, context: Context) {
             context.coordinator.parent = self
+            uiView.mcMapViewDelegate = context.coordinator
             updateMapView(uiView)
         }
     }
