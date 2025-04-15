@@ -22,13 +22,13 @@ public enum MinecraftMapContentType {
 }
 
 /// A protocol that defines map content that can be added to a ``MinecraftMapView``.
-public protocol MinecraftMapContent: AnyObject, Equatable {
+public protocol MinecraftMapContent {
     /// The type of content to be added to the map.
     var contentType: MinecraftMapContentType { get }
 }
 
 extension MinecraftMapView {
-    func addMapContent(_ content: any MinecraftMapContent) {
+    func addMapContent(_ content: MinecraftMapContent) {
         switch content.contentType {
         case .annotation:
             if let annotation = content as? MKAnnotation {
@@ -41,13 +41,13 @@ extension MinecraftMapView {
         }
     }
 
-    func addMapContents(_ contents: [any MinecraftMapContent]) {
+    func addMapContents(_ contents: [MinecraftMapContent]) {
         for content in contents {
             addMapContent(content)
         }
     }
 
-    func removeMapContent(_ content: any MinecraftMapContent) {
+    func removeMapContent(_ content: MinecraftMapContent) {
         switch content.contentType {
         case .annotation:
             if let annotation = content as? MKAnnotation {
@@ -60,16 +60,15 @@ extension MinecraftMapView {
         }
     }
 
-    func resyncMapContentIfNeeded(_ contents: [any MinecraftMapContent]) {
-        let currentIds = mapContent.map(ObjectIdentifier.init)
-        let incomingIds = contents.map(ObjectIdentifier.init)
-        if currentIds == incomingIds { return }
-        
+    func resyncMapContent(_ contents: [MinecraftMapContent]) {
         removeAnnotations(self.annotations)
-        for content in contents where content.contentType == .annotation {
-            if let annotation = content as? MKAnnotation {
-                addAnnotation(annotation)
-            }
+        for overlay in self.overlays {
+            if overlay is MinecraftRenderedTileOverlay { continue }
+            removeOverlay(overlay)
+        }
+
+        for content in contents {
+            self.addMapContent(content)
         }
     }
 }
