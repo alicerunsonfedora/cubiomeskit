@@ -101,7 +101,6 @@ public final class MinecraftMapView: MKMapView {
     public weak var mcMapViewDelegate: (any MinecraftMapViewDelegate)?
 
     var minecraftOverlay: MinecraftRenderedTileOverlay!
-    var mapContent: [any MinecraftMapContent] = []
 
     /// Initialize a map view for a specified Minecraft world in a given frame.
     ///

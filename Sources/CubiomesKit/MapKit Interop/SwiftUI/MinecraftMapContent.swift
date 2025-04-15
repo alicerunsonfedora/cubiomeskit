@@ -61,14 +61,18 @@ extension MinecraftMapView {
     }
 
     func resyncMapContentIfNeeded(_ contents: [any MinecraftMapContent]) {
-        let currentIds = mapContent.map(ObjectIdentifier.init)
-        let incomingIds = contents.map(ObjectIdentifier.init)
-        if currentIds == incomingIds { return }
-        
-        removeAnnotations(self.annotations)
-        for content in contents where content.contentType == .annotation {
-            if let annotation = content as? MKAnnotation {
-                addAnnotation(annotation)
+        removeAnnotations(contents.compactMap({ $0 as? MKAnnotation }))
+        removeOverlays(contents.compactMap({ $0 as? MKOverlay }))
+        for content in contents {
+            switch content.contentType {
+            case .annotation:
+                if let annotation = content as? MKAnnotation {
+                    addAnnotation(annotation)
+                }
+            case .overlay:
+                if let overlay = content as? MKOverlay {
+                    addOverlay(overlay)
+                }
             }
         }
     }
