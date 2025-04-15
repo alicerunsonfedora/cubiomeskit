@@ -60,15 +60,12 @@ extension MinecraftMapView {
         }
     }
 
-    func resyncMapContent(_ contents: [MinecraftMapContent]) {
+    func resyncMapContentIfNeeded(_ contents: [MinecraftMapContent]) {
         removeAnnotations(self.annotations)
-        for overlay in self.overlays {
-            if overlay is MinecraftRenderedTileOverlay { continue }
-            removeOverlay(overlay)
-        }
-
-        for content in contents {
-            self.addMapContent(content)
+        for content in contents where content.contentType == .annotation {
+            if let annotation = content as? MKAnnotation {
+                addAnnotation(annotation)
+            }
         }
     }
 }

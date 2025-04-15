@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 05-04-2025.
 //
 
+import CachingMapKitTileOverlay
 import MapKit
 import SwiftUI
 import Testing
@@ -52,7 +53,7 @@ struct MinecraftMapViewTests {
 
         let overlay = MinecraftRenderedTileOverlay(world: mcWorld)
         let renderer = mcMapView.mapView(mcMapView, rendererFor: overlay)
-        #expect(renderer is MKTileOverlayRenderer)
+        #expect(renderer is CachingTileOverlayRenderer)
     }
 
     @Test func mapViewCompareAnnotations() throws {
