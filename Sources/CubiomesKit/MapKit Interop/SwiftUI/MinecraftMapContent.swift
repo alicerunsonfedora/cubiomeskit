@@ -22,13 +22,13 @@ public enum MinecraftMapContentType {
 }
 
 /// A protocol that defines map content that can be added to a ``MinecraftMapView``.
-public protocol MinecraftMapContent {
+public protocol MinecraftMapContent: AnyObject, Equatable {
     /// The type of content to be added to the map.
     var contentType: MinecraftMapContentType { get }
 }
 
 extension MinecraftMapView {
-    func addMapContent(_ content: MinecraftMapContent) {
+    func addMapContent(_ content: any MinecraftMapContent) {
         switch content.contentType {
         case .annotation:
             if let annotation = content as? MKAnnotation {
@@ -41,13 +41,13 @@ extension MinecraftMapView {
         }
     }
 
-    func addMapContents(_ contents: [MinecraftMapContent]) {
+    func addMapContents(_ contents: [any MinecraftMapContent]) {
         for content in contents {
             addMapContent(content)
         }
     }
 
-    func removeMapContent(_ content: MinecraftMapContent) {
+    func removeMapContent(_ content: any MinecraftMapContent) {
         switch content.contentType {
         case .annotation:
             if let annotation = content as? MKAnnotation {
@@ -60,7 +60,11 @@ extension MinecraftMapView {
         }
     }
 
-    func resyncMapContentIfNeeded(_ contents: [MinecraftMapContent]) {
+    func resyncMapContentIfNeeded(_ contents: [any MinecraftMapContent]) {
+        let currentIds = mapContent.map(ObjectIdentifier.init)
+        let incomingIds = contents.map(ObjectIdentifier.init)
+        if currentIds == incomingIds { return }
+        
         removeAnnotations(self.annotations)
         for content in contents where content.contentType == .annotation {
             if let annotation = content as? MKAnnotation {

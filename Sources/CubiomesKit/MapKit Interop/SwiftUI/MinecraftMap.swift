@@ -114,6 +114,7 @@ public struct MinecraftMap {
         mapView.ornaments = ornaments
         mapView.dimension = dimension
         mapView.centerBlockCoordinate = centerCoordinate
+        mapView.mapContent = annotations
         mapView.addMapContents(annotations)
         if preferNaturalColors {
             mapView.renderOptions.insert(.naturalColors)
@@ -130,6 +131,7 @@ public struct MinecraftMap {
         if mapView.centerBlockCoordinate != centerCoordinate {
             mapView.centerBlockCoordinate = centerCoordinate
         }
+
         mapView.resyncMapContentIfNeeded(annotations)
 
         if preferNaturalColors {
