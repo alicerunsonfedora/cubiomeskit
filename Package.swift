@@ -43,6 +43,9 @@ let package = Package(
                 .product(name: "CachingMapKitTileOverlay", package: "mapkit-caching-tile-overlay")],
             resources: [
                 .process("Resources")
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("StrictConcurrency")
             ]),
         .testTarget(
             name: "CubiomesKitTests",

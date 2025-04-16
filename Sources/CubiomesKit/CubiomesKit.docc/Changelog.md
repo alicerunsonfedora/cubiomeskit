@@ -7,6 +7,20 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## 16 April 2025
+
+### Concurrency
+
+- CubiomesKit now enforces strict Swift concurrency to ensure that it is
+  fully compatible for Swift 6 apps and projects. Future iterations of the
+  library will focus on improved concurrency with migration to actors and
+  more.
+
+### MapKit Integration
+
+- For the SwiftUI interoperability, the process for adding and removing
+  map content has changed to minimize flickering.
+
 ## 14 April 2025
 
 ### MapKit Integration

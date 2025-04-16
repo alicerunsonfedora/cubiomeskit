@@ -61,14 +61,13 @@ extension MinecraftMapView {
     }
 
     func resyncMapContent(_ contents: [MinecraftMapContent]) {
-        removeAnnotations(self.annotations)
-        for overlay in self.overlays {
-            if overlay is MinecraftRenderedTileOverlay { continue }
-            removeOverlay(overlay)
-        }
+        let oldAnnotations = self.annotations
+        let oldOverlays = self.overlays.filter { !($0 is MinecraftRenderedTileOverlay) }
 
         for content in contents {
             self.addMapContent(content)
         }
+        removeAnnotations(oldAnnotations)
+        removeOverlays(oldOverlays)
     }
 }
