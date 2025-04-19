@@ -22,13 +22,13 @@ public enum MinecraftMapContentType {
 }
 
 /// A protocol that defines map content that can be added to a ``MinecraftMapView``.
-public protocol MinecraftMapContent {
+public protocol MinecraftMapContent: Equatable, Hashable {
     /// The type of content to be added to the map.
     var contentType: MinecraftMapContentType { get }
 }
 
 extension MinecraftMapView {
-    func addMapContent(_ content: MinecraftMapContent) {
+    func addMapContent(_ content: any MinecraftMapContent) {
         switch content.contentType {
         case .annotation:
             if let annotation = content as? MKAnnotation {
@@ -41,13 +41,13 @@ extension MinecraftMapView {
         }
     }
 
-    func addMapContents(_ contents: [MinecraftMapContent]) {
+    func addMapContents(_ contents: [any MinecraftMapContent]) {
         for content in contents {
             addMapContent(content)
         }
     }
 
-    func removeMapContent(_ content: MinecraftMapContent) {
+    func removeMapContent(_ content: any MinecraftMapContent) {
         switch content.contentType {
         case .annotation:
             if let annotation = content as? MKAnnotation {
@@ -60,7 +60,9 @@ extension MinecraftMapView {
         }
     }
 
-    func resyncMapContent(_ contents: [MinecraftMapContent]) {
+    func resyncMapContentIfNeeded(_ contents: [any MinecraftMapContent]) {
+        if !mapContentNeedsUpdate(contents) { return }
+
         let oldAnnotations = self.annotations
         let oldOverlays = self.overlays.filter { !($0 is MinecraftRenderedTileOverlay) }
 
@@ -69,5 +71,17 @@ extension MinecraftMapView {
         }
         removeAnnotations(oldAnnotations)
         removeOverlays(oldOverlays)
+        mapContent = contents
+    }
+
+    func mapContentNeedsUpdate(_ contents: [any MinecraftMapContent]) -> Bool {
+        if contents.count != self.mapContent.count { return true }
+        var needsUpdates = false
+        for (lhs, rhs) in zip(mapContent, contents) {
+            if lhs.equals(other: rhs) { continue }
+            needsUpdates = true
+            break
+        }
+        return needsUpdates
     }
 }

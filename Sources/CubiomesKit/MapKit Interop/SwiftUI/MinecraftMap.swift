@@ -8,6 +8,15 @@
 import MapKit
 import SwiftUI
 
+extension Equatable {
+    func equals(other: any Equatable) -> Bool {
+        if let nsObject = self as? NSObject {
+            return nsObject.isEqual(other as? NSObject)
+        }
+        return self == other as? Self
+    }
+}
+
 /// A map view of a Minecraft world that can be navigated and interacted with.
 ///
 /// This map view supports typical map interactions such as panning and zooming while displaying content from a
@@ -115,6 +124,7 @@ public struct MinecraftMap {
         mapView.dimension = dimension
         mapView.centerBlockCoordinate = centerCoordinate
         mapView.addMapContents(annotations)
+        mapView.mapContent = annotations
         if preferNaturalColors {
             mapView.renderOptions.insert(.naturalColors)
         } else {
@@ -130,7 +140,7 @@ public struct MinecraftMap {
         if mapView.centerBlockCoordinate != centerCoordinate {
             mapView.centerBlockCoordinate = centerCoordinate
         }
-//        mapView.resyncMapContent(annotations)
+        mapView.resyncMapContentIfNeeded(annotations)
 
         if preferNaturalColors {
             mapView.renderOptions.insert(.naturalColors)

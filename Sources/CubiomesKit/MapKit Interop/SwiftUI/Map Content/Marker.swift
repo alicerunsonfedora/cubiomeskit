@@ -88,6 +88,12 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
             self.color = NSColor(color)
         #endif
     }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let marker = object as? Self else { return false }
+        return marker.coordinate == self.coordinate && marker.title == self.title && marker.subtitle == self.subtitle
+            && marker.color == self.color
+    }
 }
 
 extension MinecraftMapMarkerAnnotation: MinecraftMapContent {
