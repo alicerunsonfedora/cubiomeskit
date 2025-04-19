@@ -14,7 +14,7 @@ import SwiftUI
 /// it.
 public protocol MinecraftMapBuilderContent {
     /// The built contents of this type.
-    var content: MinecraftMapContent { get }
+    var content: any MinecraftMapContent { get }
 }
 
 /// A content builder used to generate Minecraft-based map annotations for map views from closures you provide.
