@@ -130,7 +130,7 @@ public struct MinecraftMap {
         if mapView.centerBlockCoordinate != centerCoordinate {
             mapView.centerBlockCoordinate = centerCoordinate
         }
-        mapView.resyncMapContent(annotations)
+//        mapView.resyncMapContent(annotations)
 
         if preferNaturalColors {
             mapView.renderOptions.insert(.naturalColors)
