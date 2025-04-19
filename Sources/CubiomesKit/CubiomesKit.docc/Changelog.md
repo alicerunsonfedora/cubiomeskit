@@ -7,6 +7,19 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## 19 April 2025
+
+### MapKit Integration
+
+- For the SwiftUI interoperability, the process for adding, removing, and
+  updating map content has been further optimized to ensure that updates
+  occur only when necessary, versus all the time.
+
+> Important: ``MinecraftMapContent`` now requires conformance to the
+> `Equatable` protocol. For types that inherit or conform to `NSObject`,
+> you may need to override `isEqual(_:)` to ensure equality checks operate
+> correctly.
+
 ## 16 April 2025
 
 ### Concurrency

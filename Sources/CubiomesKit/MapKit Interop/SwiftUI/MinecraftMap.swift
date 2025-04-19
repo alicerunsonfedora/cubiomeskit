@@ -8,15 +8,6 @@
 import MapKit
 import SwiftUI
 
-extension Equatable {
-    func equals(other: any Equatable) -> Bool {
-        if let nsObject = self as? NSObject {
-            return nsObject.isEqual(other as? NSObject)
-        }
-        return self == other as? Self
-    }
-}
-
 /// A map view of a Minecraft world that can be navigated and interacted with.
 ///
 /// This map view supports typical map interactions such as panning and zooming while displaying content from a
