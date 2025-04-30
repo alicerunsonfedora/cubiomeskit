@@ -7,7 +7,7 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
-## 19 April 2025
+## 1.0.0 (19 April 2025)
 
 ### MapKit Integration
 

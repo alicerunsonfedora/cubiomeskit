@@ -32,12 +32,10 @@ CubiomesKit guarantees support for the following platforms:
 To add the package as a dependency to your project, add the following to
 your Package.swift:
 
-<!-- TODO: Point this to a stable release soon. -->
-
 ```swift
 dependencies: [
     .package(url: "https://github.com/alicerunsonfedora/cubiomesKit",
-             branch: "main")
+             from: "1.0.0")
 ]
 ```
 
