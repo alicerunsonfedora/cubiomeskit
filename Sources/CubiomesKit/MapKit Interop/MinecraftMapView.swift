@@ -7,6 +7,7 @@
 
 import Foundation
 import MapKit
+import os
 
 /// A map view of a Minecraft world that can be navigated and interacted with.
 ///
@@ -82,7 +83,7 @@ public final class MinecraftMapView: MKMapView {
     /// The rendering options to the map's renderer.
     public var renderOptions: MinecraftWorldRenderer.Options = [] {
         didSet {
-            minecraftOverlay?.renderer.options = renderOptions
+            applyRenderingOptions(from: oldValue)
         }
     }
 
@@ -103,6 +104,8 @@ public final class MinecraftMapView: MKMapView {
     var minecraftOverlay: MinecraftRenderedTileOverlay!
     var mapContent: [any MinecraftMapContent] = []
 
+    private var logger: Logger
+
     /// Initialize a map view for a specified Minecraft world in a given frame.
     ///
     /// - Parameter world: The Minecraft world to be rendered on the map.
@@ -111,6 +114,7 @@ public final class MinecraftMapView: MKMapView {
     public init(world: MinecraftWorld, frame: CGRect, dimension: MinecraftWorld.Dimension = .overworld) {
         self.world = world
         self.dimension = dimension
+        self.logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftMapView.self)")
         super.init(frame: frame)
         self.delegate = self
 
@@ -147,6 +151,17 @@ public final class MinecraftMapView: MKMapView {
             self.showsZoomControls = ornaments.contains(.zoom)
         #endif
         self.showsScale = ornaments.contains(.scale)
+    }
+
+    func applyRenderingOptions(from oldValue: MinecraftWorldRenderer.Options) {
+        guard let minecraftOverlay else {
+            logger.warning("The Minecraft overlay hasn't been initialized yet.")
+            return
+        }
+        minecraftOverlay.renderer.options = renderOptions
+        if renderOptions != oldValue {
+            minecraftOverlay.cache.flush()
+        }
     }
 
     func redrawDimension() {

@@ -7,6 +7,14 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## 3 May 2025
+
+### MapKit Integration
+
+- ``MinecraftMapView`` map views should now properly invalidate the
+  rendering cache when the ``MinecraftMapView/renderOptions`` has been
+  changed.
+
 ## 1.0.0 (19 April 2025)
 
 ### MapKit Integration

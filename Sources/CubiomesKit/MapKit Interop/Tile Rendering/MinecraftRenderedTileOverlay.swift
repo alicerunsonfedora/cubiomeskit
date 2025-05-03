@@ -26,7 +26,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         self.renderer = MinecraftWorldRenderer(world: world)
         self.renderer.options = []
         self.cache = TileCache()
-        self.logger = Logger()
+        self.logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftRenderedTileOverlay.self)")
 
         super.init(urlTemplate: nil)
         self.canReplaceMapContent = true

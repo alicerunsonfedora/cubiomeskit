@@ -67,4 +67,16 @@ struct MinecraftMapViewTests {
         #expect(MinecraftMapView.compareAnnotations(markerOne, markerThree) == true)
         #expect(MinecraftMapView.compareAnnotations(markerTwo, markerThree) == true)
     }
+
+    @Test func mapViewRenderCacheRefreshesOnOptionChange() throws {
+        let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
+        let mcMapView = MinecraftMapView(world: mcWorld, frame: .zero)
+        let overlayPath = MKTileOverlayPath(x: 0, y: 0, z: 18, contentScaleFactor: 1)
+
+        mcMapView.minecraftOverlay?.cache.set("Foo".data(using: .utf8) ?? Data(), forPath: overlayPath, in: .overworld)
+        #expect(mcMapView.minecraftOverlay?.cache.getValue(forPath: overlayPath, in: .overworld) != nil)
+
+        mcMapView.renderOptions.insert(.naturalColors)
+        #expect(mcMapView.minecraftOverlay?.cache.getValue(forPath: overlayPath, in: .overworld) == nil)
+    }
 }
