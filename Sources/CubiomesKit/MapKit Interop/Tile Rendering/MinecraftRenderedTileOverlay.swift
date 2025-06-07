@@ -5,10 +5,11 @@
 //  Created by Marquis Kurt on 03-04-2025.
 //
 
-import os
 import CachingMapKitTileOverlay
 import MapKit
+import os
 
+@MainActor
 final class MinecraftRenderedTileOverlay: MKTileOverlay {
     var ephemeral: Bool = false {
         didSet { didChangeEphemeralRendering() }
@@ -23,8 +24,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
     init(world: MinecraftWorld, dimension: MinecraftWorld.Dimension = .overworld) {
         self.world = world
         self.dimension = dimension
-        self.renderer = MinecraftWorldRenderer(world: world)
-        self.renderer.options = []
+        self.renderer = MinecraftWorldRenderer(world: world, options: [])
         self.cache = TileCache()
         self.logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftRenderedTileOverlay.self)")
 
@@ -39,13 +39,13 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         static let maxBoundary = 33_554_432  // 29_999_984 is world border
     }
 
-    override func loadTile(at path: MKTileOverlayPath, result: @escaping (Data?, (any Error)?) -> Void) {
+    //    override func loadTile(at path: MKTileOverlayPath, result: @escaping (Data?, (any Error)?) -> Void) {
+    override func loadTile(at path: MKTileOverlayPath) async throws -> Data {
         let chunk = chunk(forOverlayPath: path)
 
         if !ephemeral, let data = cache.getValue(forPath: path, in: dimension) {
             logger.debug("Tile cache hit for path (\(TileCache.key(forPath: path, in: self.dimension)))")
-            result(data, nil)
-            return
+            return data
         }
 
         if ephemeral {
@@ -53,9 +53,9 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         } else {
             logger.debug("Tile cache miss for path (\(TileCache.key(forPath: path, in: self.dimension)))")
         }
-        let data = renderer.render(inRegion: chunk, scale: 1, dimension: dimension)
+        let data = await renderer.render(inRegion: chunk, scale: 1, dimension: dimension)
         if !ephemeral { cache.set(data, forPath: path, in: dimension) }
-        result(data, nil)
+        return data
     }
 
     func chunk(forOverlayPath path: MKTileOverlayPath) -> MinecraftWorldRect {
@@ -71,11 +71,13 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
 
         let chunk = MinecraftWorldRect(
             origin: MinecraftPoint(x: posX, y: 15, z: posZ),
-            scale: MinecraftWorldRect.Size(squaring: Int32(blockPerTile)))
+            scale: MinecraftWorldRect.Size(squaring: Int32(blockPerTile))
+        )
 
         logger.debug("Mapping at current scale: 🔳 \(totalTilesOnAxis), 🧱 \(blockPerTile)")
         logger.debug(
-            "🗺️ [\(path.x), \(path.y) @ \(path.z)] -> 🍱 [\(chunk.origin.x), \(chunk.origin.z) @ \(blockPerTile)]")
+            "🗺️ [\(path.x), \(path.y) @ \(path.z)] -> 🍱 [\(chunk.origin.x), \(chunk.origin.z) @ \(blockPerTile)]"
+        )
         return chunk
     }
 
@@ -86,7 +88,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
     }
 }
 
-extension MinecraftRenderedTileOverlay: CachingTileOverlay {
+extension MinecraftRenderedTileOverlay: @preconcurrency CachingTileOverlay {
     func cachedData(at path: MKTileOverlayPath) -> Data? {
         cache.getValue(forPath: path, in: self.dimension)
     }

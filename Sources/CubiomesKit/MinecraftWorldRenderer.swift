@@ -9,6 +9,7 @@ import CubiomesInternal
 import Foundation
 
 /// A facility used to render Minecraft worlds as two-dimensional maps.
+@MainActor
 public class MinecraftWorldRenderer {
     /// A structure representing the various options available to the renderer.
     public struct Options: OptionSet, Sendable {
@@ -57,8 +58,13 @@ public class MinecraftWorldRenderer {
 
     /// Create a renderer for a Minecraft world.
     /// - Parameter world: The Minecraft world the renderer will generate image slices from.
-    public init(world: MinecraftWorld) {
+    public init(world: MinecraftWorld, options: Options = [.centerPositions]) {
         self.world = world
+        self.options = options
+    }
+
+    public func updateOptions(_ options: Options) {
+        self.options = options
     }
 
     /// Renders a world region as raw image data.

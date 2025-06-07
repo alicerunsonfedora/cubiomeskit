@@ -11,6 +11,7 @@ import Testing
 
 @testable import CubiomesKit
 
+@MainActor
 struct MinecraftRenderedTileOverlayTests {
     @Test func overlayReturnsCorrectTile() async throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)

@@ -23,9 +23,8 @@ struct MinecraftWorldRendererTests {
         }
         let originalData = try Data(contentsOf: originalDataURL)
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 3_257_840_388_504_953_787)
-        let renderer = MinecraftWorldRenderer(world: mcWorld)
-        renderer.options = [.centerPositions]
-        let data = renderer.render(
+        let renderer = await MinecraftWorldRenderer(world: mcWorld, options: [.centerPositions])
+        let data = await renderer.render(
             inRegion: .init(
                 origin: .init(x: 116, y: 15, z: -31),
                 scale: .init(length: 256, width: 256, height: 1)),
@@ -33,6 +32,7 @@ struct MinecraftWorldRendererTests {
         #expect(data.hashValue == originalData.hashValue)
     }
 
+    @MainActor
     @Test func naturalColorsLoads() async throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 3_257_840_388_504_953_787)
         let renderer = MinecraftWorldRenderer(world: mcWorld)
