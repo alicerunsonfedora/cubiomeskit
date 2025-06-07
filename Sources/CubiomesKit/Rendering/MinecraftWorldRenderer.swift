@@ -58,11 +58,14 @@ public class MinecraftWorldRenderer {
 
     /// Create a renderer for a Minecraft world.
     /// - Parameter world: The Minecraft world the renderer will generate image slices from.
+    /// - Parameter options: The options to use in the renderer. Defaults to center positions.
     public init(world: MinecraftWorld, options: Options = [.centerPositions]) {
         self.world = world
         self.options = options
     }
 
+    /// Update the options available to the renderer.
+    /// - Parameter options: The options to use in the renderer.
     public func updateOptions(_ options: Options) {
         self.options = options
     }

@@ -51,6 +51,7 @@ structures.
 Render map images of Minecraft worlds.
 
 - ``MinecraftWorldRenderer``
+- ``MinecraftWorldRendererActor``
 - ``PPMData``
 
 ### MapKit Integration

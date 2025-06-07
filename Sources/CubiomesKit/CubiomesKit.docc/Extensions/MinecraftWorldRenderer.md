@@ -18,8 +18,7 @@ To generate a map tile using natural colors, add ``Options/naturalColors``
 to the set of options to the renderer:
 
 ```swift
-let renderer = MinecraftWorldRenderer(world: world)
-renderer.options = [.naturalColors]
+let renderer = MinecraftWorldRenderer(world: world, options: [.naturalColors])
 let ppmData = renderer.render(inRange: snapshotRange)
 ```
 
@@ -31,7 +30,6 @@ the top left, remove the ``Options/centerPositions`` option from the
 options provided:
 
 ```swift
-let renderer = MinecraftWorldRenderer(world: world)
-renderer.options.remove(.centerPositions)
+let renderer = MinecraftWorldRenderer(world: world, options: [])
 let ppmData = renderer.render(inRange: snapshotRange)
 ```
