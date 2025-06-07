@@ -9,7 +9,6 @@ import CachingMapKitTileOverlay
 import MapKit
 import os
 
-@MainActor
 final class MinecraftRenderedTileOverlay: MKTileOverlay {
     var ephemeral: Bool = false {
         didSet { didChangeEphemeralRendering() }
@@ -21,6 +20,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
     let cache: TileCache
     let logger: Logger
 
+    @MainActor
     init(world: MinecraftWorld, dimension: MinecraftWorld.Dimension = .overworld) {
         self.world = world
         self.dimension = dimension
@@ -40,6 +40,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
     }
 
     //    override func loadTile(at path: MKTileOverlayPath, result: @escaping (Data?, (any Error)?) -> Void) {
+    @MainActor
     override func loadTile(at path: MKTileOverlayPath) async throws -> Data {
         let chunk = chunk(forOverlayPath: path)
 
@@ -88,7 +89,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
     }
 }
 
-extension MinecraftRenderedTileOverlay: @preconcurrency CachingTileOverlay {
+extension MinecraftRenderedTileOverlay: CachingTileOverlay {
     func cachedData(at path: MKTileOverlayPath) -> Data? {
         cache.getValue(forPath: path, in: self.dimension)
     }
