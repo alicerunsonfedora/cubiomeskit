@@ -158,7 +158,7 @@ public final class MinecraftMapView: MKMapView {
             logger.warning("The Minecraft overlay hasn't been initialized yet.")
             return
         }
-        minecraftOverlay.renderer.options = renderOptions
+        minecraftOverlay.renderingOptions = renderOptions
         if renderOptions != oldValue {
             minecraftOverlay.cache.flush()
         }

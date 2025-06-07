@@ -9,7 +9,7 @@ import CubiomesInternal
 import Foundation
 
 /// A facility used to render Minecraft worlds as two-dimensional maps.
-@MainActor
+@MinecraftWorldRendererActor
 public class MinecraftWorldRenderer {
     /// A structure representing the various options available to the renderer.
     public struct Options: OptionSet, Sendable {

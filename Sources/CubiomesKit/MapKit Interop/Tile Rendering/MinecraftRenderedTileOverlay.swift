@@ -15,7 +15,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
     }
     var world: MinecraftWorld
     var dimension: MinecraftWorld.Dimension = .overworld
-    let renderer: MinecraftWorldRenderer
+    var renderingOptions: MinecraftWorldRenderer.Options = []
 
     let cache: TileCache
     let logger: Logger
@@ -24,7 +24,6 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
     init(world: MinecraftWorld, dimension: MinecraftWorld.Dimension = .overworld) {
         self.world = world
         self.dimension = dimension
-        self.renderer = MinecraftWorldRenderer(world: world, options: [])
         self.cache = TileCache()
         self.logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftRenderedTileOverlay.self)")
 
@@ -54,7 +53,10 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         } else {
             logger.debug("Tile cache miss for path (\(TileCache.key(forPath: path, in: self.dimension)))")
         }
-        let data = renderer.render(inRegion: chunk, scale: 1, dimension: dimension)
+
+        let renderer = await MinecraftWorldRenderer(world: world, options: renderingOptions)
+        let data = await renderer.render(inRegion: chunk, scale: 1, dimension: dimension)
+
         if !ephemeral { cache.set(data, forPath: path, in: dimension) }
         return data
     }

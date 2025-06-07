@@ -32,7 +32,7 @@ struct MinecraftWorldRendererTests {
         #expect(data.hashValue == originalData.hashValue)
     }
 
-    @MainActor
+    @MinecraftWorldRendererActor
     @Test func naturalColorsLoads() async throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 3_257_840_388_504_953_787)
         let renderer = MinecraftWorldRenderer(world: mcWorld)

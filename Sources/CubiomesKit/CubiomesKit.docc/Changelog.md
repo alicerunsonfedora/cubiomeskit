@@ -7,6 +7,20 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## Unreleased
+
+### 7 June 2025
+
+#### Concurrency
+
+- The new ``MinecraftWorldRendererActor`` is used to isolate rendering
+  tasks, thereby improving the performance of rendering maps.
+
+#### MapKit Integration
+
+- ``MinecraftMapView`` now leverages modern Swift concurrency features
+  to significantly improve the initial load performance of map tiles.
+
 ## 1.0.1 (3 May 2025)
 
 ### MapKit Integration
