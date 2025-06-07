@@ -53,7 +53,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         } else {
             logger.debug("Tile cache miss for path (\(TileCache.key(forPath: path, in: self.dimension)))")
         }
-        let data = await renderer.render(inRegion: chunk, scale: 1, dimension: dimension)
+        let data = renderer.render(inRegion: chunk, scale: 1, dimension: dimension)
         if !ephemeral { cache.set(data, forPath: path, in: dimension) }
         return data
     }

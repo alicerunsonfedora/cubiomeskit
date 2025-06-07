@@ -125,9 +125,9 @@ public final class MinecraftMapView: MKMapView {
         self.configureMapView()
         self.centerCoordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
 
-//        let overlay = await MinecraftRenderedTileOverlay(world: world, dimension: dimension)
-//        self.addOverlay(overlay, level: .aboveLabels)
-//        self.minecraftOverlay = overlay
+        let overlay = MinecraftRenderedTileOverlay(world: world, dimension: dimension)
+        self.addOverlay(overlay, level: .aboveLabels)
+        self.minecraftOverlay = overlay
     }
 
     @available(*, unavailable)
