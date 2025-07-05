@@ -81,21 +81,21 @@ public class MinecraftWorldRenderer {
         inRegion rect: MinecraftWorldRect,
         scale pixelsPerCell: Int32 = 4,
         dimension: MinecraftWorld.Dimension = .overworld
-    ) -> Data {
+    ) async -> Data {
         var generator = world.generator(in: dimension)
-        var rangeX = rect.origin.x
-        var rangeZ = rect.origin.z
+        var originX = rect.origin.x
+        var originZ = rect.origin.z
         let size = rect.mapScale.rawValue
 
         if options.contains(.centerPositions) {
-            rangeX = (rangeX - (pixelsPerCell * rect.size.length / 2)) / size
-            rangeZ = (rangeZ - (pixelsPerCell * rect.size.width / 2)) / size
+            originX = (originX - (pixelsPerCell * rect.size.length / 2)) / size
+            originZ = (originZ - (pixelsPerCell * rect.size.width / 2)) / size
         }
         
-        let _range = Range(
+        let _range = Cubiomes.Range(
             scale: size,
-            x: rangeX,
-            z: rangeZ,
+            x: originX,
+            z: originZ,
             sx: rect.size.length,
             sz: rect.size.width,
             y: rect.origin.y,
@@ -105,26 +105,26 @@ public class MinecraftWorldRenderer {
         let biomeIds = allocCache(&generator, _range)
         genBiomes(&generator, biomeIds, _range)
 
-        let imgWidth = pixelsPerCell * _range.sx
-        let imgHeight = pixelsPerCell * _range.sz
-
         var biomeColors: ColorGroup = (0, 0, 0)
         if options.contains(.naturalColors), let naturalColorFile, dimension == .overworld {
             parseBiomeColors(&biomeColors, naturalColorFile)
         } else {
             initBiomeColors(&biomeColors)
         }
-
-        let rgbData = generateImageData(
-            imgWidth: imgWidth,
-            imgHeight: imgHeight,
+       
+        // TODO: WTF does it crash whenever we pass UInt32(pixelsPerCell) for ppc in this call? Why overflow?
+        // Has I ever?
+        let rgbData = await generateImageData(
+            imgWidth: 1024,
+            imgHeight: 1024,
             biomeColors: &biomeColors,
             biomeIds: biomeIds,
-            range: _range,
-            pixelsPerCell: pixelsPerCell
+            scaleX: 256,
+            scaleZ: 256,
+            pixelsPerCell: 4
         )
 
-        let ppmData = PPMData(pixels: rgbData, size: .init(width: Double(imgWidth), height: Double(imgHeight)))
+        let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(1024), height: Double(1024)))
         return Data(ppm: ppmData)
     }
     
@@ -136,17 +136,20 @@ public class MinecraftWorldRenderer {
         imgHeight: Int32,
         biomeColors: inout ColorGroup,
         biomeIds: UnsafeMutablePointer<Int32>?,
-        range: Cubiomes.Range,
-        pixelsPerCell: Int32
-    ) -> PixelImageData {
+        scaleX: UInt32,
+        scaleZ: UInt32,
+        pixelsPerCell: UInt32
+    ) async -> PixelImageData {
         var rgbData = PixelImageData(repeating: 0, count: Int(3 * imgWidth * imgHeight))
+        
+        // TODO: What if... we write our own??? We could replace this and see if we can chunk it on our own.
         biomesToImage(
             &rgbData,
             &biomeColors,
             UnsafePointer(biomeIds),
-            UInt32(range.sx),
-            UInt32(range.sz),
-            UInt32(pixelsPerCell),
+            scaleX,
+            scaleZ,
+            pixelsPerCell,
             2
         )
         
