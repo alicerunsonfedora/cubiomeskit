@@ -38,7 +38,6 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         static let maxBoundary = 33_554_432  // 29_999_984 is world border
     }
 
-    //    override func loadTile(at path: MKTileOverlayPath, result: @escaping (Data?, (any Error)?) -> Void) {
     @MainActor
     override func loadTile(at path: MKTileOverlayPath) async throws -> Data {
         let chunk = chunk(forOverlayPath: path)

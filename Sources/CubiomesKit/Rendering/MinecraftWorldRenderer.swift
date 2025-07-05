@@ -11,6 +11,9 @@ import Foundation
 /// A facility used to render Minecraft worlds as two-dimensional maps.
 @MinecraftWorldRendererActor
 public class MinecraftWorldRenderer {
+    public typealias ColorGroup = (UInt8, UInt8, UInt8)
+    public typealias PixelImageData = [CUnsignedChar]
+    
     /// A structure representing the various options available to the renderer.
     public struct Options: OptionSet, Sendable {
         /// The underlying raw value representing the options selected.
@@ -105,26 +108,50 @@ public class MinecraftWorldRenderer {
         let imgWidth = pixelsPerCell * _range.sx
         let imgHeight = pixelsPerCell * _range.sz
 
-        var biomeColors: (UInt8, UInt8, UInt8) = (0, 0, 0)
+        var biomeColors: ColorGroup = (0, 0, 0)
         if options.contains(.naturalColors), let naturalColorFile, dimension == .overworld {
             parseBiomeColors(&biomeColors, naturalColorFile)
         } else {
             initBiomeColors(&biomeColors)
         }
 
-        var rgbData = [CUnsignedChar](repeating: 0, count: Int(3 * imgWidth * imgHeight))
+        let rgbData = generateImageData(
+            imgWidth: imgWidth,
+            imgHeight: imgHeight,
+            biomeColors: &biomeColors,
+            biomeIds: biomeIds,
+            range: _range,
+            pixelsPerCell: pixelsPerCell
+        )
+
+        let ppmData = PPMData(pixels: rgbData, size: .init(width: Double(imgWidth), height: Double(imgHeight)))
+        return Data(ppm: ppmData)
+    }
+    
+    // NOTE(alicerunsonfedora): We're passing ownership of biomeIds here. While this makes Cubiomes happy (right now),
+    // this might cause some Swift concurrency issues because of it. Must investigate (caller shouldn't do anything else
+    // with biomeIds).
+    func generateImageData(
+        imgWidth: Int32,
+        imgHeight: Int32,
+        biomeColors: inout ColorGroup,
+        biomeIds: UnsafeMutablePointer<Int32>?,
+        range: Cubiomes.Range,
+        pixelsPerCell: Int32
+    ) -> PixelImageData {
+        var rgbData = PixelImageData(repeating: 0, count: Int(3 * imgWidth * imgHeight))
         biomesToImage(
             &rgbData,
             &biomeColors,
             UnsafePointer(biomeIds),
-            UInt32(_range.sx),
-            UInt32(_range.sz),
+            UInt32(range.sx),
+            UInt32(range.sz),
             UInt32(pixelsPerCell),
             2
         )
+        
+        // TODO: Check this is where this should occur. It very likely does...
         biomeIds?.deallocate()
-
-        let ppmData = PPMData(pixels: rgbData, size: .init(width: Double(imgWidth), height: Double(imgHeight)))
-        return Data(ppm: ppmData)
+        return rgbData
     }
 }
