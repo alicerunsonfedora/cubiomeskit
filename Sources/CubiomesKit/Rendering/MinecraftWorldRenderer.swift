@@ -127,7 +127,7 @@ public class MinecraftWorldRenderer {
         
         biomeIds?.deallocate()
 
-        let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(1024), height: Double(1024)))
+        let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(imgWidth), height: Double(imgHeight)))
         return Data(ppm: ppmData)
     }
 
