@@ -73,6 +73,64 @@ public class MinecraftWorldRenderer {
         self.options = options
     }
 
+    
+    public func renderSynchronously(
+        inRegion rect: MinecraftWorldRect,
+        scale pixelsPerCell: Int32 = 4,
+        dimension: MinecraftWorld.Dimension = .overworld
+    ) -> Data {
+        var generator = world.generator(in: dimension)
+        var originX = rect.origin.x
+        var originZ = rect.origin.z
+        let size = rect.mapScale.rawValue
+
+        if options.contains(.centerPositions) {
+            originX = (originX - (pixelsPerCell * rect.size.length / 2)) / size
+            originZ = (originZ - (pixelsPerCell * rect.size.width / 2)) / size
+        }
+        
+        let _range = Cubiomes.Range(
+            scale: size,
+            x: originX,
+            z: originZ,
+            sx: rect.size.length,
+            sz: rect.size.width,
+            y: rect.origin.y,
+            sy: rect.size.height
+        )
+
+        let biomeIds = allocCache(&generator, _range)
+        genBiomes(&generator, biomeIds, _range)
+
+        var biomeColors: ColorGroup = (0, 0, 0)
+        if options.contains(.naturalColors), let naturalColorFile, dimension == .overworld {
+            parseBiomeColors(&biomeColors, naturalColorFile)
+        } else {
+            initBiomeColors(&biomeColors)
+        }
+
+        let imgWidth = pixelsPerCell * rect.size.length
+        let imgHeight = pixelsPerCell * rect.size.width
+       
+        var rgbData = PixelImageData(repeating: 0, count: Int(3 * imgWidth * imgHeight))
+        
+        // TODO: What if... we write our own??? We could replace this and see if we can chunk it on our own.
+        biomesToImage(
+            &rgbData,
+            &biomeColors,
+            UnsafePointer(biomeIds),
+            UInt32(rect.size.length),
+            UInt32(rect.size.width),
+            UInt32(pixelsPerCell),
+            2
+        )
+        
+        biomeIds?.deallocate()
+
+        let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(1024), height: Double(1024)))
+        return Data(ppm: ppmData)
+    }
+
     /// Renders a world region as raw image data.
     /// - Parameter rect: The region to render in the world.
     /// - Parameter pixelsPerCell: The number of pixels that occupy a single cell in the rendered image.

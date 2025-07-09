@@ -54,7 +54,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         }
 
         let renderer = await MinecraftWorldRenderer(world: world, options: renderingOptions)
-        let data = await renderer.render(inRegion: chunk, scale: 1, dimension: dimension)
+        let data = await renderer.renderSynchronously(inRegion: chunk, scale: 1, dimension: dimension)
 
         if !ephemeral { cache.set(data, forPath: path, in: dimension) }
         return data
