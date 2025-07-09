@@ -21,7 +21,7 @@ let package = Package(
             targets: ["CubiomesKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/stadiamaps/mapkit-caching-tile-overlay", from: "1.0.4")
+        .package(url: "https://github.com/stadiamaps/mapkit-caching-tile-overlay", from: "1.1.0")
 //        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.18.0")
     ],
     targets: [
