@@ -80,34 +80,11 @@ public class MinecraftWorldRenderer {
         dimension: MinecraftWorld.Dimension = .overworld
     ) -> Data {
         var generator = world.generator(in: dimension)
-        var originX = rect.origin.x
-        var originZ = rect.origin.z
-        let size = rect.mapScale.rawValue
-
-        if options.contains(.centerPositions) {
-            originX = (originX - (pixelsPerCell * rect.size.length / 2)) / size
-            originZ = (originZ - (pixelsPerCell * rect.size.width / 2)) / size
-        }
+        let (originX, originZ) = getMapTileOrigin(in: rect, at: pixelsPerCell)
         
-        let _range = Cubiomes.Range(
-            scale: size,
-            x: originX,
-            z: originZ,
-            sx: rect.size.length,
-            sz: rect.size.width,
-            y: rect.origin.y,
-            sy: rect.size.height
-        )
-
-        let biomeIds = allocCache(&generator, _range)
-        genBiomes(&generator, biomeIds, _range)
-
+        let biomeIDs = createBiomeLUT(using: &generator, x: originX, z: originZ, in: rect)
         var biomeColors: ColorGroup = (0, 0, 0)
-        if options.contains(.naturalColors), let naturalColorFile, dimension == .overworld {
-            parseBiomeColors(&biomeColors, naturalColorFile)
-        } else {
-            initBiomeColors(&biomeColors)
-        }
+        getBiomeColors(for: dimension, in: &biomeColors)
 
         let imgWidth = pixelsPerCell * rect.size.length
         let imgHeight = pixelsPerCell * rect.size.width
@@ -118,14 +95,13 @@ public class MinecraftWorldRenderer {
         biomesToImage(
             &rgbData,
             &biomeColors,
-            UnsafePointer(biomeIds),
+            UnsafePointer(biomeIDs),
             UInt32(rect.size.length),
             UInt32(rect.size.width),
             UInt32(pixelsPerCell),
             2
         )
-        
-        biomeIds?.deallocate()
+        biomeIDs?.deallocate()
 
         let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(imgWidth), height: Double(imgHeight)))
         return Data(ppm: ppmData)
@@ -141,19 +117,50 @@ public class MinecraftWorldRenderer {
         dimension: MinecraftWorld.Dimension = .overworld
     ) async -> Data {
         var generator = world.generator(in: dimension)
+        let (originX, originZ) = getMapTileOrigin(in: rect, at: pixelsPerCell)
+        
+        let biomeIDs = createBiomeLUT(using: &generator, x: originX, z: originZ, in: rect)
+        var biomeColors: ColorGroup = (0, 0, 0)
+        getBiomeColors(for: dimension, in: &biomeColors)
+       
+        // TODO: WTF does it crash whenever we pass UInt32(pixelsPerCell) for ppc in this call? Why overflow?
+        // Has I ever?
+        let rgbData = await generateImageData(
+            imgWidth: 1024,
+            imgHeight: 1024,
+            biomeColors: &biomeColors,
+            biomeIds: biomeIDs,
+            scaleX: 256,
+            scaleZ: 256,
+            pixelsPerCell: 4
+        )
+
+        let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(1024), height: Double(1024)))
+        return Data(ppm: ppmData)
+    }
+
+    func getMapTileOrigin(in rect: MinecraftWorldRect, at pixelsPerCell: Int32) -> (Int32, Int32) {
         var originX = rect.origin.x
         var originZ = rect.origin.z
         let size = rect.mapScale.rawValue
-
+        
         if options.contains(.centerPositions) {
             originX = (originX - (pixelsPerCell * rect.size.length / 2)) / size
             originZ = (originZ - (pixelsPerCell * rect.size.width / 2)) / size
         }
-        
+        return (originX, originZ)
+    }
+
+    func createBiomeLUT(
+        using generator: inout Cubiomes.Generator,
+        x: Int32,
+        z: Int32,
+        in rect: MinecraftWorldRect
+    ) -> UnsafeMutablePointer<Int32>? {
         let _range = Cubiomes.Range(
-            scale: size,
-            x: originX,
-            z: originZ,
+            scale: rect.mapScale.rawValue,
+            x: x,
+            z: z,
             sx: rect.size.length,
             sz: rect.size.width,
             y: rect.origin.y,
@@ -162,28 +169,15 @@ public class MinecraftWorldRenderer {
 
         let biomeIds = allocCache(&generator, _range)
         genBiomes(&generator, biomeIds, _range)
+        return biomeIds
+    }
 
-        var biomeColors: ColorGroup = (0, 0, 0)
+    func getBiomeColors(for dimension: MinecraftWorld.Dimension, in colorGroup: inout ColorGroup) {
         if options.contains(.naturalColors), let naturalColorFile, dimension == .overworld {
-            parseBiomeColors(&biomeColors, naturalColorFile)
+            parseBiomeColors(&colorGroup, naturalColorFile)
         } else {
-            initBiomeColors(&biomeColors)
+            initBiomeColors(&colorGroup)
         }
-       
-        // TODO: WTF does it crash whenever we pass UInt32(pixelsPerCell) for ppc in this call? Why overflow?
-        // Has I ever?
-        let rgbData = await generateImageData(
-            imgWidth: 1024,
-            imgHeight: 1024,
-            biomeColors: &biomeColors,
-            biomeIds: biomeIds,
-            scaleX: 256,
-            scaleZ: 256,
-            pixelsPerCell: 4
-        )
-
-        let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(1024), height: Double(1024)))
-        return Data(ppm: ppmData)
     }
     
     // NOTE(alicerunsonfedora): We're passing ownership of biomeIds here. While this makes Cubiomes happy (right now),
