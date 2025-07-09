@@ -14,7 +14,11 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         didSet { didChangeEphemeralRendering() }
     }
     var world: MinecraftWorld
-    var dimension: MinecraftWorld.Dimension = .overworld
+    var dimension: MinecraftWorld.Dimension = .overworld {
+        didSet {
+            didChangeDimension()
+        }
+    }
     var renderingOptions: MinecraftWorldRenderer.Options = []
 
     let cache: TileCache
@@ -87,6 +91,10 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         if self.ephemeral {
             cache.flush()
         }
+    }
+
+    private func didChangeDimension() {
+        cache.flush()
     }
 }
 
