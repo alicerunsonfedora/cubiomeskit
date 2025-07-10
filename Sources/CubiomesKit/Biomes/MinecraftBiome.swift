@@ -65,6 +65,8 @@ extension MinecraftBiome: @retroactive CaseIterable {
     }
 }
 
+extension MinecraftBiome: @retroactive Hashable {}
+
 public extension String {
     /// Initializes a string from a Minecraft biome.
     /// - Parameter biomeID: The Minecraft biome to retrieve the string value of.
