@@ -7,12 +7,15 @@
 
 import CubiomesInternal
 import Foundation
+import OSLog
 
 /// A facility used to render Minecraft worlds as two-dimensional maps.
 @MinecraftWorldRendererActor
 public class MinecraftWorldRenderer {
     public typealias ColorGroup = (UInt8, UInt8, UInt8)
     public typealias PixelImageData = [CUnsignedChar]
+
+    private var logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftWorldRenderer.self)")
     
     /// A structure representing the various options available to the renderer.
     public struct Options: OptionSet, Sendable {
@@ -43,13 +46,14 @@ public class MinecraftWorldRenderer {
 
     var naturalColorFile: String? {
         guard let resourceURL = Bundle.module.url(forResource: Constants.naturalColormap, withExtension: "txt") else {
+            logger.warning("The color map doesn't exist in the bundle resources.")
             return nil
         }
         do {
             let data = try Data(contentsOf: resourceURL)
             return String(data: data, encoding: .utf8)
         } catch {
-            print("Failed to fetch natural colors: \(error.localizedDescription)")
+            logger.error("Failed to fetch natural colors: \(error.localizedDescription)")
             return nil
         }
     }
@@ -101,7 +105,6 @@ public class MinecraftWorldRenderer {
             UInt32(pixelsPerCell),
             2
         )
-        biomeIDs?.deallocate()
 
         let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(imgWidth), height: Double(imgHeight)))
         return Data(ppm: ppmData)
@@ -178,6 +181,17 @@ public class MinecraftWorldRenderer {
         } else {
             initBiomeColors(&colorGroup)
         }
+    }
+
+    func getBiomeColorMap(for dimension: MinecraftWorld.Dimension) -> MinecraftBiomeColorMap {
+        if options.contains(.naturalColors), let naturalColorFile, dimension == .overworld {
+            do {
+                return try MinecraftBiomeColorMap(decoding: naturalColorFile)
+            } catch {
+                logger.error("Failed to generate the natural color biome map: \(error.localizedDescription)")
+            }
+        }
+        return .cubiomesDefault()
     }
     
     // NOTE(alicerunsonfedora): We're passing ownership of biomeIds here. While this makes Cubiomes happy (right now),

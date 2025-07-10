@@ -57,6 +57,14 @@ public extension MinecraftBiome {
     }
 }
 
+extension MinecraftBiome: @retroactive CaseIterable {
+    public static var allCases: [BiomeID] {
+        (ocean.rawValue...pale_garden.rawValue)
+            .map(MinecraftBiome.init(rawValue:))
+            .filter { $0 != none }
+    }
+}
+
 public extension String {
     /// Initializes a string from a Minecraft biome.
     /// - Parameter biomeID: The Minecraft biome to retrieve the string value of.
