@@ -76,8 +76,8 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         posZ += Int32(blockPerTile * path.y)
 
         let chunk = MinecraftWorldRect(
-            origin: MinecraftPoint(x: posX, y: 512, z: posZ),
-            scale: MinecraftWorldRect.Size(squaring: Int32(blockPerTile), height: 512-64)
+            origin: MinecraftPoint(x: posX, y: 15, z: posZ),
+            scale: MinecraftWorldRect.Size(squaring: Int32(blockPerTile))
         )
 
         logger.debug("Mapping at current scale: 🔳 \(totalTilesOnAxis), 🧱 \(blockPerTile)")
