@@ -75,7 +75,9 @@ public final class MinecraftMapView: MKMapView {
     /// - Important: To improve performance in your apps, it is recommended to keep this option disabled.
     public var ephemeralRendering: Bool = false {
         didSet {
-            minecraftOverlay?.ephemeral = ephemeralRendering
+            if let overlay = minecraftOverlay as? MinecraftRenderedTileOverlay {
+                overlay.ephemeral = ephemeralRendering
+            }
             mcMapViewDelegate?.mapView(self, didChangeEphemeralRendering: ephemeralRendering)
         }
     }
@@ -101,7 +103,7 @@ public final class MinecraftMapView: MKMapView {
     /// delegate to display Minecraft tiles.
     public weak var mcMapViewDelegate: (any MinecraftMapViewDelegate)?
 
-    var minecraftOverlay: MinecraftRenderedTileOverlay!
+    var minecraftOverlay: (any MinecraftTileOverlay)!
     var mapContent: [any MinecraftMapContent] = []
 
     private var logger: Logger
@@ -154,8 +156,8 @@ public final class MinecraftMapView: MKMapView {
     }
 
     func applyRenderingOptions(from oldValue: MinecraftWorldRenderer.Options) {
-        guard let minecraftOverlay else {
-            logger.warning("The Minecraft overlay hasn't been initialized yet.")
+        guard let minecraftOverlay = minecraftOverlay as? MinecraftRenderedTileOverlay else {
+            logger.warning("The Minecraft overlay hasn't been initialized yet, or it doesn't need rendering options.")
             return
         }
         minecraftOverlay.renderingOptions = renderOptions
@@ -166,7 +168,9 @@ public final class MinecraftMapView: MKMapView {
 
     func redrawDimension() {
         guard let minecraftOverlay else { return }
-        minecraftOverlay.dimension = self.dimension
+        if let renderedOverlay = minecraftOverlay as? MinecraftRenderedTileOverlay {
+            renderedOverlay.dimension = self.dimension
+        }
         if let renderer = renderer(for: minecraftOverlay) as? MKTileOverlayRenderer {
             renderer.reloadData()
         }

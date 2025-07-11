@@ -9,30 +9,11 @@ import CachingMapKitTileOverlay
 import MapKit
 import os
 
-final class MinecraftRenderedTileOverlay: MKTileOverlay {
-    var ephemeral: Bool = false {
-        didSet { didChangeEphemeralRendering() }
-    }
-    var world: MinecraftWorld
-    var dimension: MinecraftWorld.Dimension = .overworld {
-        didSet {
-            didChangeDimension()
-        }
-    }
-    var renderingOptions: MinecraftWorldRenderer.Options = []
-
-    let cache: TileCache
-    let logger: Logger
-
-    @MainActor
-    init(world: MinecraftWorld, dimension: MinecraftWorld.Dimension = .overworld) {
-        self.world = world
-        self.dimension = dimension
-        self.cache = TileCache()
-        self.logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftRenderedTileOverlay.self)")
-
-        super.init(urlTemplate: nil)
-        self.canReplaceMapContent = true
+final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
+    struct Configuration {
+        var world: MinecraftWorld
+        var dimension: MinecraftWorld.Dimension = .overworld
+        var renderingOptions: MinecraftWorldRenderer.Options = []
     }
 
     enum Constants {
@@ -42,25 +23,67 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
         static let maxBoundary = 33_554_432  // 29_999_984 is world border
     }
 
+    var configuration: Configuration {
+        didSet {
+            didChangeDimension()
+        }
+    }
+
+    var ephemeral: Bool = false {
+        didSet { didChangeEphemeralRendering() }
+    }
+
+    var world: MinecraftWorld {
+        get { configuration.world }
+        set { configuration.world = newValue }
+    }
+
+    var dimension: MinecraftWorld.Dimension {
+        get { configuration.dimension }
+        set { configuration.dimension = newValue }
+    }
+
+    var renderingOptions: MinecraftWorldRenderer.Options {
+        get { configuration.renderingOptions }
+        set { configuration.renderingOptions = newValue }
+    }
+
+    let cache: TileCache
+    let logger: Logger
+
+    init(withConfiguration configuration: Configuration) {
+        self.configuration = configuration
+        self.cache = TileCache()
+        self.logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftRenderedTileOverlay.self)")
+
+        super.init(urlTemplate: nil)
+        self.canReplaceMapContent = true
+    }
+
+    @MainActor
+    convenience init(world: MinecraftWorld, dimension: MinecraftWorld.Dimension = .overworld) {
+        self.init(withConfiguration: Configuration(world: world, dimension: dimension))
+    }
+
     @MainActor
     override func loadTile(at path: MKTileOverlayPath) async throws -> Data {
         let chunk = chunk(forOverlayPath: path)
 
-        if !ephemeral, let data = cache.getValue(forPath: path, in: dimension) {
-            logger.debug("Tile cache hit for path (\(TileCache.key(forPath: path, in: self.dimension)))")
+        if !ephemeral, let data = cache.getValue(forPath: path, in: configuration.dimension) {
+            logger.debug("Tile cache hit for path (\(TileCache.key(forPath: path, in: self.configuration.dimension)))")
             return data
         }
 
         if ephemeral {
             logger.warning("Tile renderer is ephemeral, which will always generate new tiles.")
         } else {
-            logger.debug("Tile cache miss for path (\(TileCache.key(forPath: path, in: self.dimension)))")
+            logger.debug("Tile cache miss for path (\(TileCache.key(forPath: path, in: self.configuration.dimension)))")
         }
 
-        let renderer = await MinecraftWorldRenderer(world: world, options: renderingOptions)
-        let data = await renderer.renderSynchronously(inRegion: chunk, scale: 1, dimension: dimension)
+        let renderer = await MinecraftWorldRenderer(world: world, options: configuration.renderingOptions)
+        let data = await renderer.renderSynchronously(inRegion: chunk, scale: 1, dimension: configuration.dimension)
 
-        if !ephemeral { cache.set(data, forPath: path, in: dimension) }
+        if !ephemeral { cache.set(data, forPath: path, in: configuration.dimension) }
         return data
     }
 
@@ -100,6 +123,6 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay {
 
 extension MinecraftRenderedTileOverlay: CachingTileOverlay {
     func cachedData(at path: MKTileOverlayPath) -> Data? {
-        cache.getValue(forPath: path, in: self.dimension)
+        cache.getValue(forPath: path, in: self.configuration.dimension)
     }
 }

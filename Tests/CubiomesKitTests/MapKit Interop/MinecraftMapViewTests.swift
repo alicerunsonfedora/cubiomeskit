@@ -32,7 +32,9 @@ struct MinecraftMapViewTests {
         let mcMapView = MinecraftMapView(world: mcWorld, frame: .zero)
         mcMapView.dimension = .end
 
-        #expect(mcMapView.minecraftOverlay?.dimension == .end)
+        let overlay = mcMapView.minecraftOverlay as? MinecraftRenderedTileOverlay
+
+        #expect(overlay?.dimension == .end)
     }
 
     @Test func mapViewAnnotation() throws {

@@ -24,7 +24,7 @@ extension MinecraftMapView: MKMapViewDelegate {
 
     public func mapView(_ mapView: MKMapView, rendererFor overlay: any MKOverlay) -> MKOverlayRenderer {
         return switch overlay {
-        case let overlay as MinecraftRenderedTileOverlay:
+        case let overlay as any MinecraftTileOverlay:
             CachingTileOverlayRenderer(overlay: overlay)
         default:
             MKOverlayRenderer(overlay: overlay)
