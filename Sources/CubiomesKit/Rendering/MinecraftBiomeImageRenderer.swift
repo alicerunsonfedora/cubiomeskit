@@ -14,23 +14,13 @@ struct MinecraftBiomeImageRenderer {
     @discardableResult
     static func applesauce(
         data: inout [CUnsignedChar],
-        colors: UnsafeMutablePointer<(UInt8, UInt8, UInt8)>!,
+        colors: MinecraftBiomeColorMap,
         biomeIDs: UnsafePointer<Int32>!,
         width: UInt32,
         height: UInt32,
         pixelsPerCell: UInt32,
         flip: Bool
     ) -> Bool {
-        //        int biomesToImage(
-        //                unsigned char *pixels, <-- data
-        //                unsigned char biomeColors[256][3], <-- colors
-        //                const int *biomes, <-- biomeIDs
-        //                const unsigned int sx, <-- width
-        //                const unsigned int sy, <-- height
-        //                const unsigned int pixscale, <-- pixelsPerCell
-        //                const int flip <-- flip
-        //        ) {
-
         var containsInvalidBiomes = false
 
         for blockZ in 0..<Int(height) {
@@ -70,26 +60,20 @@ struct MinecraftBiomeImageRenderer {
         blockZ: Int,
         width: Int,
         biomeLUT: UnsafePointer<Int32>!,
-        colorLUT: UnsafeMutablePointer<(UInt8, UInt8, UInt8)>!
+        colorLUT: MinecraftBiomeColorMap
     ) -> BiomeColorResult {
         let biomeID = biomeLUT[blockZ * width + blockX]
         var result = BiomeColorResult(containsInvalidBiomes: false, color: (0, 0, 0))
 
-        if (0...256).contains(biomeID) {
-            result.color = colorLUT[Int(biomeID)]
-        } else {
-            // This may happen for some intermediate layers
-            result.containsInvalidBiomes = true
-            var (r, g, b) = colorLUT[Int(biomeID & 0x7f)]
-            r -= 40
-            g -= 40
-            b -= 40
+        let color = colorLUT.color(for: MinecraftBiome(biomeID))
+        result.color = (color.red, color.green, color.blue)
 
-            r = r > 255 ? 0 : r & 255
-            g = g > 255 ? 0 : g & 255
-            b = b > 255 ? 0 : b & 255
-            result.color = (r, g, b)
+        if (0...256).contains(biomeID) {
+            return result
         }
+
+        // This may happen for some intermediate layers
+        result.containsInvalidBiomes = true
         return result
     }
 
