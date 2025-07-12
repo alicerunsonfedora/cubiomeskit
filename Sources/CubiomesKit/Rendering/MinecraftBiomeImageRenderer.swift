@@ -11,6 +11,16 @@ struct MinecraftBiomeImageRenderer {
         var color: ColorRGB
     }
 
+    private struct GridCoordinate {
+        var row: UInt32
+        var column: UInt32
+    }
+
+    private struct BlockPosition {
+        var x: Int
+        var z: Int
+    }
+
     @discardableResult
     static func applesauce(
         data: inout [CUnsignedChar],
@@ -26,8 +36,7 @@ struct MinecraftBiomeImageRenderer {
         for blockZ in 0..<Int(height) {
             for blockX in 0..<Int(width) {
                 let result = biomeColor(
-                    blockX: blockX,
-                    blockZ: blockZ,
+                    at: BlockPosition(x: blockX, z: blockZ),
                     width: Int(width),
                     biomeLUT: biomeIDs,
                     colorLUT: colors
@@ -37,10 +46,8 @@ struct MinecraftBiomeImageRenderer {
                 for row in 0..<pixelsPerCell {
                     for col in 0..<pixelsPerCell {
                         assignPixel(
-                            row: row,
-                            col: col,
-                            blockX: UInt32(blockX),
-                            blockZ: UInt32(blockZ),
+                            at: GridCoordinate(row: row, column: col),
+                            blockPosition: BlockPosition(x: blockX, z: blockZ),
                             pixelsPerCell: pixelsPerCell,
                             data: &data,
                             flip: flip,
@@ -55,14 +62,13 @@ struct MinecraftBiomeImageRenderer {
         return containsInvalidBiomes
     }
 
-    static func biomeColor(
-        blockX: Int,
-        blockZ: Int,
+    private static func biomeColor(
+        at position: BlockPosition,
         width: Int,
         biomeLUT: UnsafePointer<Int32>!,
         colorLUT: MinecraftBiomeColorMap
     ) -> BiomeColorResult {
-        let biomeID = biomeLUT[blockZ * width + blockX]
+        let biomeID = biomeLUT[position.z * width + position.x]
         var result = BiomeColorResult(containsInvalidBiomes: false, color: .black)
 
         let color = colorLUT.color(for: MinecraftBiome(biomeID))
@@ -77,11 +83,9 @@ struct MinecraftBiomeImageRenderer {
         return result
     }
 
-    static func assignPixel(
-        row: UInt32,
-        col: UInt32,
-        blockX: UInt32,
-        blockZ: UInt32,
+    private static func assignPixel(
+        at coordinate: GridCoordinate,
+        blockPosition: BlockPosition,
         pixelsPerCell: UInt32,
         data: inout [CUnsignedChar],
         flip: Bool,
@@ -89,6 +93,11 @@ struct MinecraftBiomeImageRenderer {
         width: UInt32,
         height: UInt32
     ) {
+        let col = coordinate.column
+        let row = coordinate.row
+        let blockX = UInt32(blockPosition.x)
+        let blockZ = UInt32(blockPosition.z)
+
         var pixelIndex = pixelsPerCell * blockX + col
         if flip {
             pixelIndex += (width * pixelsPerCell) * ((pixelsPerCell * blockZ) + row)
