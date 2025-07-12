@@ -96,14 +96,14 @@ public class MinecraftWorldRenderer {
         var rgbData = PixelImageData(repeating: 0, count: Int(3 * imgWidth * imgHeight))
         
         // TODO: What if... we write our own??? We could replace this and see if we can chunk it on our own.
-        biomesToImage(
-            &rgbData,
-            &biomeColors,
-            UnsafePointer(biomeIDs),
-            UInt32(rect.size.length),
-            UInt32(rect.size.width),
-            UInt32(pixelsPerCell),
-            2
+        MinecraftBiomeImageRenderer.applesauce(
+            data: &rgbData,
+            colors: &biomeColors,
+            biomeIDs: UnsafePointer(biomeIDs),
+            width: UInt32(rect.size.length), // IMAGE WIDTH (X)
+            height: UInt32(rect.size.width), // IMAGE HEIGHT (Z, because Y is UP)
+            pixelsPerCell: UInt32(pixelsPerCell),
+            flip: true
         )
 
         let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(imgWidth), height: Double(imgHeight)))
