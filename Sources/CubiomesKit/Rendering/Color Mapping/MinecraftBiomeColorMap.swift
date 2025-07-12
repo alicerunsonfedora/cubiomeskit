@@ -21,7 +21,7 @@ struct MinecraftBiomeColorMap {
 
     init(decoding map: String) throws(DecodeError) {
         biomeLUT = [:]
-        let lines = map.components(separatedBy: "\n")
+        let lines = map.components(separatedBy: "\n").filter { !$0.isEmpty }
         for line in lines {
             let components = line.components(separatedBy: " ").filter { !$0.isEmpty }
             guard let biomeName = components.first, let biomeColor = components.last else {

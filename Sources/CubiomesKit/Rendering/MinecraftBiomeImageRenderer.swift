@@ -8,7 +8,7 @@
 struct MinecraftBiomeImageRenderer {
     struct BiomeColorResult {
         var containsInvalidBiomes: Bool
-        var color: (UInt8, UInt8, UInt8)
+        var color: ColorRGB
     }
 
     @discardableResult
@@ -63,10 +63,10 @@ struct MinecraftBiomeImageRenderer {
         colorLUT: MinecraftBiomeColorMap
     ) -> BiomeColorResult {
         let biomeID = biomeLUT[blockZ * width + blockX]
-        var result = BiomeColorResult(containsInvalidBiomes: false, color: (0, 0, 0))
+        var result = BiomeColorResult(containsInvalidBiomes: false, color: .black)
 
         let color = colorLUT.color(for: MinecraftBiome(biomeID))
-        result.color = (color.red, color.green, color.blue)
+        result.color = color
 
         if (0...256).contains(biomeID) {
             return result
@@ -85,11 +85,10 @@ struct MinecraftBiomeImageRenderer {
         pixelsPerCell: UInt32,
         data: inout [CUnsignedChar],
         flip: Bool,
-        color: (UInt8, UInt8, UInt8),
+        color: ColorRGB,
         width: UInt32,
         height: UInt32
     ) {
-        let (r, g, b) = color
         var pixelIndex = pixelsPerCell * blockX + col
         if flip {
             pixelIndex += (width * pixelsPerCell) * ((pixelsPerCell * blockZ) + row)
@@ -97,8 +96,8 @@ struct MinecraftBiomeImageRenderer {
             pixelIndex +=
                 (width * pixelsPerCell) * ((pixelsPerCell * (height - 1 - blockZ)) + row)
         }
-        data[(3 * Int(pixelIndex))] = r
-        data[(3 * Int(pixelIndex)) + 1] = g
-        data[(3 * Int(pixelIndex)) + 2] = b
+        data[(3 * Int(pixelIndex))] = color.red
+        data[(3 * Int(pixelIndex)) + 1] = color.green
+        data[(3 * Int(pixelIndex)) + 2] = color.blue
     }
 }

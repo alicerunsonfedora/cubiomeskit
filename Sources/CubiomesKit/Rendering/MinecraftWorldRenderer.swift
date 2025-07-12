@@ -87,8 +87,7 @@ public class MinecraftWorldRenderer {
         let (originX, originZ) = getMapTileOrigin(in: rect, at: pixelsPerCell)
         
         let biomeIDs = createBiomeLUT(using: &generator, x: originX, z: originZ, in: rect)
-        var biomeColors: ColorGroup = (0, 0, 0)
-        getBiomeColors(for: dimension, in: &biomeColors)
+        let colorMap = getBiomeColorMap(for: dimension)
 
         let imgWidth = pixelsPerCell * rect.size.length
         let imgHeight = pixelsPerCell * rect.size.width
@@ -98,7 +97,7 @@ public class MinecraftWorldRenderer {
         // TODO: What if... we write our own??? We could replace this and see if we can chunk it on our own.
         MinecraftBiomeImageRenderer.applesauce(
             data: &rgbData,
-            colors: &biomeColors,
+            colors: colorMap,
             biomeIDs: UnsafePointer(biomeIDs),
             width: UInt32(rect.size.length), // IMAGE WIDTH (X)
             height: UInt32(rect.size.width), // IMAGE HEIGHT (Z, because Y is UP)
