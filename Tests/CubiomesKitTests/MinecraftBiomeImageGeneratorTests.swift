@@ -44,23 +44,21 @@ struct MinecraftBiomeImageGeneratorTests {
                 biomeIDs
             ),
             UInt32(rect.size.length),
-            UInt32(rect.size.height),
+            UInt32(rect.size.width),
             1,
             2
         )
-
-        var actualData = [CUnsignedChar](repeating: 0, count: Int(3 * imgWidth * imgHeight))
-        MinecraftBiomeImageRenderer.applesauce(
-            data: &actualData,
-            colors: &colorGroup,
-            biomeIDs: UnsafePointer(biomeIDs),
-            width: UInt32(rect.size.length),
-            height: UInt32(rect.size.height),
-            pixelsPerCell: 1,
-            flip: true
+       
+        let actualData = MinecraftBiomeImageRenderer.image(
+            for: UnsafePointer(biomeIDs),
+            using: MinecraftBiomeColorMap.cubiomesDefault(),
+            of: rect.size,
+            scaledTo: 1,
+            flipped: true
         )
 
         print(expectedData)
+        print(actualData)
 
         let expectedHash = SHA256.hash(data: expectedData)
         let actualHash = SHA256.hash(data: actualData)

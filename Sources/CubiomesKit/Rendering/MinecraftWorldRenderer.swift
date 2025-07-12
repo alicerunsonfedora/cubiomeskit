@@ -16,7 +16,7 @@ public class MinecraftWorldRenderer {
     public typealias PixelImageData = [CUnsignedChar]
 
     private var logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftWorldRenderer.self)")
-    
+
     /// A structure representing the various options available to the renderer.
     public struct Options: OptionSet, Sendable {
         /// The underlying raw value representing the options selected.
@@ -77,7 +77,6 @@ public class MinecraftWorldRenderer {
         self.options = options
     }
 
-    
     public func renderSynchronously(
         inRegion rect: MinecraftWorldRect,
         scale pixelsPerCell: Int32 = 4,
@@ -85,25 +84,22 @@ public class MinecraftWorldRenderer {
     ) -> Data {
         var generator = world.generator(in: dimension)
         let (originX, originZ) = getMapTileOrigin(in: rect, at: pixelsPerCell)
-        
+
         let biomeIDs = createBiomeLUT(using: &generator, x: originX, z: originZ, in: rect)
         let colorMap = getBiomeColorMap(for: dimension)
 
         let imgWidth = pixelsPerCell * rect.size.length
         let imgHeight = pixelsPerCell * rect.size.width
-       
-        var rgbData = PixelImageData(repeating: 0, count: Int(3 * imgWidth * imgHeight))
-        
-        // TODO: What if... we write our own??? We could replace this and see if we can chunk it on our own.
-        MinecraftBiomeImageRenderer.applesauce(
-            data: &rgbData,
-            colors: colorMap,
-            biomeIDs: UnsafePointer(biomeIDs),
-            width: UInt32(rect.size.length), // IMAGE WIDTH (X)
-            height: UInt32(rect.size.width), // IMAGE HEIGHT (Z, because Y is UP)
-            pixelsPerCell: UInt32(pixelsPerCell),
-            flip: true
-        )
+
+        let rgbData =
+            MinecraftBiomeImageRenderer
+            .image(
+                for: UnsafePointer(biomeIDs),
+                using: colorMap,
+                of: rect.size,
+                scaledTo: pixelsPerCell,
+                flipped: true
+            )
 
         let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(imgWidth), height: Double(imgHeight)))
         return Data(ppm: ppmData)
@@ -145,7 +141,7 @@ public class MinecraftWorldRenderer {
         var originX = rect.origin.x
         var originZ = rect.origin.z
         let size = rect.mapScale.rawValue
-        
+
         if options.contains(.centerPositions) {
             originX = (originX - (pixelsPerCell * rect.size.length / 2)) / size
             originZ = (originZ - (pixelsPerCell * rect.size.width / 2)) / size
@@ -192,7 +188,7 @@ public class MinecraftWorldRenderer {
         }
         return .cubiomesDefault()
     }
-    
+
     // NOTE(alicerunsonfedora): We're passing ownership of biomeIds here. While this makes Cubiomes happy (right now),
     // this might cause some Swift concurrency issues because of it. Must investigate (caller shouldn't do anything else
     // with biomeIds).
@@ -206,7 +202,7 @@ public class MinecraftWorldRenderer {
         pixelsPerCell: UInt32
     ) async -> PixelImageData {
         var rgbData = PixelImageData(repeating: 0, count: Int(3 * imgWidth * imgHeight))
-        
+
         // TODO: What if... we write our own??? We could replace this and see if we can chunk it on our own.
         biomesToImage(
             &rgbData,
@@ -217,7 +213,7 @@ public class MinecraftWorldRenderer {
             pixelsPerCell,
             2
         )
-        
+
         // TODO: Check this is where this should occur. It very likely does...
         biomeIds?.deallocate()
         return rgbData

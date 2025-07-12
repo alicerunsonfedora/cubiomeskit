@@ -6,6 +6,7 @@
 //
 
 struct MinecraftBiomeImageRenderer {
+    typealias BiomeIDPointer = UnsafePointer<Int32>
     struct BiomeColorResult {
         var containsInvalidBiomes: Bool
         var color: ColorRGB
@@ -21,23 +22,44 @@ struct MinecraftBiomeImageRenderer {
         var z: Int
     }
 
+    static func image(
+        for biomes: BiomeIDPointer!,
+        using colorMap: MinecraftBiomeColorMap,
+        of size: MinecraftWorldRect.Size,
+        scaledTo pixelsPerCell: Int32,
+        flipped: Bool
+    ) -> [CUnsignedChar] {
+        let imgWidth = UInt32(pixelsPerCell) * UInt32(size.length)
+        let imgHeight = UInt32(pixelsPerCell) * UInt32(size.width)
+       
+        var rgbData = [CUnsignedChar](repeating: 0, count: Int(3 * imgWidth * imgHeight))
+        Self.colorizeImageData(
+            data: &rgbData,
+            colors: colorMap,
+            biomeIDs: biomes,
+            size: size,
+            pixelsPerCell: UInt32(pixelsPerCell),
+            flip: flipped
+        )
+        return rgbData
+    }
+
     @discardableResult
-    static func applesauce(
+    static func colorizeImageData(
         data: inout [CUnsignedChar],
         colors: MinecraftBiomeColorMap,
         biomeIDs: UnsafePointer<Int32>!,
-        width: UInt32,
-        height: UInt32,
+        size: MinecraftWorldRect.Size,
         pixelsPerCell: UInt32,
         flip: Bool
     ) -> Bool {
         var containsInvalidBiomes = false
 
-        for blockZ in 0..<Int(height) {
-            for blockX in 0..<Int(width) {
+        for blockZ in 0..<Int(size.width) {
+            for blockX in 0..<Int(size.length) {
                 let result = biomeColor(
                     at: BlockPosition(x: blockX, z: blockZ),
-                    width: Int(width),
+                    width: Int(size.length),
                     biomeLUT: biomeIDs,
                     colorLUT: colors
                 )
@@ -47,13 +69,13 @@ struct MinecraftBiomeImageRenderer {
                     for col in 0..<pixelsPerCell {
                         assignPixel(
                             at: GridCoordinate(row: row, column: col),
-                            blockPosition: BlockPosition(x: blockX, z: blockZ),
+                            blockPosition: BlockPosition(x: Int(blockX), z: Int(blockZ)),
                             pixelsPerCell: pixelsPerCell,
                             data: &data,
                             flip: flip,
                             color: result.color,
-                            width: width,
-                            height: height
+                            width: UInt32(size.length),
+                            height: UInt32(size.width)
                         )
                     }
                 }

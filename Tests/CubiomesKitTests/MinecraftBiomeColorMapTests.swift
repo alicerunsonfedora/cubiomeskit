@@ -57,7 +57,7 @@ struct MinecraftBiomeColorMapTests {
             )
         }
         #expect(throws: MinecraftBiomeColorMap.DecodeError.invalidLineArguments) {
-            try MinecraftBiomeColorMap(decoding: "")
+            try MinecraftBiomeColorMap(decoding: " ")
         }
         #expect(throws: MinecraftBiomeColorMap.DecodeError.invalidColorCode(.invalidHexHeader)) {
             try MinecraftBiomeColorMap(decoding: "badlands lorelei")
