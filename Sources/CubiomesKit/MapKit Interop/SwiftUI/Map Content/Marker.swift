@@ -33,6 +33,7 @@ public struct Marker: MinecraftMapBuilderContent {
         self.location = location
         self.title = title
         self.color = color
+        self.systemImage = systemImage
     }
 
     public var content: any MinecraftMapContent {
