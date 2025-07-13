@@ -10,6 +10,12 @@ import MapKit
 import Foundation
 
 extension MinecraftMapView: MKMapViewDelegate {
+    #if os(macOS)
+    typealias ImageType = NSImage
+    #else
+    typealias ImageType = UIImage
+    #endif
+
     public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         mcMapViewDelegate?.mapView(self, regionDidChangeAnimated: animated)
     }
@@ -43,6 +49,9 @@ extension MinecraftMapView: MKMapViewDelegate {
         }
 
         view.markerTintColor = annotation.color
+        if let symbol = annotation.systemImage {
+            view.glyphImage = ImageType(systemSymbolName: symbol, accessibilityDescription: nil)
+        }
         return view
     }
 }

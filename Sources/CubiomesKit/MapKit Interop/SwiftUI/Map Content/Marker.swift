@@ -22,11 +22,14 @@ public struct Marker: MinecraftMapBuilderContent {
     /// The name of the marker.
     public var title: String
 
+    /// The symbol to use for the pin.
+    public var systemImage: String?
+
     /// Create a marker at a given position.
     /// - Parameter location: The Minecraft coordinate where the marker will be placed.
     /// - Parameter title: The name of the marker.
     /// - Parameter color: The marker's tint color.
-    public init(location: CGPoint, title: String, color: Color = .accentColor) {
+    public init(location: CGPoint, title: String, color: Color = .accentColor, systemImage: String? = nil) {
         self.location = location
         self.title = title
         self.color = color
@@ -56,10 +59,14 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     /// The subtitle of the marker, which displays the marker in Minecraft coordinates.
     public private(set) var subtitle: String?
 
+    /// The symbol to use for the marker.
+    public private(set) var systemImage: String?
+
     /// Initializes an annotation from a Minecraft marker.
     public init(marker: Marker) {
         self.coordinate = CoordinateProjections.project(marker.location)
         self.title = marker.title
+        self.systemImage = marker.systemImage
 
         let xCoord = Int(marker.location.x)
         let zCoord = Int(marker.location.y)
@@ -78,6 +85,7 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     public init(location: CGPoint, title: String, color: Color = .accentColor) {
         self.coordinate = CoordinateProjections.project(location)
         self.title = title
+        self.systemImage = nil
 
         let xCoord = Int(location.x)
         let zCoord = Int(location.y)
@@ -92,7 +100,7 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     public override func isEqual(_ object: Any?) -> Bool {
         guard let marker = object as? Self else { return false }
         return marker.coordinate == self.coordinate && marker.title == self.title && marker.subtitle == self.subtitle
-            && marker.color == self.color
+            && marker.color == self.color && marker.systemImage == self.systemImage
     }
 }
 
