@@ -43,11 +43,14 @@ extension MinecraftMapView: MKMapViewDelegate {
         }
 
         view.markerTintColor = annotation.color
+        view.animatesWhenAdded = true
         if let symbol = annotation.systemImage {
             #if canImport(AppKit)
                 view.glyphImage = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)
+                view.glyphImage?.isTemplate = true
             #elseif canImport(UIKit)
-                view.glyphImage = UIImage(systemName: symbol)
+                view.glyphImage = UIImage(systemName: symbol)?
+                .withRenderingMode(.alwaysTemplate)
             #else
                 print("This platform doesn't support SF Symbols.")
             #endif
