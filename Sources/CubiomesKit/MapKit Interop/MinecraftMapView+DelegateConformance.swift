@@ -53,15 +53,14 @@ extension MinecraftMapView: MKMapViewDelegate {
             return view
         } else if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
             let view = MKAnnotationView(annotation: player, reuseIdentifier: "PlayerImage")
-
-            fetchAvatar(for: player.playerUUID) { data in
-                if let data {
-                    DispatchQueue.main.async {
-                        view.image = ImageType(data: data)
-                    }
-                }
-            }
-
+            view.image = ImageType(named: "MHF_Steve")
+//            fetchAvatar(for: player.playerUUID) { data in
+//                if let data {
+//                    DispatchQueue.main.async {
+//                        view.image = ImageType(data: data)
+//                    }
+//                }
+//            }
             return view
         }
         return MKAnnotationView()
