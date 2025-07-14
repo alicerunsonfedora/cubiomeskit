@@ -9,6 +9,14 @@ import CachingMapKitTileOverlay
 import Foundation
 import MapKit
 
+#if os(macOS)
+private typealias ImageType = NSImage
+private typealias ImageViewType = NSImageView
+#else
+private typealias ImageType = UIImage
+private typealias ImageViewType = UIImageView
+#endif
+
 extension MinecraftMapView: MKMapViewDelegate {
     public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         mcMapViewDelegate?.mapView(self, regionDidChangeAnimated: animated)
@@ -44,15 +52,18 @@ extension MinecraftMapView: MKMapViewDelegate {
             configureMarkerAnnotation(marker: marker, view: view)
             return view
         } else if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
-            guard
-                let view = mapView.dequeueReusableAnnotationView(
-                    withIdentifier: "\(MinecraftPlayerMarkerAnnotationView.self)",
-                    for: annotation
-                ) as? MinecraftPlayerMarkerAnnotationView
-            else {
-                return MKMarkerAnnotationView()
+            let view = MKAnnotationView(annotation: player, reuseIdentifier: "PlayerImage")
+            var image: ImageType?
+
+            fetchAvatar(for: player.playerUUID) { data in
+                if let data {
+                    DispatchQueue.main.async {
+                        image = ImageType(data: data)
+                    }
+                }
             }
-            view.configure(withConfiguration: player)
+            
+            view.addSubview(ImageViewType(image: image))
             return view
         }
         return MKAnnotationView()
@@ -70,6 +81,18 @@ extension MinecraftMapView: MKMapViewDelegate {
             #else
                 print("This platform doesn't support SF Symbols.")
             #endif
+        }
+    }
+
+    private func fetchAvatar(for uuid: UUID, completion: @escaping @Sendable (Data?) -> Void) {
+        guard let url = URL(string: "https://mc-heads.net/avatar/\(uuid.uuidString)") else {
+            return
+        }
+        let session = URLSession(configuration: .default)
+        let request = URLRequest(url: url)
+        session.dataTask(with: request) { [completion] data, response, error in
+            guard error == nil else { return }
+            completion(data)
         }
     }
 }
