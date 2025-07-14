@@ -10,11 +10,11 @@ import Foundation
 import MapKit
 
 #if os(macOS)
-private typealias ImageType = NSImage
-private typealias ImageViewType = NSImageView
+    private typealias ImageType = NSImage
+    private typealias ImageViewType = NSImageView
 #else
-private typealias ImageType = UIImage
-private typealias ImageViewType = UIImageView
+    private typealias ImageType = UIImage
+    private typealias ImageViewType = UIImageView
 #endif
 
 extension MinecraftMapView: MKMapViewDelegate {
@@ -53,17 +53,15 @@ extension MinecraftMapView: MKMapViewDelegate {
             return view
         } else if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
             let view = MKAnnotationView(annotation: player, reuseIdentifier: "PlayerImage")
-            var image: ImageType?
 
             fetchAvatar(for: player.playerUUID) { data in
                 if let data {
                     DispatchQueue.main.async {
-                        image = ImageType(data: data)
+                        view.image = ImageType(data: data)
                     }
                 }
             }
-            
-            view.addSubview(ImageViewType(image: image))
+
             return view
         }
         return MKAnnotationView()
@@ -77,7 +75,7 @@ extension MinecraftMapView: MKMapViewDelegate {
                 view.glyphImage?.isTemplate = true
             #elseif canImport(UIKit)
                 view.glyphImage = UIImage(systemName: symbol)?
-                .withRenderingMode(.alwaysTemplate)
+                    .withRenderingMode(.alwaysTemplate)
             #else
                 print("This platform doesn't support SF Symbols.")
             #endif
