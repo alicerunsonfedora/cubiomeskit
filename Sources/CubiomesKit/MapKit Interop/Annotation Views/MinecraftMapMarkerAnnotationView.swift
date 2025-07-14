@@ -44,7 +44,7 @@ class MinecraftMapMarkerAnnotationView: MKAnnotationView {
         guard let configuration else {
             logger.error("🧑🏻‍🏭 The player configuration is nil. Using default Steve head.")
             await MainActor.run {
-                loadDefaultSteve()
+                loadDefaultSteveIfAvailable()
             }
             return
         }
@@ -56,6 +56,14 @@ class MinecraftMapMarkerAnnotationView: MKAnnotationView {
 
         do {
             let (data, response) = try await session.data(for: request)
+            guard let httpResp = response as? HTTPURLResponse, (200..<300).contains(httpResp.statusCode) else {
+                logger.error("🧑🏻‍🏭 The response returned badly. Using default Steve head.")
+                await MainActor.run {
+                    loadDefaultSteveIfAvailable()
+                }
+                return
+            }
+            
             await MainActor.run {
                 let image = ImageType(data: data)
                 self.image = image
@@ -66,13 +74,23 @@ class MinecraftMapMarkerAnnotationView: MKAnnotationView {
                     "🧑🏻‍🏭 Failed to get the player's head \(error.localizedDescription). Using default Steve head."
                 )
             await MainActor.run {
-                loadDefaultSteve()
+                loadDefaultSteveIfAvailable()
             }
         }
     }
 
-    private func loadDefaultSteve() {
-        let defaultSteve = Bundle.module.image(forResource: "MHF_Steve")
-        self.image = defaultSteve
+    private func loadDefaultSteveIfAvailable() {
+        #if canImport(UIKit)
+        let image = UIImage(named: "MHF_Steve", in: .module, compatibleWith: nil)
+        #else
+        let bundle = Bundle.module
+        let image = bundle.image(forResource: "MHF_Steve")
+        #endif
+
+        if image == nil {
+            logger.error("🧑🏻‍🏭 Steve is missing. Is the file included in the xcassets?")
+        }
+        
+        self.image = image
     }
 }
