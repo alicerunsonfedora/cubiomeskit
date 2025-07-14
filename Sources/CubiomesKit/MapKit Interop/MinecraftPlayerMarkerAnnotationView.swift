@@ -11,6 +11,13 @@ import MapKit
 class MinecraftPlayerMarkerAnnotationView: MKMarkerAnnotationView {
     var configuration: MinecraftMapPlayerMarkerAnnotation?
 
+    override init(annotation: (any MKAnnotation)?, reuseIdentifier: String?) {
+        super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
+            self.configure(withConfiguration: player)
+        }
+    }
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
