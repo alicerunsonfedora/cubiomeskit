@@ -123,6 +123,10 @@ public final class MinecraftMapView: MKMapView {
         self.register(
             MKMarkerAnnotationView.self,
             forAnnotationViewWithReuseIdentifier: "\(MKMarkerAnnotationView.self)")
+        self.register(
+            MinecraftPlayerMarkerAnnotationView.self,
+            forAnnotationViewWithReuseIdentifier: "\(MinecraftPlayerMarkerAnnotationView.self)"
+        )
 
         self.configureMapView()
         self.centerCoordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)

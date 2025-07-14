@@ -32,19 +32,35 @@ extension MinecraftMapView: MKMapViewDelegate {
     }
 
     public func mapView(_ mapView: MKMapView, viewFor annotation: any MKAnnotation) -> MKAnnotationView? {
-        guard let annotation = annotation as? MinecraftMapMarkerAnnotation else { return MKAnnotationView() }
-        guard
-            let view = mapView.dequeueReusableAnnotationView(
-                withIdentifier: "\(MKMarkerAnnotationView.self)",
-                for: annotation
-            ) as? MKMarkerAnnotationView
-        else {
-            return MKMarkerAnnotationView()
+        if let marker = annotation as? MinecraftMapMarkerAnnotation {
+            guard
+                let view = mapView.dequeueReusableAnnotationView(
+                    withIdentifier: "\(MKMarkerAnnotationView.self)",
+                    for: annotation
+                ) as? MKMarkerAnnotationView
+            else {
+                return MKMarkerAnnotationView()
+            }
+            configureMarkerAnnotation(marker: marker, view: view)
+            return view
+        } else if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
+            guard
+                let view = mapView.dequeueReusableAnnotationView(
+                    withIdentifier: "\(MinecraftPlayerMarkerAnnotationView.self)",
+                    for: annotation
+                ) as? MinecraftPlayerMarkerAnnotationView
+            else {
+                return MKMarkerAnnotationView()
+            }
+            view.configure(withConfiguration: player)
+            return view
         }
+        return MKAnnotationView()
+    }
 
-        view.markerTintColor = annotation.color
-        view.animatesWhenAdded = true
-        if let symbol = annotation.systemImage {
+    func configureMarkerAnnotation(marker: MinecraftMapMarkerAnnotation, view: MKMarkerAnnotationView) {
+        view.markerTintColor = marker.color
+        if let symbol = marker.systemImage {
             #if canImport(AppKit)
                 view.glyphImage = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)
                 view.glyphImage?.isTemplate = true
@@ -55,6 +71,5 @@ extension MinecraftMapView: MKMapViewDelegate {
                 print("This platform doesn't support SF Symbols.")
             #endif
         }
-        return view
     }
 }
