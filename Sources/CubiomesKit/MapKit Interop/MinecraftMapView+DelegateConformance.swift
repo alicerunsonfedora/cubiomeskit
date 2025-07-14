@@ -8,14 +8,7 @@
 import CachingMapKitTileOverlay
 import Foundation
 import MapKit
-
-#if os(macOS)
-    private typealias ImageType = NSImage
-    private typealias ImageViewType = NSImageView
-#else
-    private typealias ImageType = UIImage
-    private typealias ImageViewType = UIImageView
-#endif
+import SwiftUI
 
 extension MinecraftMapView: MKMapViewDelegate {
     public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
@@ -40,33 +33,25 @@ extension MinecraftMapView: MKMapViewDelegate {
     }
 
     public func mapView(_ mapView: MKMapView, viewFor annotation: any MKAnnotation) -> MKAnnotationView? {
+        var annotationView: MKAnnotationView?
         if let marker = annotation as? MinecraftMapMarkerAnnotation {
-            guard
-                let view = mapView.dequeueReusableAnnotationView(
-                    withIdentifier: "\(MKMarkerAnnotationView.self)",
-                    for: annotation
-                ) as? MKMarkerAnnotationView
-            else {
-                return MKMarkerAnnotationView()
-            }
-            configureMarkerAnnotation(marker: marker, view: view)
-            return view
+            annotationView = markerAnnotationView(for: marker, in: mapView)
         } else if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
-            let view = MKAnnotationView(annotation: player, reuseIdentifier: "PlayerImage")
-            view.image = ImageType(named: "MHF_Steve")
-//            fetchAvatar(for: player.playerUUID) { data in
-//                if let data {
-//                    DispatchQueue.main.async {
-//                        view.image = ImageType(data: data)
-//                    }
-//                }
-//            }
-            return view
+            annotationView = playerMarkerAnnotationView(for: player, in: mapView)
         }
-        return MKAnnotationView()
+
+        return annotationView
     }
 
-    func configureMarkerAnnotation(marker: MinecraftMapMarkerAnnotation, view: MKMarkerAnnotationView) {
+    func markerAnnotationView(for marker: MinecraftMapMarkerAnnotation, in mapView: MKMapView) -> MKAnnotationView {
+        guard
+            let view = mapView.dequeueReusableAnnotationView(
+                withIdentifier: "\(MKMarkerAnnotationView.self)",
+                for: marker
+            ) as? MKMarkerAnnotationView
+        else {
+            return MKMarkerAnnotationView()
+        }
         view.markerTintColor = marker.color
         if let symbol = marker.systemImage {
             #if canImport(AppKit)
@@ -79,17 +64,20 @@ extension MinecraftMapView: MKMapViewDelegate {
                 print("This platform doesn't support SF Symbols.")
             #endif
         }
+        return view
     }
 
-    private func fetchAvatar(for uuid: UUID, completion: @escaping @Sendable (Data?) -> Void) {
-        guard let url = URL(string: "https://mc-heads.net/avatar/\(uuid.uuidString)") else {
-            return
+    func playerMarkerAnnotationView(
+        for player: MinecraftMapPlayerMarkerAnnotation,
+        in mapView: MKMapView
+    ) -> MKAnnotationView {
+        guard let playerMarkerView = mapView.dequeueReusableAnnotationView(
+            withIdentifier: "\(MinecraftMapMarkerAnnotationView.self)",
+            for: player
+        ) as? MinecraftMapMarkerAnnotationView else {
+            return MKAnnotationView()
         }
-        let session = URLSession(configuration: .default)
-        let request = URLRequest(url: url)
-        session.dataTask(with: request) { [completion] data, response, error in
-            guard error == nil else { return }
-            completion(data)
-        }
+        playerMarkerView.configure(with: player)
+        return playerMarkerView
     }
 }

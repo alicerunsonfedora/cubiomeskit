@@ -120,10 +120,9 @@ public final class MinecraftMapView: MKMapView {
         super.init(frame: frame)
         self.delegate = self
 
-        self.register(
-            MKMarkerAnnotationView.self,
-            forAnnotationViewWithReuseIdentifier: "\(MKMarkerAnnotationView.self)")
-
+        self.registerAnnotationView(of: MKMarkerAnnotationView.self)
+        self.registerAnnotationView(of: MinecraftMapMarkerAnnotationView.self)
+        
         self.configureMapView()
         self.centerCoordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
 
@@ -183,6 +182,12 @@ public final class MinecraftMapView: MKMapView {
         default:
             return lhs.coordinate == rhs.coordinate
         }
+    }
+}
+
+extension MinecraftMapView {
+    func registerAnnotationView<T: NSObject>(of type: T.Type) {
+        self.register(type, forAnnotationViewWithReuseIdentifier: "\(type)")
     }
 }
 
