@@ -48,7 +48,7 @@ class MinecraftMapMarkerAnnotationView: MKAnnotationView {
             }
             return
         }
-        guard let url = URL(string: "https://mc-heads.net/head/\(configuration.playerUUID.uuidString)/50") else {
+        guard let url = URL(string: "https://mc-heads.net/head/\(configuration.playerUUID.uuidString)/30") else {
             return
         }
         let session = URLSession(configuration: .default)
