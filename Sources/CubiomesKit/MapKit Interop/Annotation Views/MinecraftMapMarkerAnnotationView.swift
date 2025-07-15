@@ -16,7 +16,7 @@ private typealias ImageType = UIImage
 #endif
 
 class MinecraftMapMarkerAnnotationView: MKAnnotationView {
-    var configuration: MinecraftMapPlayerMarkerAnnotation?
+    var configuration: MinecraftMapPlayerMarkerAnnotation?    
 
     private let logger = Logger(
         subsystem: "net.marquiskurt.cubiomes",

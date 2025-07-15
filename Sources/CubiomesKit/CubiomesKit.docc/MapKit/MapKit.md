@@ -66,13 +66,21 @@ A map view can be displayed with either a ``MinecraftMap`` or
 ### Displaying a Map in AppKit/UIKit
 
 - ``MinecraftMapView``
-- ``MinecraftMapMarkerAnnotation``
 
 ### Displaying a Map in SwiftUI
 
 - ``MinecraftMap``
-- ``Marker``
 - ``MinecraftMapContentBuilder``
+
+### Map Annotations in AppKit/UIKit
+
+- ``MinecraftMapMarkerAnnotation``
+- ``MinecraftMapPlayerMarkerAnnotation``
+
+### Map Annotations in SwiftUI
+
+- ``Marker``
+- ``PlayerMarker``
 
 ### Point Projections and Conversions
 

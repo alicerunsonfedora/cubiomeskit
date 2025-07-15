@@ -9,6 +9,29 @@ Review the latest changes made to CubiomesKit.
 
 ## Unreleased
 
+### 15 July 2025
+
+#### MapKit Integration
+
+- The new ``PlayerMarker`` and ``MinecraftMapPlayerMarkerAnnotation``
+  marker annotation types allow developers to display Minecraft players
+  on the map. Heads of players specified by their Minecraft UUID are
+  fetched from the [MC-Heads API](https://mc-heads.net), defaulting to
+  Steve if no such UUID exists.
+- The CachingMapKitTileOverlay dependency has been update to v1.1.0,
+  allowing compilation on Xcode 26 beta and improving general concurrency.
+
+#### World Rendering
+
+- The ``MinecraftWorldRenderer`` now uses a new renderer for translating
+  biome ID data into appropriate pixel colors, written entirely in Swift.
+- The ``MinecraftWorldRenderer/renderSynchronously(inRegion:scale:dimension:)``
+  method has been introduced to maintain compatibility with existing
+  codebases that have not been rendering their world map content
+  concurrently. This is a temporary method that will fold into the general
+  ``MinecraftWorldRenderer/render(inRegion:scale:dimension:)`` signature
+  for both the synchronous and asynchronous variants.
+
 ### 7 June 2025
 
 #### Concurrency
