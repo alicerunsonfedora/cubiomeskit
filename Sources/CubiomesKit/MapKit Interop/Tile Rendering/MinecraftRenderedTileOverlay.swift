@@ -10,10 +10,14 @@ import MapKit
 import os
 
 final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
-    struct Configuration {
+    struct Configuration: Sendable, Equatable {
         var world: MinecraftWorld
         var dimension: MinecraftWorld.Dimension = .overworld
         var renderingOptions: MinecraftWorldRenderer.Options = []
+
+        static func == (lhs: Configuration, rhs: Configuration) -> Bool {
+            lhs.dimension == rhs.dimension && lhs.renderingOptions == rhs.renderingOptions
+        }
     }
 
     enum Constants {
@@ -123,11 +127,9 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
     }
 
     private func didChangeConfiguration(from oldValue: Configuration) {
-        guard configuration.dimension == oldValue.dimension,
-              configuration.renderingOptions == configuration.renderingOptions else {
+        if configuration == oldValue {
             return
         }
-
         logger.debug("🗺️ The world dimension or the rendering options have changed. The cache must be flushed.")
         flushCache()
     }
