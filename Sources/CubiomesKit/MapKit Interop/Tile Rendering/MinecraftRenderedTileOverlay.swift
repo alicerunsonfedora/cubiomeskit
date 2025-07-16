@@ -25,7 +25,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
 
     var configuration: Configuration {
         didSet {
-            didChangeDimension()
+            didChangeConfiguration(from: oldValue)
         }
     }
 
@@ -33,16 +33,19 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
         didSet { didChangeEphemeralRendering() }
     }
 
+    @available(*, deprecated, renamed: "configuration.world")
     var world: MinecraftWorld {
         get { configuration.world }
         set { configuration.world = newValue }
     }
 
+    @available(*, deprecated, renamed: "configuration.dimension")
     var dimension: MinecraftWorld.Dimension {
         get { configuration.dimension }
         set { configuration.dimension = newValue }
     }
 
+    @available(*, deprecated, renamed: "configuration.renderingOptions")
     var renderingOptions: MinecraftWorldRenderer.Options {
         get { configuration.renderingOptions }
         set { configuration.renderingOptions = newValue }
@@ -53,7 +56,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
 
     init(withConfiguration configuration: Configuration) {
         self.configuration = configuration
-        self.cache = TileCache()
+        self.cache = TileCache(max: 1000)
         self.logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftRenderedTileOverlay.self)")
 
         super.init(urlTemplate: nil)
@@ -70,17 +73,19 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
         let chunk = chunk(forOverlayPath: path)
 
         if !ephemeral, let data = cache.getValue(forPath: path, in: configuration.dimension) {
-            logger.debug("Tile cache hit for path (\(TileCache.key(forPath: path, in: self.configuration.dimension)))")
+            logger.debug(
+                "🗺️ Tile cache hit for path (\(TileCache.key(forPath: path, in: self.configuration.dimension)))")
             return data
         }
 
         if ephemeral {
-            logger.warning("Tile renderer is ephemeral, which will always generate new tiles.")
+            logger.warning("🗺️ Tile renderer is ephemeral, which will always generate new tiles.")
         } else {
-            logger.debug("Tile cache miss for path (\(TileCache.key(forPath: path, in: self.configuration.dimension)))")
+            logger.debug(
+                "🗺️ Tile cache miss for path (\(TileCache.key(forPath: path, in: self.configuration.dimension)))")
         }
 
-        let renderer = await MinecraftWorldRenderer(world: world, options: configuration.renderingOptions)
+        let renderer = await MinecraftWorldRenderer(world: configuration.world, options: configuration.renderingOptions)
         let data = await renderer.renderSynchronously(inRegion: chunk, scale: 1, dimension: configuration.dimension)
 
         if !ephemeral { cache.set(data, forPath: path, in: configuration.dimension) }
@@ -103,7 +108,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
             scale: MinecraftWorldRect.Size(squaring: Int32(blockPerTile))
         )
 
-        logger.debug("Mapping at current scale: 🔳 \(totalTilesOnAxis), 🧱 \(blockPerTile)")
+        logger.debug("🗺️ Mapping at current scale: 🔳 \(totalTilesOnAxis), 🧱 \(blockPerTile)")
         logger.debug(
             "🗺️ [\(path.x), \(path.y) @ \(path.z)] -> 🍱 [\(chunk.origin.x), \(chunk.origin.z) @ \(blockPerTile)]"
         )
@@ -111,12 +116,24 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
     }
 
     private func didChangeEphemeralRendering() {
-        if self.ephemeral {
-            cache.flush()
+        guard self.ephemeral else {
+            return
         }
+        flushCache()
     }
 
-    private func didChangeDimension() {
+    private func didChangeConfiguration(from oldValue: Configuration) {
+        guard configuration.dimension == oldValue.dimension,
+              configuration.renderingOptions == configuration.renderingOptions else {
+            return
+        }
+
+        logger.debug("🗺️ The world dimension or the rendering options have changed. The cache must be flushed.")
+        flushCache()
+    }
+
+    private func flushCache() {
+        logger.debug("🗺️ Flushing the current cache.")
         cache.flush()
     }
 }

@@ -159,7 +159,7 @@ public final class MinecraftMapView: MKMapView {
             logger.warning("The Minecraft overlay hasn't been initialized yet, or it doesn't need rendering options.")
             return
         }
-        minecraftOverlay.renderingOptions = renderOptions
+        minecraftOverlay.configuration.renderingOptions = renderOptions
         if renderOptions != oldValue {
             minecraftOverlay.cache.flush()
         }
@@ -168,7 +168,7 @@ public final class MinecraftMapView: MKMapView {
     func redrawDimension() {
         guard let minecraftOverlay else { return }
         if let renderedOverlay = minecraftOverlay as? MinecraftRenderedTileOverlay {
-            renderedOverlay.dimension = self.dimension
+            renderedOverlay.configuration.dimension = self.dimension
         }
         if let renderer = renderer(for: minecraftOverlay) as? MKTileOverlayRenderer {
             renderer.reloadData()
