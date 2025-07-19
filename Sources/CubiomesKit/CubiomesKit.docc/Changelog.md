@@ -22,7 +22,9 @@ Review the latest changes made to CubiomesKit.
   allowing compilation on Xcode 26 beta and improving general concurrency.
 - The Y levels for each dimension has been adjusted to be more accurate to
   the respective sea levels. The Overworld will now render at Y=62, the
-  Nether will render at Y=31, and the End will render at Y=48. 
+  Nether will render at Y=31, and the End will render at Y=48.
+- ``MinecraftMapView`` instances that have ephemeral rendering disabled
+  should now properly refresh whenever the dimension changes.
 
 #### World Rendering
 

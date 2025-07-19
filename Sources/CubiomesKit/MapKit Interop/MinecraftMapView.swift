@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 03-04-2025.
 //
 
+import CachingMapKitTileOverlay
 import Foundation
 import MapKit
 import os
@@ -60,7 +61,8 @@ public final class MinecraftMapView: MKMapView {
     /// The dimension the map will render.
     public var dimension: MinecraftWorld.Dimension = .overworld {
         didSet {
-            redrawDimension()
+            guard dimension != oldValue else { return }
+            redrawDimensionIfNeeded()
         }
     }
 
@@ -165,13 +167,13 @@ public final class MinecraftMapView: MKMapView {
         }
     }
 
-    func redrawDimension() {
+    func redrawDimensionIfNeeded() {
         guard let minecraftOverlay else { return }
         if let renderedOverlay = minecraftOverlay as? MinecraftRenderedTileOverlay {
             renderedOverlay.configuration.dimension = self.dimension
         }
-        if let renderer = renderer(for: minecraftOverlay) as? MKTileOverlayRenderer {
-            renderer.reloadData()
+        if let renderer = renderer(for: minecraftOverlay) as? CachingTileOverlayRenderer {
+            renderer.setNeedsDisplay()
         }
     }
 
