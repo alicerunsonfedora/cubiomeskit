@@ -108,7 +108,7 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
         posZ += Int32(blockPerTile * path.y)
 
         let chunk = MinecraftWorldRect(
-            origin: MinecraftPoint(x: posX, y: 15, z: posZ),
+            origin: MinecraftPoint(x: posX, y: Self.getYLevels(for: configuration.dimension), z: posZ),
             scale: MinecraftWorldRect.Size(squaring: Int32(blockPerTile))
         )
 
@@ -117,6 +117,21 @@ final class MinecraftRenderedTileOverlay: MKTileOverlay, MinecraftTileOverlay {
             "🗺️ [\(path.x), \(path.y) @ \(path.z)] -> 🍱 [\(chunk.origin.x), \(chunk.origin.z) @ \(blockPerTile)]"
         )
         return chunk
+    }
+
+    private static func getYLevels(for dimension: MinecraftWorld.Dimension) -> Int32 {
+        // NOTE: Values pulled from the specified levels at: https://minecraft.wiki/w/Altitude.
+        switch dimension {
+        case .overworld:
+            // Sea level for the overworld
+            return 62
+        case .nether:
+            // Lava sea level in the Nether
+            return 31
+        case .end:
+            // Where the End platform generates
+            return 48
+        }
     }
 
     private func didChangeEphemeralRendering() {

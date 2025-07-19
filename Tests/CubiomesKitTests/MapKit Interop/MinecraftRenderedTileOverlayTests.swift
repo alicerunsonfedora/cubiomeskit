@@ -20,7 +20,7 @@ struct MinecraftRenderedTileOverlayTests {
         overlay.ephemeral = true
         let chunk = overlay.chunk(forOverlayPath: overlayPath)
 
-        #expect(chunk.origin == MinecraftPoint(x: -33_554_432, y: 15, z: -33_554_432))
+        #expect(chunk.origin == MinecraftPoint(x: -33_554_432, y: 62, z: -33_554_432))
         #expect(chunk.size == MinecraftWorldRect.Size(length: 256, width: 256, height: 1))
     }
 

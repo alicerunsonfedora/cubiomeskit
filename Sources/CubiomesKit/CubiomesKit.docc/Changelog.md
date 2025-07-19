@@ -20,6 +20,9 @@ Review the latest changes made to CubiomesKit.
   Steve if no such UUID exists.
 - The CachingMapKitTileOverlay dependency has been update to v1.1.0,
   allowing compilation on Xcode 26 beta and improving general concurrency.
+- The Y levels for each dimension has been adjusted to be more accurate to
+  the respective sea levels. The Overworld will now render at Y=62, the
+  Nether will render at Y=31, and the End will render at Y=48. 
 
 #### World Rendering
 
