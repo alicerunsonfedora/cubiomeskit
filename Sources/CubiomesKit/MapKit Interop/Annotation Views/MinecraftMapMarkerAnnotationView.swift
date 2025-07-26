@@ -25,6 +25,7 @@ class MinecraftMapMarkerAnnotationView: MKAnnotationView {
 
     override init(annotation: (any MKAnnotation)?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        self.displayPriority = .defaultHigh
     }
 
     @available(*, unavailable)

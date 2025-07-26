@@ -9,6 +9,17 @@ Review the latest changes made to CubiomesKit.
 
 ## Unreleased
 
+### 25 July 2025
+
+#### MapKit Integration
+
+- The ``Marker`` and ``MinecraftMapMarkerAnnotation`` annotation types
+  now accept a ``Marker/clusteringIdentifier`` property to control
+  clustering behaviors.
+- Markers are now clustered by default in the map view.
+- Player markers are now displayed with a higher priority to ensure they
+  remain visible over traditional markers.
+
 ### 15 July 2025
 
 #### MapKit Integration

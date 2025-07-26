@@ -53,6 +53,7 @@ extension MinecraftMapView: MKMapViewDelegate {
             return MKMarkerAnnotationView()
         }
         view.markerTintColor = marker.color
+        view.clusteringIdentifier = marker.clusteringIdentifier
         if let symbol = marker.systemImage {
             #if canImport(AppKit)
                 view.glyphImage = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)

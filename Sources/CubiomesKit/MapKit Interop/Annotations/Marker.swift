@@ -25,15 +25,28 @@ public struct Marker: MinecraftMapBuilderContent {
     /// The symbol to use for the pin.
     public var systemImage: String?
 
+    /// The identifier used to determine whether this marker should be joined together in a cluster.
+    ///
+    /// Markers will generally be clustered to the default identifier. Setting a custom identifier allows markers to
+    /// only be clustered to other markers of its type.
+    public var clusteringIdentifier: String
+
     /// Create a marker at a given position.
     /// - Parameter location: The Minecraft coordinate where the marker will be placed.
     /// - Parameter title: The name of the marker.
     /// - Parameter color: The marker's tint color.
-    public init(location: CGPoint, title: String, color: Color = .accentColor, systemImage: String? = nil) {
+    public init(
+        location: CGPoint,
+        title: String,
+        color: Color = .accentColor,
+        systemImage: String? = nil,
+        clusterIdentifier: String = "cubiomeskit-default"
+    ) {
         self.location = location
         self.title = title
         self.color = color
         self.systemImage = systemImage
+        self.clusteringIdentifier = clusterIdentifier
     }
 
     public var content: any MinecraftMapContent {
@@ -63,11 +76,18 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     /// The symbol to use for the marker.
     public private(set) var systemImage: String?
 
+    /// The identifier used to determine whether this marker should be joined together in a cluster.
+    ///
+    /// Markers will generally be clustered to the default identifier. Setting a custom identifier allows markers to
+    /// only be clustered to other markers of its type.
+    public private(set) var clusteringIdentifier: String
+
     /// Initializes an annotation from a Minecraft marker.
     public init(marker: Marker) {
         self.coordinate = CoordinateProjections.project(marker.location)
         self.title = marker.title
         self.systemImage = marker.systemImage
+        self.clusteringIdentifier = marker.clusteringIdentifier
 
         let xCoord = Int(marker.location.x)
         let zCoord = Int(marker.location.y)
@@ -83,10 +103,16 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     /// - Parameter location: The location of the marker in Minecraft block coordinates.
     /// - Parameter title: The name of the marker.
     /// - Parameter color: The tint color of the marker pin.
-    public init(location: CGPoint, title: String, color: Color = .accentColor) {
+    public init(
+        location: CGPoint,
+        title: String,
+        color: Color = .accentColor,
+        clusterIdentifier: String = "cubiomeskit-default"
+    ) {
         self.coordinate = CoordinateProjections.project(location)
         self.title = title
         self.systemImage = nil
+        self.clusteringIdentifier = clusterIdentifier
 
         let xCoord = Int(location.x)
         let zCoord = Int(location.y)
@@ -100,8 +126,12 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
 
     public override func isEqual(_ object: Any?) -> Bool {
         guard let marker = object as? Self else { return false }
-        return marker.coordinate == self.coordinate && marker.title == self.title && marker.subtitle == self.subtitle
-            && marker.color == self.color && marker.systemImage == self.systemImage
+        return marker.coordinate == self.coordinate
+            && marker.title == self.title
+            && marker.subtitle == self.subtitle
+            && marker.color == self.color
+            && marker.systemImage == self.systemImage
+            && marker.clusteringIdentifier == self.clusteringIdentifier
     }
 }
 
