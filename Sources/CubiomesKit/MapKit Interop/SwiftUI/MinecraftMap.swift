@@ -110,10 +110,9 @@ public struct MinecraftMap {
 
     @MainActor
     func createMapView() -> MinecraftMapView {
-        let mapView = MinecraftMapView(world: world, frame: .zero)
+        let mapView = MinecraftMapView(world: world, frame: .zero, centerCoordinate: centerCoordinate)
         mapView.ornaments = ornaments
         mapView.dimension = dimension
-        mapView.centerBlockCoordinate = centerCoordinate
         mapView.addMapContents(annotations)
         mapView.mapContent = annotations
         if preferNaturalColors {

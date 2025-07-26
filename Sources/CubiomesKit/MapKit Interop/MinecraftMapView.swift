@@ -115,7 +115,13 @@ public final class MinecraftMapView: MKMapView {
     /// - Parameter world: The Minecraft world to be rendered on the map.
     /// - Parameter frame: The frame to initialize the view in.
     /// - Parameter dimension: The dimension that the map will render the world in.
-    public init(world: MinecraftWorld, frame: CGRect, dimension: MinecraftWorld.Dimension = .overworld) {
+    /// - Parameter centerCoordinate: The center of the map to focus on.
+    public init(
+        world: MinecraftWorld,
+        frame: CGRect,
+        dimension: MinecraftWorld.Dimension = .overworld,
+        centerCoordinate: CGPoint = .zero
+    ) {
         self.world = world
         self.dimension = dimension
         self.logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftMapView.self)")
@@ -126,7 +132,7 @@ public final class MinecraftMapView: MKMapView {
         self.registerAnnotationView(of: MinecraftMapMarkerAnnotationView.self)
         
         self.configureMapView()
-        self.centerCoordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+        self.centerCoordinate = CLLocationCoordinate2D(projecting: centerCoordinate)
 
         let overlay = MinecraftRenderedTileOverlay(world: world, dimension: dimension)
         self.addOverlay(overlay, level: .aboveLabels)

@@ -19,6 +19,9 @@ Review the latest changes made to CubiomesKit.
 - Markers are now clustered by default in the map view.
 - Player markers are now displayed with a higher priority to ensure they
   remain visible over traditional markers.
+- The ``MinecraftMapView`` now supports providing a center coordinate in
+  its initializer:
+  ``MinecraftMapView/init(world:frame:dimension:centerCoordinate:)``.
 
 ### 15 July 2025
 
