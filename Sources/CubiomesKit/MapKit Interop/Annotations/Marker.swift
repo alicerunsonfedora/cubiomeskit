@@ -12,7 +12,7 @@ import SwiftUI
 ///
 /// Markers are generally used to indicate points of interest on a Minecraft world map. Tapping on a marker will
 /// display its coordinate below as a subtitle.
-public struct Marker: MinecraftMapBuilderContent {
+public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable {
     /// The location of the marker in blocks.
     public var location: CGPoint
 
@@ -59,6 +59,10 @@ public struct Marker: MinecraftMapBuilderContent {
 /// Markers are generally used to indicate points of interest on a Minecraft world map. Tapping on a marker will
 /// display its coordinate below as a subtitle.
 public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
+    public var model: Marker {
+        didSet { applyModel() }
+    }
+
     /// The location of the coordinate as a Core Location coordinate.
     public private(set) var coordinate: CLLocationCoordinate2D
     #if canImport(UIKit)
@@ -88,6 +92,7 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
         self.title = marker.title
         self.systemImage = marker.systemImage
         self.clusteringIdentifier = marker.clusteringIdentifier
+        self.model = marker
 
         let xCoord = Int(marker.location.x)
         let zCoord = Int(marker.location.y)
@@ -103,38 +108,38 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     /// - Parameter location: The location of the marker in Minecraft block coordinates.
     /// - Parameter title: The name of the marker.
     /// - Parameter color: The tint color of the marker pin.
-    public init(
+    public convenience init(
         location: CGPoint,
         title: String,
         color: Color = .accentColor,
         clusterIdentifier: String = "cubiomeskit-default"
     ) {
-        self.coordinate = CoordinateProjections.project(location)
-        self.title = title
-        self.systemImage = nil
-        self.clusteringIdentifier = clusterIdentifier
-
-        let xCoord = Int(location.x)
-        let zCoord = Int(location.y)
-        self.subtitle = "(\(xCoord), \(zCoord))"
-        #if canImport(UIKit)
-            self.color = UIColor(color)
-        #else
-            self.color = NSColor(color)
-        #endif
+        self.init(marker: Marker(location: location, title: title, color: color, clusterIdentifier: clusterIdentifier))
     }
 
     public override func isEqual(_ object: Any?) -> Bool {
         guard let marker = object as? Self else { return false }
-        return marker.coordinate == self.coordinate
-            && marker.title == self.title
-            && marker.subtitle == self.subtitle
-            && marker.color == self.color
-            && marker.systemImage == self.systemImage
-            && marker.clusteringIdentifier == self.clusteringIdentifier
+        return marker.model == model
+    }
+
+    func applyModel() {
+        self.coordinate = CoordinateProjections.project(model.location)
+        self.title = model.title
+        self.systemImage = model.systemImage
+        self.clusteringIdentifier = model.clusteringIdentifier
+
+        let xCoord = Int(model.location.x)
+        let zCoord = Int(model.location.y)
+        self.subtitle = "(\(xCoord), \(zCoord))"
+        #if canImport(UIKit)
+            self.color = UIColor(model.color)
+        #else
+            self.color = NSColor(model.color)
+        #endif
     }
 }
 
 extension MinecraftMapMarkerAnnotation: MinecraftMapContent {
+    public typealias Model = Marker
     public var contentType: MinecraftMapContentType { .annotation }
 }

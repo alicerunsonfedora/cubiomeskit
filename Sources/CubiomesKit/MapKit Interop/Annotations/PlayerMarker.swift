@@ -6,6 +6,7 @@
 //
 
 import MapKit
+import SwiftUI
 
 /// A marker that displays a player.
 ///
@@ -13,7 +14,7 @@ import MapKit
 /// will attempt to load in the player's head from the MC-Heads API and use that as the annotation image; otherwise, it
 /// will use the default Steve head. Selecting the annotation will display a callout with the player's Minecraft
 /// username and their position on the map.
-public struct PlayerMarker: MinecraftMapBuilderContent {
+public struct PlayerMarker: MinecraftMapBuilderContent, Equatable, Hashable {
     /// The player's location on the map.
     public var location: CGPoint
 
@@ -45,6 +46,10 @@ public struct PlayerMarker: MinecraftMapBuilderContent {
 /// will use the default Steve head. Selecting the annotation will display a callout with the player's Minecraft
 /// username and their position on the map.
 public class MinecraftMapPlayerMarkerAnnotation: NSObject, MKAnnotation {
+    public var model: PlayerMarker {
+        didSet { applyModel() }
+    }
+
     /// The player's Minecraft username.
     public private(set) var name: String
 
@@ -52,7 +57,7 @@ public class MinecraftMapPlayerMarkerAnnotation: NSObject, MKAnnotation {
     public private(set) var playerUUID: UUID
 
     /// The player's location on the map in Core Location coordinates.
-    public private(set) var coordinate: CLLocationCoordinate2D
+    @objc public private(set) dynamic var coordinate: CLLocationCoordinate2D
 
     /// The name of the marker.
     public var title: String?
@@ -64,15 +69,8 @@ public class MinecraftMapPlayerMarkerAnnotation: NSObject, MKAnnotation {
     /// - Parameter name: The player's Minecraft username.
     /// - Parameter playerUUID: The player's Minecraft UUID.
     /// - Parameter location: The player's location on the map.
-    public init(name: String, playerUUID: UUID, location: CGPoint) {
-        self.name = name
-        self.playerUUID = playerUUID
-        self.coordinate = CLLocationCoordinate2D(projecting: location)
-
-        self.title = name
-        let xCoord = Int(location.x)
-        let zCoord = Int(location.y)
-        self.subtitle = "(\(xCoord), \(zCoord))"
+    public convenience init(name: String, playerUUID: UUID, location: CGPoint) {
+        self.init(playerMarker: PlayerMarker(location: location, name: name, playerUUID: playerUUID))
     }
 
     /// Create a player marker annotation from an existing marker.
@@ -81,6 +79,7 @@ public class MinecraftMapPlayerMarkerAnnotation: NSObject, MKAnnotation {
         self.name = playerMarker.name
         self.playerUUID = playerMarker.playerUUID
         self.coordinate = CLLocationCoordinate2D(projecting: playerMarker.location)
+        self.model = playerMarker
 
         self.title = name
         let xCoord = Int(playerMarker.location.x)
@@ -90,10 +89,25 @@ public class MinecraftMapPlayerMarkerAnnotation: NSObject, MKAnnotation {
 
     public override func isEqual(_ object: Any?) -> Bool {
         guard let marker = object as? Self else { return false }
-        return marker.name == self.name && marker.playerUUID == self.playerUUID && marker.coordinate == self.coordinate
+        return marker.model == self.model
+    }
+
+    func applyModel() {
+        self.name = model.name
+        self.playerUUID = model.playerUUID
+
+        withAnimation(.default) {
+            self.coordinate = CLLocationCoordinate2D(projecting: model.location)
+        }
+
+        self.title = name
+        let xCoord = Int(model.location.x)
+        let zCoord = Int(model.location.y)
+        self.subtitle = "(\(xCoord), \(zCoord))"
     }
 }
 
 extension MinecraftMapPlayerMarkerAnnotation: MinecraftMapContent {
+    public typealias Model = PlayerMarker
     public var contentType: MinecraftMapContentType { .annotation }
 }

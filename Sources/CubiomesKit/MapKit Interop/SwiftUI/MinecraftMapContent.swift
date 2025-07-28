@@ -23,8 +23,13 @@ public enum MinecraftMapContentType {
 
 /// A protocol that defines map content that can be added to a ``MinecraftMapView``.
 public protocol MinecraftMapContent: Equatable, Hashable {
+    associatedtype Model: Equatable, Hashable
+
     /// The type of content to be added to the map.
     var contentType: MinecraftMapContentType { get }
+
+    /// The model used to configure the annotation or overlay.
+    var model: Model { get set }
 }
 
 extension MinecraftMapView {
@@ -63,13 +68,36 @@ extension MinecraftMapView {
     func resyncMapContentIfNeeded(_ contents: [any MinecraftMapContent]) {
         if !mapContentNeedsUpdate(contents) { return }
 
-        let oldAnnotations = self.annotations
         let oldOverlays = self.overlays.filter { !($0 is MinecraftRenderedTileOverlay) }
+        let playerMapping = createPlayerMap(from: contents)
+        var annotationsToRemove = [any MKAnnotation]()
 
-        for content in contents {
-            self.addMapContent(content)
+        // First pass: Prefer to update any existing annotations instead of queuing for removal.
+        for annotation in annotations {
+            if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
+                if let newLocation = playerMapping[player.model.playerUUID] {
+                    player.model.location = newLocation
+                    continue
+                }
+                annotationsToRemove.append(annotation)
+            } else {
+                annotationsToRemove.append(annotation)
+            }
         }
-        removeAnnotations(oldAnnotations)
+
+        // Second pass: Add any map content that wasn't accounted for in the first pass.
+        for content in contents {
+            if let player = content as? MinecraftMapPlayerMarkerAnnotation {
+                if playerMapping[player.model.playerUUID] != nil {
+                    continue
+                }
+                self.addMapContent(content)
+            } else {
+                self.addMapContent(content)
+            }
+        }
+
+        removeAnnotations(annotationsToRemove)
         removeOverlays(oldOverlays)
         mapContent = contents
     }
@@ -83,5 +111,15 @@ extension MinecraftMapView {
             break
         }
         return needsUpdates
+    }
+
+    func createPlayerMap(from contents: [any MinecraftMapContent]) -> [UUID: CGPoint] {
+        var coordinates = [UUID: CGPoint]()
+        for content in contents {
+            if content.contentType == .annotation, let player = content.model as? PlayerMarker {
+                coordinates[player.playerUUID] = player.location
+            }
+        }
+        return coordinates
     }
 }

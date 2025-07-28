@@ -9,6 +9,17 @@ Review the latest changes made to CubiomesKit.
 
 ## Unreleased
 
+### 28 July 2025
+
+#### MapKit Integration
+
+- The ``MinecraftMapContent`` protocol now includes a typealias for a data
+  model that is used to configure the content.
+- When updating map content in SwiftUI, it will attempt to update the
+  positions of existing player marker annotations instead of rebuilding
+  player markers. This should allow developers to display realtime player
+  updates with minimal flickering effects.
+
 ### 25 July 2025
 
 #### MapKit Integration

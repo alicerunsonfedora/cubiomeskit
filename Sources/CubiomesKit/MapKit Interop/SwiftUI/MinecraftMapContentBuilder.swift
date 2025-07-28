@@ -6,7 +6,6 @@
 //
 
 import MapKit
-import SwiftUI
 
 /// A protocol that defines content used in a ``MinecraftMapContentBuilder``.
 ///
