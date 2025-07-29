@@ -44,59 +44,8 @@ extension MinecraftMapView {
     func resyncMapContentIfNeeded(_ contents: [any MinecraftMapContent]) {
         if !mapContentNeedsUpdate(contents) { return }
 
-        let oldOverlays = self.overlays.filter { !($0 is MinecraftRenderedTileOverlay) }
-        let playerMapping = createPlayerMap(from: contents)
-        let markerMapping = createMarkerMap(from: contents)
-        var annotationsToRemove = [any MKAnnotation]()
-
-        // First pass: Prefer to update any existing annotations instead of queuing for removal.
-        for annotation in annotations {
-            if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
-                if let newLocation = playerMapping[player.model.playerUUID] {
-                    if player.model.location != newLocation {
-                        player.model.location = newLocation
-                    }
-                    continue
-                }
-                annotationsToRemove.append(annotation)
-            } else if let marker = annotation as? MinecraftMapMarkerAnnotation {
-                if let newModel = markerMapping[marker.id] {
-                    if marker.model != newModel {
-                        marker.model = newModel
-                    }
-                    continue
-                }
-                annotationsToRemove.append(annotation)
-            } else {
-                annotationsToRemove.append(annotation)
-            }
-        }
-
-        // Second pass: Add any map content that wasn't accounted for in the first pass.
-        let isInitialPass = annotations.isEmpty
-        for content in contents {
-            if isInitialPass {
-                self.addMapContent(content)
-                continue
-            }
-
-            if let player = content as? MinecraftMapPlayerMarkerAnnotation {
-                if playerMapping[player.model.playerUUID] != nil {
-                    continue
-                }
-                self.addMapContent(content)
-            } else if let marker = content as? MinecraftMapMarkerAnnotation {
-                if markerMapping[marker.model.id] != nil {
-                    continue
-                }
-                self.addMapContent(content)
-            } else {
-                self.addMapContent(content)
-            }
-        }
-
-        removeAnnotations(annotationsToRemove)
-        removeOverlays(oldOverlays)
+        updateAnnotations(from: contents)
+        updateOverlays(from: contents)
         mapContent = contents
     }
 
@@ -129,6 +78,73 @@ extension MinecraftMapView {
             }
         }
         return markers
+    }
+
+    func updateAnnotations(from contents: [any MinecraftMapContent]) {
+        let playerMapping = createPlayerMap(from: contents)
+        let markerMapping = createMarkerMap(from: contents)
+        var updatedAnnotations = [String: Bool]()
+
+        var annotationsToRemove = [any MKAnnotation]()
+
+        // First pass: Prefer to update any existing annotations instead of queuing for removal.
+        for annotation in annotations {
+            if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
+                if let newLocation = playerMapping[player.model.playerUUID] {
+                    if player.model.location != newLocation {
+                        player.model.location = newLocation
+                        updatedAnnotations[player.model.playerUUID.uuidString] = true
+                    }
+                    continue
+                }
+                annotationsToRemove.append(annotation)
+            } else if let marker = annotation as? MinecraftMapMarkerAnnotation {
+                if let newModel = markerMapping[marker.id] {
+                    if marker.model != newModel {
+                        marker.model = newModel
+                        updatedAnnotations[marker.id] = true
+                    }
+                    continue
+                }
+                annotationsToRemove.append(annotation)
+            } else {
+                annotationsToRemove.append(annotation)
+            }
+        }
+
+        // Second pass: Add any map content that wasn't accounted for in the first pass.
+        let isInitialPass = annotations.isEmpty
+        for content in contents {
+            if isInitialPass {
+                self.addMapContent(content)
+                continue
+            }
+
+            if let player = content as? MinecraftMapPlayerMarkerAnnotation {
+                if playerMapping[player.model.playerUUID] != nil,
+                   updatedAnnotations[player.model.playerUUID.uuidString] == true {
+                    continue
+                }
+                self.addMapContent(content)
+            } else if let marker = content as? MinecraftMapMarkerAnnotation {
+                if markerMapping[marker.model.id] != nil, updatedAnnotations[marker.id] == true {
+                    continue
+                }
+                self.addMapContent(content)
+            } else {
+                self.addMapContent(content)
+            }
+        }
+
+        removeAnnotations(annotationsToRemove)
+    }
+
+    func updateOverlays(from contents: [any MinecraftMapContent]) {
+        let oldOverlays = self.overlays.filter { !($0 is MinecraftRenderedTileOverlay) }
+        for content in contents where content.contentType == .overlay {
+            self.addMapContent(content)
+        }
+        removeOverlays(oldOverlays)
     }
 }
 
