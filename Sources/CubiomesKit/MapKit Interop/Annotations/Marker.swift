@@ -12,7 +12,10 @@ import SwiftUI
 ///
 /// Markers are generally used to indicate points of interest on a Minecraft world map. Tapping on a marker will
 /// display its coordinate below as a subtitle.
-public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable {
+public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable, Identifiable {
+    /// The marker's unique identifier.
+    public var id: String
+
     /// The location of the marker in blocks.
     public var location: CGPoint
 
@@ -32,21 +35,51 @@ public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable {
     public var clusteringIdentifier: String
 
     /// Create a marker at a given position.
+    /// - Parameter id: A unique identifier for this marker.
     /// - Parameter location: The Minecraft coordinate where the marker will be placed.
     /// - Parameter title: The name of the marker.
     /// - Parameter color: The marker's tint color.
+    /// - Parameter systemImage: The symbol to display as the glyph.
+    /// - Parameter clusterIdentifier: The identifier to use when clustering pins.
     public init(
+        id: String = UUID().uuidString,
         location: CGPoint,
         title: String,
         color: Color = .accentColor,
         systemImage: String? = nil,
         clusterIdentifier: String = "cubiomeskit-default"
     ) {
+        self.id = id
         self.location = location
         self.title = title
         self.color = color
         self.systemImage = systemImage
         self.clusteringIdentifier = clusterIdentifier
+    }
+
+    /// Create a marker at a given position.
+    /// - Parameter id: A unique identifier for this marker.
+    /// - Parameter location: The Minecraft coordinate where the marker will be placed.
+    /// - Parameter title: The name of the marker.
+    /// - Parameter color: The marker's tint color.
+    /// - Parameter systemImage: The symbol to display as the glyph.
+    /// - Parameter clusterIdentifier: The identifier to use when clustering pins.
+    public init(
+        id: UUID,
+        location: CGPoint,
+        title: String,
+        color: Color = .accentColor,
+        systemImage: String? = nil,
+        clusterIdentifier: String = "cubiomeskit-default"
+    ) {
+        self.init(
+            id: id.uuidString,
+            location: location,
+            title: title,
+            color: color,
+            systemImage: systemImage,
+            clusterIdentifier: clusterIdentifier
+        )
     }
 
     public var content: any MinecraftMapContent {
@@ -64,12 +97,16 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     }
 
     /// The location of the coordinate as a Core Location coordinate.
-    public private(set) var coordinate: CLLocationCoordinate2D
+    @objc public private(set) dynamic var coordinate: CLLocationCoordinate2D
+
     #if canImport(UIKit)
         var color: UIColor
     #else
         var color: NSColor
     #endif
+
+    /// The marker's unique identifier.
+    public private(set) var id: String
 
     /// The name of the marker.
     public var title: String?
@@ -93,6 +130,7 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
         self.systemImage = marker.systemImage
         self.clusteringIdentifier = marker.clusteringIdentifier
         self.model = marker
+        self.id = marker.id
 
         let xCoord = Int(marker.location.x)
         let zCoord = Int(marker.location.y)
@@ -123,6 +161,7 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     }
 
     func applyModel() {
+        self.id = model.id
         self.coordinate = CoordinateProjections.project(model.location)
         self.title = model.title
         self.systemImage = model.systemImage

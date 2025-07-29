@@ -9,6 +9,15 @@ Review the latest changes made to CubiomesKit.
 
 ## Unreleased
 
+### 29 July 2025
+
+#### MapKit Integration
+
+- The ``Marker`` and ``MinecraftMapMarkerAnnotation`` annotation types now
+  include a required ``Marker/id`` to make them identifiable on the map.
+- Conditional map updates introduced in the previous iteration now apply
+  to general markers as well, provided they include a provided ID.
+
 ### 28 July 2025
 
 #### MapKit Integration

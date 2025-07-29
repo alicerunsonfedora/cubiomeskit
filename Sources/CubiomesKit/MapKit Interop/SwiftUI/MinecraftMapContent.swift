@@ -70,6 +70,7 @@ extension MinecraftMapView {
 
         let oldOverlays = self.overlays.filter { !($0 is MinecraftRenderedTileOverlay) }
         let playerMapping = createPlayerMap(from: contents)
+        let markerMapping = createMarkerMap(from: contents)
         var annotationsToRemove = [any MKAnnotation]()
 
         // First pass: Prefer to update any existing annotations instead of queuing for removal.
@@ -80,15 +81,32 @@ extension MinecraftMapView {
                     continue
                 }
                 annotationsToRemove.append(annotation)
+            } else if let marker = annotation as? MinecraftMapMarkerAnnotation {
+                if let newModel = markerMapping[marker.id] {
+                    marker.model = newModel
+                    continue
+                }
+                annotationsToRemove.append(annotation)
             } else {
                 annotationsToRemove.append(annotation)
             }
         }
 
         // Second pass: Add any map content that wasn't accounted for in the first pass.
+        let isInitialPass = annotations.isEmpty
         for content in contents {
+            if isInitialPass {
+                self.addMapContent(content)
+                continue
+            }
+
             if let player = content as? MinecraftMapPlayerMarkerAnnotation {
                 if playerMapping[player.model.playerUUID] != nil {
+                    continue
+                }
+                self.addMapContent(content)
+            } else if let marker = content as? MinecraftMapMarkerAnnotation {
+                if markerMapping[marker.model.id] != nil {
                     continue
                 }
                 self.addMapContent(content)
@@ -121,5 +139,15 @@ extension MinecraftMapView {
             }
         }
         return coordinates
+    }
+
+    func createMarkerMap(from contents: [any MinecraftMapContent]) -> [String: Marker] {
+        var markers = [String: Marker]()
+        for content in contents {
+            if content.contentType == .annotation, let marker = content.model as? Marker {
+                markers[marker.id] = marker
+            }
+        }
+        return markers
     }
 }

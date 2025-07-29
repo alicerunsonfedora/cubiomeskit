@@ -76,7 +76,7 @@ struct MinecraftMapTests {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mapView = MinecraftMapView(world: mcWorld, frame: .zero)
         let map = MinecraftMap(world: mcWorld) {
-            Marker(location: .zero, title: "Spawn")
+            Marker(id: "foo", location: .zero, title: "Spawn")
         }
             .ornaments(.all)
             .mapColorScheme(.natural)
