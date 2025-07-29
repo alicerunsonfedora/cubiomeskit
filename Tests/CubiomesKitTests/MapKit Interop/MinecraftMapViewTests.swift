@@ -58,6 +58,18 @@ struct MinecraftMapViewTests {
         #expect(renderer is CachingTileOverlayRenderer)
     }
 
+    @Test func mapViewCompareAnnotations() throws {
+        let markerOne = MinecraftMapMarkerAnnotation(location: .zero, title: "Spawn")
+        let markerTwo = MinecraftMapMarkerAnnotation(location: .zero, title: "Spawn")
+        let markerThree = MKPointAnnotation()
+        markerThree.title = "Spawn"
+        markerThree.coordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+
+        #expect(MinecraftMapView.compareAnnotations(markerOne, markerTwo) == true)
+        #expect(MinecraftMapView.compareAnnotations(markerOne, markerThree) == true)
+        #expect(MinecraftMapView.compareAnnotations(markerTwo, markerThree) == true)
+    }
+
     @Test func mapViewRenderCacheRefreshesOnOptionChange() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mcMapView = MinecraftMapView(world: mcWorld, frame: .zero)
