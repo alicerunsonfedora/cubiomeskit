@@ -186,7 +186,9 @@ public final class MinecraftMapView: MKMapView {
     static func compareAnnotations(_ lhs: any MKAnnotation, _ rhs: any MKAnnotation) -> Bool {
         switch (lhs, rhs) {
         case let (lhs as MinecraftMapMarkerAnnotation, rhs as MinecraftMapMarkerAnnotation):
-            return lhs.coordinate == rhs.coordinate && lhs.title == rhs.title
+            return lhs.model == rhs.model
+        case let (lhs as MinecraftMapPlayerMarkerAnnotation, rhs as MinecraftMapPlayerMarkerAnnotation):
+            return lhs.model == rhs.model
         default:
             return lhs.coordinate == rhs.coordinate
         }
