@@ -23,7 +23,7 @@ public enum MinecraftMapContentType {
 
 /// A protocol that defines map content that can be added to a ``MinecraftMapView``.
 public protocol MinecraftMapContent: Equatable, Hashable {
-    associatedtype Model: Equatable, Hashable
+    associatedtype Model: Equatable, Hashable, Identifiable
 
     /// The type of content to be added to the map.
     var contentType: MinecraftMapContentType { get }

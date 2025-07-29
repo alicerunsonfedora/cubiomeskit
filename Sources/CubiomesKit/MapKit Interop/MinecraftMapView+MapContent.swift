@@ -8,6 +8,20 @@
 import MapKit
 import SwiftUI
 
+private enum Either<T, U> {
+    case left(T)
+    case right(U)
+}
+
+private struct AnnotationUpdate {
+    enum UpdateType {
+        case addition, inPlace, removal
+    }
+    var content: Either<any MinecraftMapContent, any MKAnnotation>
+    var action: UpdateType
+    var updateIndex: Int?
+}
+
 extension MinecraftMapView {
     func addMapContent(_ content: any MinecraftMapContent) {
         switch content.contentType {
@@ -81,61 +95,72 @@ extension MinecraftMapView {
     }
 
     func updateAnnotations(from contents: [any MinecraftMapContent]) {
-        let playerMapping = createPlayerMap(from: contents)
-        let markerMapping = createMarkerMap(from: contents)
-        var updatedAnnotations = [String: Bool]()
+        var updateTransaction = [String: AnnotationUpdate]()
 
-        var annotationsToRemove = [any MKAnnotation]()
+        // Phase one: assume we're adding all new content.
+        for content in contents where content.contentType == .annotation {
+            let updateID = identifier(for: content)
+            updateTransaction[updateID] = AnnotationUpdate(content: .left(content), action: .addition)
+        }
 
-        // First pass: Prefer to update any existing annotations instead of queuing for removal.
-        for annotation in annotations {
-            if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
-                if let newLocation = playerMapping[player.model.playerUUID] {
-                    if player.model.location != newLocation {
-                        player.model.location = newLocation
-                        updatedAnnotations[player.model.playerUUID.uuidString] = true
-                    }
-                    continue
-                }
-                annotationsToRemove.append(annotation)
-            } else if let marker = annotation as? MinecraftMapMarkerAnnotation {
-                if let newModel = markerMapping[marker.id] {
-                    if marker.model != newModel {
-                        marker.model = newModel
-                        updatedAnnotations[marker.id] = true
-                    }
-                    continue
-                }
-                annotationsToRemove.append(annotation)
+        // Phase two: check for any cases where we can perform an in-place update. Fall back to removal when
+        // necessary.
+        for (index, annotation) in annotations.enumerated() {
+            let updateID = identifier(for: annotation)
+            if var update = updateTransaction[updateID] {
+                update.action = .inPlace
+                update.updateIndex = index
+                updateTransaction[updateID] = update
             } else {
-                annotationsToRemove.append(annotation)
+                updateTransaction[updateID] = AnnotationUpdate(content: .right(annotation), action: .removal)
             }
         }
 
-        // Second pass: Add any map content that wasn't accounted for in the first pass.
-        let isInitialPass = annotations.isEmpty
-        for content in contents {
-            if isInitialPass {
-                self.addMapContent(content)
+        // Phase three: Handle in-place updates.
+        for (_, updateCtx) in updateTransaction {
+            guard updateCtx.action == .inPlace, let idx = updateCtx.updateIndex else {
                 continue
             }
 
-            if let player = content as? MinecraftMapPlayerMarkerAnnotation {
-                if playerMapping[player.model.playerUUID] != nil {
-                    continue
-                }
-                self.addMapContent(content)
-            } else if let marker = content as? MinecraftMapMarkerAnnotation {
-                if markerMapping[marker.model.id] != nil {
-                    continue
-                }
-                self.addMapContent(content)
-            } else {
-                self.addMapContent(content)
+            guard case .left(let content) = updateCtx.content else { continue }
+            let annotation = annotations[idx]
+            if let playerA = annotation as? MinecraftMapPlayerMarkerAnnotation,
+               let playerC = content.model as? PlayerMarker {
+                playerA.model = playerC
+            } else if let markerA = annotation as? MinecraftMapMarkerAnnotation,
+                      let markerC = content.model as? Marker {
+                markerA.model = markerC
             }
         }
 
-        removeAnnotations(annotationsToRemove)
+        // Phase four: handle remaining transaction types.
+        for (_, updateCtx) in updateTransaction {
+            switch (updateCtx.action, updateCtx.content) {
+            case let (.addition, .left(content)):
+                self.addMapContent(content)
+            case let (.removal, .right(annotation)):
+                self.removeAnnotation(annotation)
+            default:
+                continue
+            }
+        }
+    }
+
+    func identifier(for content: any MinecraftMapContent) -> String {
+        if let playerID = content.model as? PlayerMarker {
+            return playerID.playerUUID.uuidString
+        } else if let marker = content.model as? Marker {
+            return marker.id
+        } else {
+            return ""
+        }
+    }
+
+    func identifier(for annotation: any MKAnnotation) -> String {
+        guard let content = annotation as? any MinecraftMapContent else {
+            return ""
+        }
+        return self.identifier(for: content)
     }
 
     func updateOverlays(from contents: [any MinecraftMapContent]) {

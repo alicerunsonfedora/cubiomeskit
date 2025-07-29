@@ -14,7 +14,10 @@ import SwiftUI
 /// will attempt to load in the player's head from the MC-Heads API and use that as the annotation image; otherwise, it
 /// will use the default Steve head. Selecting the annotation will display a callout with the player's Minecraft
 /// username and their position on the map.
-public struct PlayerMarker: MinecraftMapBuilderContent, Equatable, Hashable {
+public struct PlayerMarker: MinecraftMapBuilderContent, Equatable, Hashable, Identifiable {
+    /// A unique identifier for the pin.
+    public var id: UUID { playerUUID }
+
     /// The player's location on the map.
     public var location: CGPoint
 
