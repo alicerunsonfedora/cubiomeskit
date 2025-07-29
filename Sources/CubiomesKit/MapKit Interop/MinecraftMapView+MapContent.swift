@@ -121,13 +121,12 @@ extension MinecraftMapView {
             }
 
             if let player = content as? MinecraftMapPlayerMarkerAnnotation {
-                if playerMapping[player.model.playerUUID] != nil,
-                   updatedAnnotations[player.model.playerUUID.uuidString] == true {
+                if playerMapping[player.model.playerUUID] != nil {
                     continue
                 }
                 self.addMapContent(content)
             } else if let marker = content as? MinecraftMapMarkerAnnotation {
-                if markerMapping[marker.model.id] != nil, updatedAnnotations[marker.id] == true {
+                if markerMapping[marker.model.id] != nil {
                     continue
                 }
                 self.addMapContent(content)
