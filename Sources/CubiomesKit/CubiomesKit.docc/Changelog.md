@@ -9,6 +9,19 @@ Review the latest changes made to CubiomesKit.
 
 ## Unreleased
 
+### 30 July 2025
+
+#### Biome Generation
+
+- Biome generation now occurs on a separate actor. Any public-facing code
+  that interfaces with biome generation now works asynchronously to
+  prevent data races and crossing actor boundaries.
+
+#### World Rendering
+
+- The `renderSynchronously(inRegion:scale:dimension)` method has been
+  removed in favor of a single asynchronous version.
+
 ### 28 July 2025
 
 #### MapKit Integration
@@ -55,10 +68,10 @@ Review the latest changes made to CubiomesKit.
 
 - The ``MinecraftWorldRenderer`` now uses a new renderer for translating
   biome ID data into appropriate pixel colors, written entirely in Swift.
-- The ``MinecraftWorldRenderer/renderSynchronously(inRegion:scale:dimension:)``
-  method has been introduced to maintain compatibility with existing
-  codebases that have not been rendering their world map content
-  concurrently. This is a temporary method that will fold into the general
+- The `renderSynchronously(inRegion:scale:dimension)` method has been
+  introduced to maintain compatibility with existing codebases that have
+  not been rendering their world map content concurrently. This is a
+  temporary method that will fold into the general
   ``MinecraftWorldRenderer/render(inRegion:scale:dimension:)`` signature
   for both the synchronous and asynchronous variants.
 

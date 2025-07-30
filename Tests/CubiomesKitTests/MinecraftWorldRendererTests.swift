@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 05-04-2025.
 //
 
+import CryptoKit
 import Foundation
 import Testing
 
@@ -29,7 +30,15 @@ struct MinecraftWorldRendererTests {
                 origin: .init(x: 116, y: 15, z: -31),
                 scale: .init(length: 256, width: 256, height: 1)),
             dimension: .overworld)
-        #expect(data.hashValue == originalData.hashValue)
+
+        let expectedHash = SHA256.hash(data: originalData)
+        let actualHash = SHA256.hash(data: data)
+        #expect(actualHash == expectedHash)
+
+        #if swift(>=6.2)
+        Attachment.record(originalData, named: "original.ppm")
+        Attachment.record(data, named: "actual.ppm")
+        #endif
     }
 
     @MinecraftWorldRendererActor

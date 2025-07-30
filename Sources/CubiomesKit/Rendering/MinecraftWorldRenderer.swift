@@ -77,15 +77,23 @@ public class MinecraftWorldRenderer {
         self.options = options
     }
 
-    public func renderSynchronously(
+    /// Render the contents of the world in the specified region.
+    /// - Parameter rect: The region to render.
+    /// - Parameter pixelsPerCell: The number of pixels that take up an individual block.
+    /// - Parameter dimension: The dimension to render the world in.
+    public func render(
         inRegion rect: MinecraftWorldRect,
         scale pixelsPerCell: Int32 = 4,
         dimension: MinecraftWorld.Dimension = .overworld
-    ) -> Data {
-        var generator = world.generator(in: dimension)
+    ) async -> Data {
         let (originX, originZ) = getMapTileOrigin(in: rect, at: pixelsPerCell)
+        let renderRect = MinecraftWorldRect(
+            origin: MinecraftPoint(x: originX, y: rect.origin.y, z: originZ),
+            scale: rect.size,
+            mapScale: rect.mapScale)
 
-        let biomeIDs = createBiomeLUT(using: &generator, x: originX, z: originZ, in: rect)
+        let biomeGen = await MinecraftBiomeLUTGenerator(world: world, dimension: dimension)
+        let biomeIDs = await biomeGen.generate(for: renderRect)
         let colorMap = getBiomeColorMap(for: dimension)
 
         let imgWidth = pixelsPerCell * rect.size.length
@@ -94,46 +102,14 @@ public class MinecraftWorldRenderer {
         let rgbData =
             MinecraftBiomeImageRenderer
             .image(
-                for: UnsafePointer(biomeIDs),
+                for: biomeIDs,
                 using: colorMap,
-                of: rect.size,
+                of: renderRect.size,
                 scaledTo: pixelsPerCell,
                 flipped: true
             )
 
         let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(imgWidth), height: Double(imgHeight)))
-        return Data(ppm: ppmData)
-    }
-
-    /// Renders a world region as raw image data.
-    /// - Parameter rect: The region to render in the world.
-    /// - Parameter pixelsPerCell: The number of pixels that occupy a single cell in the rendered image.
-    /// - Parameter dimension: The dimension to render the region in.
-    public func render(
-        inRegion rect: MinecraftWorldRect,
-        scale pixelsPerCell: Int32 = 4,
-        dimension: MinecraftWorld.Dimension = .overworld
-    ) async -> Data {
-        var generator = world.generator(in: dimension)
-        let (originX, originZ) = getMapTileOrigin(in: rect, at: pixelsPerCell)
-        
-        let biomeIDs = createBiomeLUT(using: &generator, x: originX, z: originZ, in: rect)
-        var biomeColors: ColorGroup = (0, 0, 0)
-        getBiomeColors(for: dimension, in: &biomeColors)
-       
-        // TODO: WTF does it crash whenever we pass UInt32(pixelsPerCell) for ppc in this call? Why overflow?
-        // Has I ever?
-        let rgbData = await generateImageData(
-            imgWidth: 1024,
-            imgHeight: 1024,
-            biomeColors: &biomeColors,
-            biomeIds: biomeIDs,
-            scaleX: 256,
-            scaleZ: 256,
-            pixelsPerCell: 4
-        )
-
-        let ppmData = PPMData(pixels: rgbData, size: CGSize(width: Double(1024), height: Double(1024)))
         return Data(ppm: ppmData)
     }
 

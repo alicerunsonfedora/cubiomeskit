@@ -23,7 +23,7 @@ struct MinecraftBiomeImageRenderer {
     }
 
     static func image(
-        for biomes: BiomeIDPointer!,
+        for biomes: [MinecraftBiome],
         using colorMap: MinecraftBiomeColorMap,
         of size: MinecraftWorldRect.Size,
         scaledTo pixelsPerCell: Int32,
@@ -48,7 +48,7 @@ struct MinecraftBiomeImageRenderer {
     static func colorizeImageData(
         data: inout [CUnsignedChar],
         colors: MinecraftBiomeColorMap,
-        biomeIDs: UnsafePointer<Int32>!,
+        biomeIDs: [MinecraftBiome],
         size: MinecraftWorldRect.Size,
         pixelsPerCell: UInt32,
         flip: Bool
@@ -87,16 +87,16 @@ struct MinecraftBiomeImageRenderer {
     private static func biomeColor(
         at position: BlockPosition,
         width: Int,
-        biomeLUT: UnsafePointer<Int32>!,
+        biomeLUT: [MinecraftBiome],
         colorLUT: MinecraftBiomeColorMap
     ) -> BiomeColorResult {
         let biomeID = biomeLUT[position.z * width + position.x]
         var result = BiomeColorResult(containsInvalidBiomes: false, color: .black)
 
-        let color = colorLUT.color(for: MinecraftBiome(biomeID))
+        let color = colorLUT.color(for: biomeID)
         result.color = color
 
-        if (0...256).contains(biomeID) {
+        if (0...256).contains(biomeID.rawValue) {
             return result
         }
 

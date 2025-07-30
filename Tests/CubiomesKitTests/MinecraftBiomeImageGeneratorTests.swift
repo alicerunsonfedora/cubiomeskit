@@ -11,21 +11,13 @@ import Testing
 
 @testable import CubiomesKit
 
+@MinecraftWorldGeneratorActor
 struct MinecraftBiomeImageGeneratorTests {
     @Test func imageGeneratorMatchesUtils() throws {
         let world = MinecraftWorld(version: MC_NEWEST, seed: 123456)
         var generator = world.generator(in: .nether)
         let rect = MinecraftWorldRect(origin: .zero, scale: MinecraftWorldRect.Size(squaring: 4))
-
-        let cbRange = Cubiomes.Range(
-            scale: 4,
-            x: rect.origin.x,
-            z: rect.origin.z,
-            sx: rect.size.length,
-            sz: rect.size.width,
-            y: rect.origin.y,
-            sy: rect.size.height
-        )
+        let cbRange = Cubiomes.Range(rect: rect)
 
         let biomeIDs = allocCache(&generator, cbRange)
         genBiomes(&generator, biomeIDs, cbRange)
@@ -48,17 +40,17 @@ struct MinecraftBiomeImageGeneratorTests {
             1,
             2
         )
-       
+
+        let biomeGenerator = MinecraftBiomeLUTGenerator(world: world, dimension: .nether)
+        let semanticIDs = biomeGenerator.generate(for: rect)
+        
         let actualData = MinecraftBiomeImageRenderer.image(
-            for: UnsafePointer(biomeIDs),
+            for: semanticIDs,
             using: MinecraftBiomeColorMap.cubiomesDefault(),
             of: rect.size,
             scaledTo: 1,
             flipped: true
         )
-
-        print(expectedData)
-        print(actualData)
 
         let expectedHash = SHA256.hash(data: expectedData)
         let actualHash = SHA256.hash(data: actualData)
