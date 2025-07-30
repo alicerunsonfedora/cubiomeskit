@@ -43,6 +43,12 @@ extension MinecraftVersion: @retroactive CaseIterable {
 
 extension MinecraftVersion: @retroactive Hashable, @retroactive @unchecked Sendable {}
 
+extension MinecraftVersion: @retroactive Comparable {
+    public static func < (lhs: MCVersion, rhs: MCVersion) -> Bool {
+        lhs.rawValue < rhs.rawValue
+    }
+}
+
 extension String {
     /// Initialize a string from a Minecraft version.
     /// - Parameter mcVersion: The Minecraft version to get a string representation of.

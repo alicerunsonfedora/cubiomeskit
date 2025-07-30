@@ -30,7 +30,7 @@ public struct MinecraftWorld: Sendable {
     }
 
     /// The version of Minecraft used to generate the world.
-    public var version: MCVersion
+    public var version: MinecraftVersion
 
     /// The seed used to generate the world.
     public var seed: Int64

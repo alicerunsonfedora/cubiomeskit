@@ -92,7 +92,7 @@ public class MinecraftWorldRenderer {
             scale: rect.size,
             mapScale: rect.mapScale)
 
-        let biomeGen = await MinecraftBiomeLUTGenerator(world: world, dimension: dimension)
+        let biomeGen = await MinecraftBiomeGenerator(world: world, dimension: dimension)
         let biomeIDs = await biomeGen.generate(for: renderRect)
         let colorMap = getBiomeColorMap(for: dimension)
 

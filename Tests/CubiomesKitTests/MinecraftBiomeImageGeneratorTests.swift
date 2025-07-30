@@ -41,7 +41,7 @@ struct MinecraftBiomeImageGeneratorTests {
             2
         )
 
-        let biomeGenerator = MinecraftBiomeLUTGenerator(world: world, dimension: .nether)
+        let biomeGenerator = MinecraftBiomeGenerator(world: world, dimension: .nether)
         let semanticIDs = biomeGenerator.generate(for: rect)
         
         let actualData = MinecraftBiomeImageRenderer.image(

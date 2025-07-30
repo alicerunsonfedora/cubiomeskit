@@ -14,11 +14,11 @@ import CubiomesInternal
 }
 
 @MinecraftWorldGeneratorActor
-class MinecraftBiomeLUTGenerator {
+class MinecraftBiomeGenerator {
     var world: MinecraftWorld
     var dimension: MinecraftWorld.Dimension
 
-    init(world: MinecraftWorld, dimension: MinecraftWorld.Dimension) {
+    init(world: MinecraftWorld, dimension: MinecraftWorld.Dimension = .overworld) {
         self.world = world
         self.dimension = dimension
     }
