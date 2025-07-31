@@ -7,6 +7,8 @@
 
 import MapKit
 
+public typealias AnyMinecraftMapContent = any MinecraftMapContent
+
 /// A protocol that defines content used in a ``MinecraftMapContentBuilder``.
 ///
 /// This underlying type allows conversion to ``MinecraftMapContent`` which can be handled by map views that support
@@ -38,4 +40,10 @@ public struct MinecraftMapContentBuilder {
     public static func buildEither(second component: MinecraftMapBuilderContent) -> [any MinecraftMapContent] {
         [component.content]
     }
+}
+
+public func buildMinecraftMapContent(
+    @MinecraftMapContentBuilder from contentBuilder: () -> [AnyMinecraftMapContent]
+) -> [AnyMinecraftMapContent] {
+    return contentBuilder()
 }

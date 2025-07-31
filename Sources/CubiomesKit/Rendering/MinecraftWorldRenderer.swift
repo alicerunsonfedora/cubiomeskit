@@ -125,35 +125,6 @@ public class MinecraftWorldRenderer {
         return (originX, originZ)
     }
 
-    func createBiomeLUT(
-        using generator: inout Cubiomes.Generator,
-        x: Int32,
-        z: Int32,
-        in rect: MinecraftWorldRect
-    ) -> UnsafeMutablePointer<Int32>? {
-        let _range = Cubiomes.Range(
-            scale: rect.mapScale.rawValue,
-            x: x,
-            z: z,
-            sx: rect.size.length,
-            sz: rect.size.width,
-            y: rect.origin.y,
-            sy: rect.size.height
-        )
-
-        let biomeIds = allocCache(&generator, _range)
-        genBiomes(&generator, biomeIds, _range)
-        return biomeIds
-    }
-
-    func getBiomeColors(for dimension: MinecraftWorld.Dimension, in colorGroup: inout ColorGroup) {
-        if options.contains(.naturalColors), let naturalColorFile, dimension == .overworld {
-            parseBiomeColors(&colorGroup, naturalColorFile)
-        } else {
-            initBiomeColors(&colorGroup)
-        }
-    }
-
     func getBiomeColorMap(for dimension: MinecraftWorld.Dimension) -> MinecraftBiomeColorMap {
         if options.contains(.naturalColors), let naturalColorFile, dimension == .overworld {
             do {
@@ -163,35 +134,5 @@ public class MinecraftWorldRenderer {
             }
         }
         return .cubiomesDefault()
-    }
-
-    // NOTE(alicerunsonfedora): We're passing ownership of biomeIds here. While this makes Cubiomes happy (right now),
-    // this might cause some Swift concurrency issues because of it. Must investigate (caller shouldn't do anything else
-    // with biomeIds).
-    func generateImageData(
-        imgWidth: Int32,
-        imgHeight: Int32,
-        biomeColors: inout ColorGroup,
-        biomeIds: UnsafeMutablePointer<Int32>?,
-        scaleX: UInt32,
-        scaleZ: UInt32,
-        pixelsPerCell: UInt32
-    ) async -> PixelImageData {
-        var rgbData = PixelImageData(repeating: 0, count: Int(3 * imgWidth * imgHeight))
-
-        // TODO: What if... we write our own??? We could replace this and see if we can chunk it on our own.
-        biomesToImage(
-            &rgbData,
-            &biomeColors,
-            UnsafePointer(biomeIds),
-            scaleX,
-            scaleZ,
-            pixelsPerCell,
-            2
-        )
-
-        // TODO: Check this is where this should occur. It very likely does...
-        biomeIds?.deallocate()
-        return rgbData
     }
 }

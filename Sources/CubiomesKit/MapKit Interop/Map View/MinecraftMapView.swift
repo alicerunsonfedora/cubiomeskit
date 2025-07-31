@@ -182,15 +182,6 @@ public final class MinecraftMapView: MKMapView {
             renderer.setNeedsDisplay()
         }
     }
-
-    static func compareAnnotations(_ lhs: any MKAnnotation, _ rhs: any MKAnnotation) -> Bool {
-        switch (lhs, rhs) {
-        case let (lhs as MinecraftMapMarkerAnnotation, rhs as MinecraftMapMarkerAnnotation):
-            return lhs.coordinate == rhs.coordinate && lhs.title == rhs.title
-        default:
-            return lhs.coordinate == rhs.coordinate
-        }
-    }
 }
 
 extension MinecraftMapView {

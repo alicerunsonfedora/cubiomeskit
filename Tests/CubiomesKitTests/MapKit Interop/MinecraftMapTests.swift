@@ -85,5 +85,5 @@ struct MinecraftMapTests {
         #expect(mapView.ornaments == .all)
         #expect(mapView.renderOptions.contains(.naturalColors))
         #expect(mapView.annotations.count == 1)
-    }
+    }    
 }
