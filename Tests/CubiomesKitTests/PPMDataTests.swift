@@ -10,7 +10,8 @@ import Foundation
 import Testing
 
 struct PPMDataTests {
-    @Test func dataInitializer() async throws {
+    @Test(.tags(.render))
+    func dataInitializer() async throws {
         let expectedContent =
             """
             P6

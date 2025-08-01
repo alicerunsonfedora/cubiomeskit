@@ -14,7 +14,8 @@ import Testing
 struct MinecraftMapViewContentTests {
     let world = MinecraftWorld(version: MC_1_21, seed: 123)
 
-    @Test func mapViewInsertsGeneralContent() throws {
+    @Test(.tags(.mapkit))
+    func mapViewInsertsGeneralContent() throws {
         let view = MinecraftMapView(world: world, frame: .zero)
         #expect(view.annotations.isEmpty)
 
@@ -25,7 +26,8 @@ struct MinecraftMapViewContentTests {
         #expect(view.annotations.count == 1)
     }
 
-    @Test func mapViewInsertsPlayerContent() throws {
+    @Test(.tags(.mapkit))
+    func mapViewInsertsPlayerContent() throws {
         let view = MinecraftMapView(world: world, frame: .zero)
         #expect(view.annotations.isEmpty)
 
@@ -50,7 +52,8 @@ struct MinecraftMapViewContentTests {
         )
     }
 
-    @Test func mapViewUpdatesPlayerContentInPlace() throws {
+    @Test(.tags(.mapkit))
+    func mapViewUpdatesPlayerContentInPlace() throws {
         let view = MinecraftMapView(world: world, frame: .zero)
         #expect(view.annotations.isEmpty)
 

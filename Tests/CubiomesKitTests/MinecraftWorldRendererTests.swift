@@ -12,7 +12,8 @@ import Testing
 @testable import CubiomesKit
 
 struct MinecraftWorldRendererTests {
-    @Test func snapshotMatchesOriginalImage() async throws {
+    @Test(.tags(.render, .biomes))
+    func snapshotMatchesOriginalImage() async throws {
         guard
             let originalDataURL = Bundle.module.url(
                 forResource: "snapshotMatchesOriginalImage",
@@ -42,7 +43,8 @@ struct MinecraftWorldRendererTests {
     }
 
     @MinecraftWorldRendererActor
-    @Test func naturalColorsLoads() async throws {
+    @Test(.tags(.render, .biomes))
+    func naturalColorsLoads() async throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 3_257_840_388_504_953_787)
         let renderer = MinecraftWorldRenderer(world: mcWorld)
         #expect(renderer.naturalColorFile != nil)

@@ -11,7 +11,8 @@ import Testing
 @testable import CubiomesKit
 
 struct MinecraftBiomeColorMapTests {
-    @Test func biomeColorParses() async throws {
+    @Test(.tags(.render))
+    func biomeColorParses() async throws {
         let color = try ColorRGB(hex: "#000000")
         #expect(color == ColorRGB(r: 0, g: 0, b: 0))
 
@@ -22,7 +23,8 @@ struct MinecraftBiomeColorMapTests {
         #expect(magicColorRaw == ColorRGB(r: 241, g: 194, b: 135))
     }
 
-    @Test func biomeColorParseFailures() async throws {
+    @Test(.tags(.render))
+    func biomeColorParseFailures() async throws {
         #expect(throws: ColorRGB.ParseError.invalidHexHeader) {
             try ColorRGB(hex: "lorelei")
         }
@@ -32,7 +34,8 @@ struct MinecraftBiomeColorMapTests {
         }
     }
 
-    @Test func biomeMapInit() async throws {
+    @Test(.tags(.render))
+    func biomeMapInit() async throws {
         let biomeMap = try MinecraftBiomeColorMap(
             decoding:
                 """
@@ -47,7 +50,8 @@ struct MinecraftBiomeColorMapTests {
         #expect(biomeMap.color(for: taigaHills) == .black)
     }
 
-    @Test func biomeMapParseFailure() async throws {
+    @Test(.tags(.render))
+    func biomeMapParseFailure() async throws {
         #expect(throws: MinecraftBiomeColorMap.DecodeError.invalidBiomeID) {
             try MinecraftBiomeColorMap(
                 decoding:
@@ -64,7 +68,8 @@ struct MinecraftBiomeColorMapTests {
         }
     }
 
-    @Test func biomeMapCubiomesDefault() async throws {
+    @Test(.tags(.render))
+    func biomeMapCubiomesDefault() async throws {
         let biomeMap = MinecraftBiomeColorMap.cubiomesDefault()
         #expect(!biomeMap.isEmpty)
     }

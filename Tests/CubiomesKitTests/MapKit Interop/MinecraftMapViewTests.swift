@@ -14,7 +14,8 @@ import Testing
 
 @MainActor
 struct MinecraftMapViewTests {
-    @Test func mapViewInit() throws {
+    @Test(.tags(.mapkit))
+    func mapViewInit() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mcMapView = MinecraftMapView(world: mcWorld, frame: .zero)
 
@@ -27,7 +28,8 @@ struct MinecraftMapViewTests {
         #expect(mcMapView.isRotateEnabled == false)
     }
 
-    @Test func mapViewDimensionChange() throws {
+    @Test(.tags(.mapkit))
+    func mapViewDimensionChange() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mcMapView = MinecraftMapView(world: mcWorld, frame: .zero)
         mcMapView.dimension = .end
@@ -37,7 +39,8 @@ struct MinecraftMapViewTests {
         #expect(overlay?.configuration.dimension == .end)
     }
 
-    @Test func mapViewAnnotation() throws {
+    @Test(.tags(.mapkit))
+    func mapViewAnnotation() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mcMapView = MinecraftMapView(world: mcWorld, frame: .zero)
         let annotationView = mcMapView.mapView(
@@ -49,7 +52,8 @@ struct MinecraftMapViewTests {
         #expect(annotationView is MKMarkerAnnotationView)
     }
 
-    @Test func mapViewOverlayRenderer() throws {
+    @Test(.tags(.mapkit))
+    func mapViewOverlayRenderer() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mcMapView = MinecraftMapView(world: mcWorld, frame: .zero)
 
@@ -58,7 +62,8 @@ struct MinecraftMapViewTests {
         #expect(renderer is CachingTileOverlayRenderer)
     }
 
-    @Test func mapViewRenderCacheRefreshesOnOptionChange() throws {
+    @Test(.tags(.mapkit))
+    func mapViewRenderCacheRefreshesOnOptionChange() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mcMapView = MinecraftMapView(world: mcWorld, frame: .zero)
         let overlayPath = MKTileOverlayPath(x: 0, y: 0, z: 18, contentScaleFactor: 1)

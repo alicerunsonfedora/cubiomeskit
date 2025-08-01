@@ -12,7 +12,8 @@ import Testing
 @testable import CubiomesKit
 
 struct MinecraftMarkerTests {
-    @Test func markerInit() async throws {
+    @Test(.tags(.mapkit))
+    func markerInit() async throws {
         let marker = Marker(location: .zero, title: "Spawn", color: .blue)
         let annotation = MinecraftMapMarkerAnnotation(marker: marker)
 
@@ -40,7 +41,8 @@ struct MinecraftMarkerTests {
 
     // NOTE(alicerunsonfedora): Still don't understand this voodoo shit, but it checks out visually, so the tests are
     // here to make sure it's in place...
-    @Test func markerProjection() async throws {
+    @Test(.tags(.mapkit))
+    func markerProjection() async throws {
         let blockCoordinate = CGPoint(x: -1670, y: 1493)
         let clCoordinate = CoordinateProjections.project(blockCoordinate)
 
@@ -48,7 +50,8 @@ struct MinecraftMarkerTests {
         #expect(clCoordinate.longitude == -0.0022396445274353027)
     }
 
-    @Test func markerUnprojection() async throws {
+    @Test(.tags(.mapkit))
+    func markerUnprojection() async throws {
         let coord = CLLocationCoordinate2D(latitude: -0.0020022690296173096, longitude: -0.0022396445274353027)
         let blockCoordinate = CoordinateProjections.unproject(coord)
 

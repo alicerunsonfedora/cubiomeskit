@@ -13,7 +13,8 @@ import Testing
 
 @MinecraftWorldGeneratorActor
 struct MinecraftBiomeImageGeneratorTests {
-    @Test func imageGeneratorMatchesUtils() throws {
+    @Test(.tags(.render))
+    func imageGeneratorMatchesUtils() throws {
         let world = MinecraftWorld(version: MC_NEWEST, seed: 123456)
         var generator = world.generator(in: .nether)
         let rect = MinecraftWorldRect(origin: .zero, scale: MinecraftWorldRect.Size(squaring: 4))

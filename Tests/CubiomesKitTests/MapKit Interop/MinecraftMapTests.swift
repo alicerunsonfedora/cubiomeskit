@@ -13,7 +13,8 @@ import Testing
 
 @MainActor
 struct MinecraftMapTests {
-    @Test func viewInit() throws {
+    @Test(.tags(.mapkit))
+    func viewInit() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let map = MinecraftMap(world: mcWorld)
 
@@ -26,7 +27,8 @@ struct MinecraftMapTests {
         #expect(map.preferNaturalColors == false)
     }
 
-    @Test func viewAnnotationsModifier() throws {
+    @Test(.tags(.mapkit))
+    func viewAnnotationsModifier() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let map = MinecraftMap(world: mcWorld) {
             Marker(location: .zero, title: "Spawn")
@@ -43,7 +45,8 @@ struct MinecraftMapTests {
         #expect(mapTwo.annotations.allSatisfy({ $0 is MinecraftMapMarkerAnnotation }))
     }
 
-    @Test func viewOrnamentsModifier() throws {
+    @Test(.tags(.mapkit))
+    func viewOrnamentsModifier() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let map = MinecraftMap(world: mcWorld)
             .ornaments(.all)
@@ -51,7 +54,8 @@ struct MinecraftMapTests {
         #expect(map.ornaments == .all)
     }
 
-    @Test func viewMapColorSchemeModifier() throws {
+    @Test(.tags(.mapkit))
+    func viewMapColorSchemeModifier() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let map = MinecraftMap(world: mcWorld)
             .mapColorScheme(.natural)
@@ -59,7 +63,8 @@ struct MinecraftMapTests {
         #expect(map.preferNaturalColors == true)
     }
 
-    @Test func viewMapCreatesView() throws {
+    @Test(.tags(.mapkit))
+    func viewMapCreatesView() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let map = MinecraftMap(world: mcWorld)
 
@@ -72,7 +77,8 @@ struct MinecraftMapTests {
         #expect(!mapView.renderOptions.contains(.naturalColors))
     }
 
-    @Test func viewMapUpdatesView() throws {
+    @Test(.tags(.mapkit))
+    func viewMapUpdatesView() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mapView = MinecraftMapView(world: mcWorld, frame: .zero)
         let map = MinecraftMap(world: mcWorld) {

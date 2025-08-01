@@ -11,7 +11,8 @@ import Testing
 @testable import CubiomesKit
 
 struct MinecraftBiomeTests {
-    @Test func nameMatches() throws {
+    @Test(.tags(.biomes))
+    func nameMatches() throws {
         let simpleBiome = plains.localizedString(for: MC_1_21_3)
         #expect(simpleBiome == "Plains")
 
@@ -19,7 +20,8 @@ struct MinecraftBiomeTests {
         #expect(complexBiome == "Mushroom Field Shore")
     }
 
-    @Test func reverseLookup() throws {
+    @Test(.tags(.biomes))
+    func reverseLookup() throws {
         let biome = MinecraftBiome(localizedString: "Mushroom Field Shore", mcVersion: "1.21.3")
         #expect(biome?.rawValue == mushroom_field_shore.rawValue)
     }

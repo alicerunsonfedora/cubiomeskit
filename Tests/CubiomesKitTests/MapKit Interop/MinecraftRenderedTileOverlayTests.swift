@@ -13,7 +13,8 @@ import Testing
 
 @MainActor
 struct MinecraftRenderedTileOverlayTests {
-    @Test func overlayReturnsCorrectTile() async throws {
+    @Test(.tags(.mapkit))
+    func overlayReturnsCorrectTile() async throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let overlayPath = MKTileOverlayPath(x: 0, y: 0, z: 18, contentScaleFactor: 1)
         let overlay = MinecraftRenderedTileOverlay(world: mcWorld)
@@ -24,7 +25,8 @@ struct MinecraftRenderedTileOverlayTests {
         #expect(chunk.size == MinecraftWorldRect.Size(length: 256, width: 256, height: 1))
     }
 
-    @Test func overlayReturnsValidData() async throws {
+    @Test(.tags(.mapkit))
+    func overlayReturnsValidData() async throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let overlayPath = MKTileOverlayPath(x: 0, y: 0, z: 18, contentScaleFactor: 1)
         let overlay = MinecraftRenderedTileOverlay(world: mcWorld)

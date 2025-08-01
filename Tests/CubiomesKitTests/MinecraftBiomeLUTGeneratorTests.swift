@@ -9,7 +9,8 @@ import Testing
 @testable import CubiomesKit
 
 struct MinecraftBiomeLUTGeneratorTests {
-    @Test func generatorMatchesUpstreamOutput() async throws {
+    @Test(.tags(.render, .biomes))
+    func generatorMatchesUpstreamOutput() async throws {
         let rect = MinecraftWorldRect(origin: .zero, scale: MinecraftWorldRect.Size(squaring: 32))
         let cbRange = CubiomesKit.Range(rect: rect)
         let world = MinecraftWorld(version: MC_1_21_WD, seed: 123)
