@@ -71,6 +71,7 @@ A map view can be displayed with either a ``MinecraftMap`` or
 
 - ``MinecraftMap``
 - ``MinecraftMapContentBuilder``
+- ``buildMinecraftMapContent(from:)``
 
 ### Map Annotations in AppKit/UIKit
 

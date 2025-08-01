@@ -9,6 +9,24 @@ Review the latest changes made to CubiomesKit.
 
 ## Unreleased
 
+### 1 Aug 2025
+
+#### MapKit Integration
+
+- ``MinecraftMapView`` maps can now provide a preferred configuration
+  through the ``MinecraftMapView/mapConfiguration`` property. This
+  configuration structure provides configurable map properties such as
+  ephemeral rendering and ornaments.
+- The ``MinecraftMapView/ornaments`` and
+  ``MinecraftMapView/ephemeralRendering`` properties have been deprecated
+  in favor of the new ``MinecraftMapView/mapConfiguration`` property.
+- By default, maps will pick the appropriate system appearance based on
+  the ``MinecraftMapView/dimension``, thereby making the map more
+  accessible. This can be configured in the
+  ``MinecraftMapView/mapConfiguration`` through the
+  ``MinecraftMapPreferredConfiguration/dimensionDeterminesSystemAppearance``
+  property.
+
 ### 30 July 2025
 
 #### Biome Generation
@@ -44,8 +62,7 @@ Review the latest changes made to CubiomesKit.
 - Player markers are now displayed with a higher priority to ensure they
   remain visible over traditional markers.
 - The ``MinecraftMapView`` now supports providing a center coordinate in
-  its initializer:
-  ``MinecraftMapView/init(world:frame:dimension:centerCoordinate:)``.
+  its initializer.
 
 ### 15 July 2025
 

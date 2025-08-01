@@ -58,16 +58,14 @@ MinecraftMap(world: try MinecraftWorld(version: "1.21", seed: 123))
 ```
 
 > Note: Changing the map's color scheme is independent of the view's
-> preferred scheme, and will always render with the user's preferred color
-> scheme unless otherwise specified. To change the preferred color scheme,
-> refer to the SwiftUI documentation of ``preferredColorScheme(_:)``.
+> preferred scheme, and it will automatically pick the appropriate system
+> appearance based on the world dimension.
+>
+> This behavior can be changed via the
+> ``dimensionDeterminesPreferredColorScheme(_:)`` modifier, instead using
+> the default ``preferredColorScheme(_:)`` modifier.
 
 ## Topics
-
-### Displaying Annotations and Markers
-
-- ``MinecraftMapMarker``
-- ``MinecraftMapContentBuilder``
 
 ### Displaying Ornaments
 
@@ -78,3 +76,4 @@ MinecraftMap(world: try MinecraftWorld(version: "1.21", seed: 123))
 
 - ``ColorScheme``
 - ``mapColorScheme(_:)``
+- ``dimensionDeterminesPreferredColorScheme(_:)``

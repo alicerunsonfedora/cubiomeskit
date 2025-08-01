@@ -16,7 +16,7 @@ import SwiftUI
 /// - SeeAlso: For use in AppKit/UIKit views, use the ``MinecraftMapView``.
 public struct MinecraftMap {
     /// A type alias representing the map's ornaments displayed in the view above the map's content.
-    public typealias Ornaments = MinecraftMapView.Ornaments
+    public typealias Ornaments = MinecraftMapPreferredConfiguration.Ornaments
 
     /// An enumeration representing the various color schemes available to the map.
     public enum ColorScheme {
@@ -60,6 +60,7 @@ public struct MinecraftMap {
     var ornaments: Ornaments = []
     var annotations: [any MinecraftMapContent] = []
     var preferNaturalColors: Bool = false
+    var automaticMapSystemAppearance: Bool = true
 
     /// Create a Minecraft map view.
     /// - Parameter world: The world to display in the map view.
@@ -98,7 +99,8 @@ public struct MinecraftMap {
         ornaments: Ornaments = [],
         annotations: [any MinecraftMapContent] = [],
         dimension: MinecraftWorld.Dimension = .overworld,
-        preferNaturalColors: Bool = false
+        preferNaturalColors: Bool = false,
+        automaticMapSystemAppearance: Bool = true
     ) {
         self.world = world
         self.ornaments = ornaments
@@ -106,12 +108,13 @@ public struct MinecraftMap {
         self.dimension = dimension
         self.annotations = annotations
         self.preferNaturalColors = preferNaturalColors
+        self.automaticMapSystemAppearance = automaticMapSystemAppearance
     }
 
     @MainActor
     func createMapView() -> MinecraftMapView {
         let mapView = MinecraftMapView(world: world, frame: .zero, centerCoordinate: centerCoordinate)
-        mapView.ornaments = ornaments
+        mapView.mapConfiguration.ornaments = ornaments
         mapView.dimension = dimension
         mapView.addMapContents(annotations)
         mapView.mapContent = annotations
@@ -125,7 +128,7 @@ public struct MinecraftMap {
 
     @MainActor
     func updateMapView(_ mapView: MinecraftMapView) {
-        mapView.ornaments = ornaments
+        mapView.mapConfiguration.ornaments = ornaments
         mapView.dimension = dimension
         if mapView.centerBlockCoordinate != centerCoordinate {
             mapView.centerBlockCoordinate = centerCoordinate
@@ -147,7 +150,8 @@ public struct MinecraftMap {
             ornaments: ornaments,
             annotations: self.annotations,
             dimension: self.dimension,
-            preferNaturalColors: self.preferNaturalColors
+            preferNaturalColors: self.preferNaturalColors,
+            automaticMapSystemAppearance: self.automaticMapSystemAppearance
         )
     }
 
@@ -160,7 +164,26 @@ public struct MinecraftMap {
             ornaments: self.ornaments,
             annotations: self.annotations,
             dimension: self.dimension,
-            preferNaturalColors: colorScheme == .natural
+            preferNaturalColors: colorScheme == .natural,
+            automaticMapSystemAppearance: self.automaticMapSystemAppearance
+        )
+    }
+
+    /// Determines whether the map view's preferred color scheme is inferred from the world dimension instead of the
+    /// parent view.
+    ///
+    /// By default, the map will automatically determine the appropriate system appearance to use based on the current
+    /// dimension provided to ensure legibility. Setting this modifier to false disables the behavior, falling back to
+    /// the parent view's ``MinecraftMap/preferredColorScheme(_:)``.
+    public func dimensionDeterminesPreferredColorScheme(_ allowed: Bool = true) -> MinecraftMap {
+        MinecraftMap(
+            world: self.world,
+            centerCoordinate: self._centerCoordinate,
+            ornaments: self.ornaments,
+            annotations: self.annotations,
+            dimension: self.dimension,
+            preferNaturalColors: self.preferNaturalColors,
+            automaticMapSystemAppearance: allowed
         )
     }
 }

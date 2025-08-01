@@ -66,7 +66,7 @@ struct MinecraftMapTests {
         let mapView = map.createMapView()
         #expect(mapView.world.version == mcWorld.version)
         #expect(mapView.world.seed == mcWorld.seed)
-        #expect(mapView.ornaments.isEmpty)
+        #expect(mapView.mapConfiguration.ornaments.isEmpty)
         #expect(mapView.dimension == .overworld)
         #expect(mapView.annotations.isEmpty)
         #expect(!mapView.renderOptions.contains(.naturalColors))
@@ -82,7 +82,7 @@ struct MinecraftMapTests {
             .mapColorScheme(.natural)
 
         map.updateMapView(mapView)
-        #expect(mapView.ornaments == .all)
+        #expect(mapView.mapConfiguration.ornaments == .all)
         #expect(mapView.renderOptions.contains(.naturalColors))
         #expect(mapView.annotations.count == 1)
     }    

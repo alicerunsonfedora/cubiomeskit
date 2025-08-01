@@ -75,22 +75,21 @@ extension MyView: MinecraftMapViewDelegate {
 
 ### Initializers
 
-- ``init(world:frame:dimension:)``
+- ``init(world:frame:dimension:centerCoordinate:preferredConfiguration:)``
+
+### Configuring a map view
+
+- ``mapConfiguration``
+- ``MinecraftMapPreferredConfiguration``
 
 ### Customizing the renderer
 
 - ``renderOptions``
-- ``ephemeralRendering``
 
 ### Delegates
 
 - ``mcMapViewDelegate``
 - ``MinecraftMapViewDelegate``
-
-### Displaying additional ornaments
-
-- ``Ornaments``
-- ``ornaments``
 
 ### Interaction with worlds
 

@@ -35,6 +35,9 @@ public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable {
     /// - Parameter location: The Minecraft coordinate where the marker will be placed.
     /// - Parameter title: The name of the marker.
     /// - Parameter color: The marker's tint color.
+    /// - Parameter systemImage: The symbol to use on the marker.
+    /// - Parameter clusterIdentifier: The identifier used to determine whether this marker should be joined together
+    ///   in a cluster.
     public init(
         location: CGPoint,
         title: String,
@@ -108,6 +111,8 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     /// - Parameter location: The location of the marker in Minecraft block coordinates.
     /// - Parameter title: The name of the marker.
     /// - Parameter color: The tint color of the marker pin.
+    /// - Parameter clusterIdentifier: The identifier used to determine whether this marker should be joined together
+    ///   in a cluster.
     public convenience init(
         location: CGPoint,
         title: String,

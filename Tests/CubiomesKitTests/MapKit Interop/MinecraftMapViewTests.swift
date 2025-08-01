@@ -18,7 +18,7 @@ struct MinecraftMapViewTests {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mcMapView = MinecraftMapView(world: mcWorld, frame: .zero)
 
-        #expect(mcMapView.ornaments == [.compass])
+        #expect(mcMapView.mapConfiguration.ornaments == [.compass])
         #expect(mcMapView.showsScale == false)
         #if os(macOS)
         #expect(mcMapView.showsPitchControl == false)

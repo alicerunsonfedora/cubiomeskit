@@ -18,32 +18,8 @@ import os
 ///
 /// - SeeAlso: For use in SwiftUI views, use the ``MinecraftMap`` view.
 public final class MinecraftMapView: MKMapView {
-    /// A set of views and controls that sit above the map.
-    public struct Ornaments: OptionSet, Sendable {
-        /// The raw value of the option set.
-        public let rawValue: Int
-
-        /// Display the map compass.
-        public static let compass = Ornaments(rawValue: 1 << 0)
-
-        /// Display controls for zooming in and out of the map.
-        public static let zoom = Ornaments(rawValue: 1 << 1)
-
-        /// Display a map scale ornament.
-        ///
-        /// This ornament is generally used to display a scale control that represents the scale of a map in meters.
-        ///
-        /// - Note: This view might be inaccurate regarding scaling.
-        public static let scale = Ornaments(rawValue: 1 << 2)
-
-        /// Display all available ornaments.
-        public static let all: Ornaments = [.compass, .zoom, .scale]
-
-        /// Initializes an ornament option.
-        public init(rawValue: Int) {
-            self.rawValue = rawValue
-        }
-    }
+    @available(*, deprecated, renamed: "MinecraftMapPreferredConfiguration.Ornaments")
+    public typealias Ornaments = MinecraftMapPreferredConfiguration.Ornaments
 
     /// The center coordinate of the map view, represented as a Minecraft block coordinate.
     ///
@@ -55,6 +31,13 @@ public final class MinecraftMapView: MKMapView {
             DispatchQueue.main.async { [weak self] in
                 self?.setCenter(CoordinateProjections.project(newValue), animated: true)
             }
+        }
+    }
+
+    /// The characteristics of the map view, specific to the Minecraft aspects of the view.
+    public var mapConfiguration: MinecraftMapPreferredConfiguration {
+        didSet {
+            didChangeMapConfiguration()
         }
     }
 
@@ -75,15 +58,12 @@ public final class MinecraftMapView: MKMapView {
     /// - Note: This option will always return false in the ``MinecraftMap`` view. If you need the SwiftUI view to
     ///   leverage ephemeral rendering, create a wrapper around ``MinecraftMapView``.
     /// - Important: To improve performance in your apps, it is recommended to keep this option disabled.
-    public var ephemeralRendering: Bool = false {
-        didSet {
-            if let overlay = minecraftOverlay as? MinecraftRenderedTileOverlay {
-                overlay.ephemeral = ephemeralRendering
-            }
-            mcMapViewDelegate?.mapView(self, didChangeEphemeralRendering: ephemeralRendering)
-        }
+    @available(*, deprecated, renamed: "mapConfiguration.ephemeralRendering")
+    public var ephemeralRendering: Bool {
+        get { return mapConfiguration.ephemeralRendering }
+        set { mapConfiguration.ephemeralRendering = newValue }
     }
-    
+
     /// The rendering options to the map's renderer.
     public var renderOptions: MinecraftWorldRenderer.Options = [] {
         didSet {
@@ -92,8 +72,10 @@ public final class MinecraftMapView: MKMapView {
     }
 
     /// The ornaments that should be displayed on top of the map view.
-    public var ornaments: Ornaments = [.compass] {
-        didSet { reconfigureOrnaments() }
+    @available(*, deprecated, renamed: "mapConfiguration.ornaments")
+    public var ornaments: Ornaments {
+        get { return mapConfiguration.ornaments }
+        set { mapConfiguration.ornaments = newValue }
     }
 
     /// The world the map view will render.
@@ -116,22 +98,26 @@ public final class MinecraftMapView: MKMapView {
     /// - Parameter frame: The frame to initialize the view in.
     /// - Parameter dimension: The dimension that the map will render the world in.
     /// - Parameter centerCoordinate: The center of the map to focus on.
+    /// - Parameter preferredConfiguration: The preferred configuration to use.
     public init(
         world: MinecraftWorld,
         frame: CGRect,
         dimension: MinecraftWorld.Dimension = .overworld,
-        centerCoordinate: CGPoint = .zero
+        centerCoordinate: CGPoint = .zero,
+        preferredConfiguration: MinecraftMapPreferredConfiguration = .preferredDefault()
     ) {
         self.world = world
         self.dimension = dimension
         self.logger = Logger(subsystem: "net.marquiskurt.cubiomeskit", category: "\(MinecraftMapView.self)")
+        self.mapConfiguration = preferredConfiguration
         super.init(frame: frame)
         self.delegate = self
 
         self.registerAnnotationView(of: MKMarkerAnnotationView.self)
         self.registerAnnotationView(of: MinecraftMapMarkerAnnotationView.self)
-        
+
         self.configureMapView()
+        self.setViableAppearanceForDimension()
         self.centerCoordinate = CLLocationCoordinate2D(projecting: centerCoordinate)
 
         let overlay = MinecraftRenderedTileOverlay(world: world, dimension: dimension)
@@ -155,11 +141,11 @@ public final class MinecraftMapView: MKMapView {
     }
 
     func reconfigureOrnaments() {
-        self.showsCompass = ornaments.contains(.compass)
+        self.showsCompass = mapConfiguration.ornaments.contains(.compass)
         #if os(macOS)
-            self.showsZoomControls = ornaments.contains(.zoom)
+            self.showsZoomControls = mapConfiguration.ornaments.contains(.zoom)
         #endif
-        self.showsScale = ornaments.contains(.scale)
+        self.showsScale = mapConfiguration.ornaments.contains(.scale)
     }
 
     func applyRenderingOptions(from oldValue: MinecraftWorldRenderer.Options) {
@@ -181,6 +167,29 @@ public final class MinecraftMapView: MKMapView {
         if let renderer = renderer(for: minecraftOverlay) as? CachingTileOverlayRenderer {
             renderer.setNeedsDisplay()
         }
+        self.setViableAppearanceForDimension()
+    }
+
+    func setViableAppearanceForDimension() {
+        guard mapConfiguration.dimensionDeterminesSystemAppearance else {
+            self.appearance = .currentDrawing()
+            return
+        }
+
+        switch dimension {
+        case .overworld, .end:
+            self.appearance = NSAppearance(named: .aqua)
+        default:
+            self.appearance = .currentDrawing()
+        }
+    }
+
+    func didChangeMapConfiguration() {
+        if let overlay = minecraftOverlay as? MinecraftRenderedTileOverlay {
+            overlay.ephemeral = mapConfiguration.ephemeralRendering
+        }
+        mcMapViewDelegate?.mapView(self, didChangeEphemeralRendering: mapConfiguration.ephemeralRendering)
+        reconfigureOrnaments()
     }
 }
 
