@@ -172,15 +172,27 @@ public final class MinecraftMapView: MKMapView {
 
     func setViableAppearanceForDimension() {
         guard mapConfiguration.dimensionDeterminesSystemAppearance else {
+            #if os(macOS)
             self.appearance = .currentDrawing()
+            #else
+            self.overrideUserInterfaceStyle = .unspecified
+            #endif
             return
         }
 
         switch dimension {
         case .overworld, .end:
+            #if os(macOS)
             self.appearance = NSAppearance(named: .aqua)
+            #else
+            self.overrideUserInterfaceStyle = .light
+            #endif
         default:
+            #if os(macOS)
             self.appearance = .currentDrawing()
+            #else
+            self.overrideUserInterfaceStyle = .dark
+            #endif
         }
     }
 
