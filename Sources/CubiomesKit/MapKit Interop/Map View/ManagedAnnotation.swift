@@ -99,6 +99,7 @@ struct ManagedAnnotationCollection {
                 } else {
                     annotationLUT[key] = .remove(.marker(marker.model))
                 }
+            } else {
                 continue
             }
         }
