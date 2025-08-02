@@ -71,6 +71,10 @@ extension MinecraftMapView {
             case let .addition(managedAnnotation):
                 annotationsToAppend.append(managedAnnotation.annotation)
             case let .updateInPlace(managedAnnotation, atIndex):
+                guard annotations.indices.contains(atIndex) else {
+                    logger.error("🗃️ The managed annotation doesn't exist at index \(atIndex). Did you prematurely remove it?")
+                    continue
+                }
                 switch managedAnnotation {
                 case let .player(playerModel):
                     if let annotation = annotations[atIndex] as? MinecraftMapPlayerMarkerAnnotation {
