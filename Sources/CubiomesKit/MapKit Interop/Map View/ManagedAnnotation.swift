@@ -27,7 +27,7 @@ enum ManagedAnnotationID: Hashable {
 }
 
 struct ManagedAnnotationCollection {
-    enum Action {
+    enum Action: Equatable {
         case addition(ManagedAnnotation)
         case updateInPlace(ManagedAnnotation, atIndex: [any MKAnnotation].Index)
         case remove(ManagedAnnotation)
@@ -103,6 +103,12 @@ struct ManagedAnnotationCollection {
                 continue
             }
         }
+    }
+}
+
+extension ManagedAnnotationCollection: Equatable {
+    static func == (lhs: ManagedAnnotationCollection, rhs: ManagedAnnotationCollection) -> Bool {
+        return lhs.annotationLUT == rhs.annotationLUT
     }
 }
 

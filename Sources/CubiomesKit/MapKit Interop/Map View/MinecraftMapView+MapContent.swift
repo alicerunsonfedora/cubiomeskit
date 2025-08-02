@@ -100,12 +100,11 @@ extension MinecraftMapView {
 
     func mapContentNeedsUpdate(_ contents: [any MinecraftMapContent]) -> Bool {
         if contents.count != self.mapContent.count { return true }
-        var needsUpdates = false
-        for (lhs, rhs) in zip(mapContent, contents) {
-            if lhs.equals(other: rhs) { continue }
-            needsUpdates = true
-            break
-        }
-        return needsUpdates
+        let currentManagedConfiguration = ManagedAnnotationCollection(
+            annotations: self.annotations,
+            contents: self.mapContent
+        )
+        let newManagedConfiguration = ManagedAnnotationCollection(annotations: self.annotations, contents: contents)
+        return newManagedConfiguration != currentManagedConfiguration
     }
 }
