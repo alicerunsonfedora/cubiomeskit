@@ -71,6 +71,8 @@ extension MinecraftMapView {
 
         for (_, action) in managedCollection {
             switch action {
+            case .ignore:
+                break
             case let .addition(managedAnnotation):
                 if annotations.contains(where: { $0.isEqual(managedAnnotation.annotation) }) {
                     logger.error("🗃️ The specified annotation already exists.")

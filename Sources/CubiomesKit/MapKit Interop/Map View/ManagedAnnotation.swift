@@ -31,12 +31,14 @@ struct ManagedAnnotationCollection {
         case addition(ManagedAnnotation)
         case updateInPlace(ManagedAnnotation, atIndex: [any MKAnnotation].Index)
         case remove(ManagedAnnotation)
+        case ignore(ManagedAnnotation)
     }
 
     struct Count: Equatable, Sendable {
         var additions: Int
         var inPlaceUpdates: Int
         var deletions: Int
+        var ignored: Int
     }
 
     private var annotationLUT: [ManagedAnnotationID: Action]
@@ -47,7 +49,7 @@ struct ManagedAnnotationCollection {
     }
 
     func countActions() -> Count {
-        var counts = Count(additions: 0, inPlaceUpdates: 0, deletions: 0)
+        var counts = Count(additions: 0, inPlaceUpdates: 0, deletions: 0, ignored: 0)
         for (_, value) in annotationLUT {
             switch value {
             case .addition:
@@ -56,6 +58,8 @@ struct ManagedAnnotationCollection {
                 counts.inPlaceUpdates += 1
             case .remove:
                 counts.deletions += 1
+            case .ignore:
+                counts.ignored += 1
             }
         }
         return counts
@@ -80,7 +84,11 @@ struct ManagedAnnotationCollection {
                 if let existingKey = annotationLUT[key] {
                     switch existingKey {
                     case let .addition(model):
-                        annotationLUT[key] = .updateInPlace(model, atIndex: index)
+                        if case let .player(playerModel) = model, playerModel == player.model {
+                            annotationLUT[key] = .ignore(model)
+                        } else {
+                            annotationLUT[key] = .updateInPlace(model, atIndex: index)
+                        }
                     default:
                         annotationLUT[key] = .updateInPlace(.player(player.model), atIndex: index)
                     }
@@ -92,7 +100,11 @@ struct ManagedAnnotationCollection {
                 if let existingKey = annotationLUT[key] {
                     switch existingKey {
                     case let .addition(model):
-                        annotationLUT[key] = .updateInPlace(model, atIndex: index)
+                        if case let .marker(markerModel) = model, markerModel == marker.model {
+                            annotationLUT[key] = .ignore(model)
+                        } else {
+                            annotationLUT[key] = .updateInPlace(model, atIndex: index)
+                        }
                     default:
                         annotationLUT[key] = .updateInPlace(.marker(marker.model), atIndex: index)
                     }

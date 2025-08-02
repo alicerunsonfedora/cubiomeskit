@@ -30,7 +30,7 @@ struct ManagedAnnotationTests {
             managedCollection
                 .countActions()
                 == ManagedAnnotationCollection
-                .Count(additions: 2, inPlaceUpdates: 1, deletions: 1)
+                .Count(additions: 2, inPlaceUpdates: 0, deletions: 1, ignored: 1)
         )
     }    
 }
