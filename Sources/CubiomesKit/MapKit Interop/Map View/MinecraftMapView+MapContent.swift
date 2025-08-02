@@ -60,6 +60,11 @@ extension MinecraftMapView {
         var annotationsToRemove = [any MKAnnotation]()
 
         let managedCollection = ManagedAnnotationCollection(annotations: annotations, contents: contents)
+        let counts = managedCollection.countActions()
+        logger
+            .debug(
+                "🗃️ Managed annotations: \(counts.additions) additions, \(counts.inPlaceUpdates) in-place updates, \(counts.deletions) removals"
+            )
 
         for (_, action) in managedCollection {
             switch action {

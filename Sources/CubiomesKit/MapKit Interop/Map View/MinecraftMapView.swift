@@ -90,7 +90,7 @@ public final class MinecraftMapView: MKMapView {
     var minecraftOverlay: (any MinecraftTileOverlay)!
     var mapContent: [any MinecraftMapContent] = []
 
-    private var logger: Logger
+    var logger: Logger
 
     /// Initialize a map view for a specified Minecraft world in a given frame.
     ///

@@ -33,11 +33,32 @@ struct ManagedAnnotationCollection {
         case remove(ManagedAnnotation)
     }
 
+    struct Count {
+        var additions: Int
+        var inPlaceUpdates: Int
+        var deletions: Int
+    }
+
     private var annotationLUT: [ManagedAnnotationID: Action]
 
     init(annotations: [any MKAnnotation] = [], contents: [any MinecraftMapContent] = []) {
         annotationLUT = [:]
         zip(annotations: annotations, contents: contents)
+    }
+
+    func countActions() -> Count {
+        var counts = Count(additions: 0, inPlaceUpdates: 0, deletions: 0)
+        for (_, value) in annotationLUT {
+            switch value {
+            case .addition:
+                counts.additions += 1
+            case .updateInPlace:
+                counts.inPlaceUpdates += 1
+            case .remove:
+                counts.deletions += 1
+            }
+        }
+        return counts
     }
 
     mutating func zip(annotations: [any MKAnnotation], contents: [any MinecraftMapContent]) {
