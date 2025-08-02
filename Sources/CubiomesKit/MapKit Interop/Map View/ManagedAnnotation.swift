@@ -33,7 +33,7 @@ struct ManagedAnnotationCollection {
         case remove(ManagedAnnotation)
     }
 
-    struct Count {
+    struct Count: Equatable, Sendable {
         var additions: Int
         var inPlaceUpdates: Int
         var deletions: Int

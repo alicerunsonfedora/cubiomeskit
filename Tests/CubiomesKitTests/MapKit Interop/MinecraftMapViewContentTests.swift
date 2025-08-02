@@ -126,4 +126,28 @@ struct MinecraftMapViewContentTests {
             playerMarker.model == Marker(location: CGPoint(x: 1847, y: 1847), title: "Spawn", id: id)
         )
     }
+
+    @Test(.tags(.mapkit))
+    func mapViewUpdatesContentAndRemainsConsistent() throws {
+        let view = MinecraftMapView(world: world, frame: .zero)
+        #expect(view.annotations.isEmpty)
+
+        let id = UUID()
+        let contents: [AnyMinecraftMapContent] = buildMinecraftMapContent {
+            Marker(location: .zero, title: "Spawn", id: "spawn")
+            PlayerMarker(location: CGPoint(x: 10, y: 10), name: "foobear", playerUUID: id)
+        }
+        view.resyncMapContentIfNeeded(contents)
+
+        #expect(view.annotations.count == 2)
+
+        let newContents: [AnyMinecraftMapContent] = contents + [
+            Marker(location: CGPoint(x: 11, y: 32), title: "New Location", id: "newloc").content
+        ]
+
+        for _ in 1...10 {
+            view.resyncMapContentIfNeeded(newContents)
+            #expect(view.annotations.count == 3)
+        }
+    }
 }
