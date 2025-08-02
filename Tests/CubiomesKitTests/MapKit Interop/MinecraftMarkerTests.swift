@@ -14,7 +14,7 @@ import Testing
 struct MinecraftMarkerTests {
     @Test(.tags(.mapkit))
     func markerInit() async throws {
-        let marker = Marker(location: .zero, title: "Spawn", color: .blue)
+        let marker = Marker(location: .zero, title: "Spawn", id: "sample", color: .blue)
         let annotation = MinecraftMapMarkerAnnotation(marker: marker)
 
         #expect(annotation.title == "Spawn")

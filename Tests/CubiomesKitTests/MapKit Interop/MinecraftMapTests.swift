@@ -31,14 +31,16 @@ struct MinecraftMapTests {
     func viewAnnotationsModifier() throws {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let map = MinecraftMap(world: mcWorld) {
-            Marker(location: .zero, title: "Spawn")
+            Marker(location: .zero, title: "Spawn", id: "spawn")
         }
 
         #expect(map.annotations.count == 1)
         #expect(map.annotations.allSatisfy({ $0 is MinecraftMapMarkerAnnotation }))
 
         let mapTwo = MinecraftMap(world: mcWorld) {
-            Array(repeating: Marker(location: CGPoint(x: 10, y: 10), title: "Foo"), count: 10)
+            (1...10).map { id in
+                Marker(location: CGPoint(x: 10, y: 10), title: "Foo", id: "foo\(id)")
+            }
         }
 
         #expect(mapTwo.annotations.count == 10)
@@ -82,7 +84,7 @@ struct MinecraftMapTests {
         let mcWorld = try MinecraftWorld(version: "1.21", seed: 123)
         let mapView = MinecraftMapView(world: mcWorld, frame: .zero)
         let map = MinecraftMap(world: mcWorld) {
-            Marker(location: .zero, title: "Spawn")
+            Marker(location: .zero, title: "Spawn", id: "sample")
         }
             .ornaments(.all)
             .mapColorScheme(.natural)

@@ -9,6 +9,16 @@ Review the latest changes made to CubiomesKit.
 
 ## Unreleased
 
+### 2 Aug 2025
+
+#### MapKit Integration
+
+- Wherever possible, markers and player markers will try updating in place
+  over deleting and re-inserting the annotation internally. This should
+  allow for real-time updates.
+- ``PlayerMarker`` and ``Marker`` now conform to `Identifiable`. The
+  ``Marker`` can be provided an ID, generally a UUID.
+
 ### 1 Aug 2025
 
 #### MapKit Integration

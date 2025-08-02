@@ -14,7 +14,9 @@ import SwiftUI
 /// will attempt to load in the player's head from the MC-Heads API and use that as the annotation image; otherwise, it
 /// will use the default Steve head. Selecting the annotation will display a callout with the player's Minecraft
 /// username and their position on the map.
-public struct PlayerMarker: MinecraftMapBuilderContent, Equatable, Hashable {
+public struct PlayerMarker: MinecraftMapBuilderContent, Equatable, Hashable, Identifiable {
+    public var id: UUID { playerUUID }
+    
     /// The player's location on the map.
     public var location: CGPoint
 
@@ -51,19 +53,19 @@ public class MinecraftMapPlayerMarkerAnnotation: NSObject, MKAnnotation {
     }
 
     /// The player's Minecraft username.
-    public private(set) var name: String
+    @objc public private(set) var name: String
 
     /// The player's Minecraft UUID.
-    public private(set) var playerUUID: UUID
+    @objc public private(set) var playerUUID: UUID
 
     /// The player's location on the map in Core Location coordinates.
     @objc public private(set) dynamic var coordinate: CLLocationCoordinate2D
 
     /// The name of the marker.
-    public var title: String?
+    @objc public dynamic var title: String?
 
     /// The subtitle of the marker, which displays the marker in Minecraft coordinates.
-    public private(set) var subtitle: String?
+    @objc public private(set) dynamic var subtitle: String?
 
     /// Create a player marker annotation at a specified position.
     /// - Parameter name: The player's Minecraft username.
@@ -90,6 +92,25 @@ public class MinecraftMapPlayerMarkerAnnotation: NSObject, MKAnnotation {
     public override func isEqual(_ object: Any?) -> Bool {
         guard let marker = object as? Self else { return false }
         return marker.model == self.model
+    }
+
+    func updateModel(_ newModel: PlayerMarker) {
+        apply(model: newModel)
+        self.model = newModel
+    }
+
+    func apply(model: PlayerMarker) {
+        self.name = model.name
+        self.playerUUID = model.playerUUID
+
+        withAnimation(.default) {
+            self.coordinate = CLLocationCoordinate2D(projecting: model.location)
+        }
+
+        self.title = name
+        let xCoord = Int(model.location.x)
+        let zCoord = Int(model.location.y)
+        self.subtitle = "(\(xCoord), \(zCoord))"
     }
 
     func applyModel() {

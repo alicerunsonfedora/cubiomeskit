@@ -8,6 +8,19 @@
 import CubiomesInternal
 import MapKit
 
+public protocol ModeledAnnotation: MKAnnotation {
+    associatedtype Model: Equatable, Hashable, Identifiable
+
+    var model: Model { get set }
+}
+
+extension ModeledAnnotation {
+    public func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? Self else { return false }
+        return other.model == self.model
+    }
+}
+
 extension MinecraftMapView {
     func addMapContent(_ content: any MinecraftMapContent) {
         switch content.contentType {
@@ -42,42 +55,37 @@ extension MinecraftMapView {
     }
 
     func resyncMapContentIfNeeded(_ contents: [any MinecraftMapContent]) {
-        if !mapContentNeedsUpdate(contents) { return }
-        let isInitialPass = annotations.isEmpty
-
-        let oldOverlays = self.overlays.filter { !($0 is MinecraftRenderedTileOverlay) }
-        let playerMapping = createPlayerMap(from: contents)
+        guard mapContentNeedsUpdate(contents) else { return }
+        var annotationsToAppend = [any MKAnnotation]()
         var annotationsToRemove = [any MKAnnotation]()
 
-        // First pass: Prefer to update any existing annotations instead of queuing for removal.
-        for annotation in annotations {
-            if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
-                if let newLocation = playerMapping[player.model.playerUUID] {
-                    player.model.location = newLocation
-                    continue
+        let managedCollection = ManagedAnnotationCollection(annotations: annotations, contents: contents)
+
+        for (_, action) in managedCollection {
+            switch action {
+            case let .addition(managedAnnotation):
+                annotationsToAppend.append(managedAnnotation.annotation)
+            case let .updateInPlace(managedAnnotation, atIndex):
+                switch managedAnnotation {
+                case let .player(playerModel):
+                    if let annotation = annotations[atIndex] as? MinecraftMapPlayerMarkerAnnotation {
+                        annotation.model = playerModel
+                    }
+                case let .marker(markerModel):
+                    if let annotation = annotations[atIndex] as? MinecraftMapMarkerAnnotation {
+                        annotation.model = markerModel
+                    }
                 }
-                annotationsToRemove.append(annotation)
-            } else {
-                annotationsToRemove.append(annotation)
+            case let .remove(managedAnnotation):
+                annotationsToRemove.append(managedAnnotation.annotation)
             }
         }
-
-        // Second pass: Add any map content that wasn't accounted for in the first pass.
-        for content in contents {
-            if isInitialPass {
-                self.addMapContent(content)
-                continue
-            }
-            if let player = content as? MinecraftMapPlayerMarkerAnnotation,
-                playerMapping[player.model.playerUUID] != nil
-            {
-                continue
-            }
-            self.addMapContent(content)
-        }
-
+        addAnnotations(annotationsToAppend)
         removeAnnotations(annotationsToRemove)
+
+        let oldOverlays = self.overlays.filter { !($0 is MinecraftRenderedTileOverlay) }
         removeOverlays(oldOverlays)
+
         mapContent = contents
     }
 
@@ -90,15 +98,5 @@ extension MinecraftMapView {
             break
         }
         return needsUpdates
-    }
-
-    func createPlayerMap(from contents: [any MinecraftMapContent]) -> [UUID: CGPoint] {
-        var coordinates = [UUID: CGPoint]()
-        for content in contents {
-            if content.contentType == .annotation, let player = content.model as? PlayerMarker {
-                coordinates[player.playerUUID] = player.location
-            }
-        }
-        return coordinates
     }
 }

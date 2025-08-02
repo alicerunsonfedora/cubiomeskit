@@ -12,7 +12,10 @@ import SwiftUI
 ///
 /// Markers are generally used to indicate points of interest on a Minecraft world map. Tapping on a marker will
 /// display its coordinate below as a subtitle.
-public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable {
+public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable, Identifiable {
+    /// A unique identifier to the marker.
+    public var id: String
+
     /// The location of the marker in blocks.
     public var location: CGPoint
 
@@ -34,6 +37,7 @@ public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable {
     /// Create a marker at a given position.
     /// - Parameter location: The Minecraft coordinate where the marker will be placed.
     /// - Parameter title: The name of the marker.
+    /// - Parameter id: A unique identifier for the pin.
     /// - Parameter color: The marker's tint color.
     /// - Parameter systemImage: The symbol to use on the marker.
     /// - Parameter clusterIdentifier: The identifier used to determine whether this marker should be joined together
@@ -41,12 +45,38 @@ public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable {
     public init(
         location: CGPoint,
         title: String,
+        id: String,
         color: Color = .accentColor,
         systemImage: String? = nil,
         clusterIdentifier: String = "cubiomeskit-default"
     ) {
         self.location = location
         self.title = title
+        self.id = id
+        self.color = color
+        self.systemImage = systemImage
+        self.clusteringIdentifier = clusterIdentifier
+    }
+
+    /// Create a marker at a given position.
+    /// - Parameter location: The Minecraft coordinate where the marker will be placed.
+    /// - Parameter title: The name of the marker.
+    /// - Parameter id: A unique identifier for the pin.
+    /// - Parameter color: The marker's tint color.
+    /// - Parameter systemImage: The symbol to use on the marker.
+    /// - Parameter clusterIdentifier: The identifier used to determine whether this marker should be joined together
+    ///   in a cluster.
+    public init(
+        location: CGPoint,
+        title: String,
+        id: UUID,
+        color: Color = .accentColor,
+        systemImage: String? = nil,
+        clusterIdentifier: String = "cubiomeskit-default"
+    ) {
+        self.location = location
+        self.title = title
+        self.id = id.uuidString
         self.color = color
         self.systemImage = systemImage
         self.clusteringIdentifier = clusterIdentifier
@@ -62,12 +92,12 @@ public struct Marker: MinecraftMapBuilderContent, Equatable, Hashable {
 /// Markers are generally used to indicate points of interest on a Minecraft world map. Tapping on a marker will
 /// display its coordinate below as a subtitle.
 public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
-    public var model: Marker {
+    public dynamic var model: Marker {
         didSet { applyModel() }
     }
 
     /// The location of the coordinate as a Core Location coordinate.
-    public private(set) var coordinate: CLLocationCoordinate2D
+    @objc public private(set) dynamic var coordinate: CLLocationCoordinate2D
     #if canImport(UIKit)
         var color: UIColor
     #else
@@ -75,19 +105,19 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
     #endif
 
     /// The name of the marker.
-    public var title: String?
+    @objc public dynamic var title: String?
 
     /// The subtitle of the marker, which displays the marker in Minecraft coordinates.
-    public private(set) var subtitle: String?
+    @objc public private(set) dynamic var subtitle: String?
 
     /// The symbol to use for the marker.
-    public private(set) var systemImage: String?
+    @objc public private(set) dynamic var systemImage: String?
 
     /// The identifier used to determine whether this marker should be joined together in a cluster.
     ///
     /// Markers will generally be clustered to the default identifier. Setting a custom identifier allows markers to
     /// only be clustered to other markers of its type.
-    public private(set) var clusteringIdentifier: String
+    @objc public private(set) dynamic var clusteringIdentifier: String
 
     /// Initializes an annotation from a Minecraft marker.
     public init(marker: Marker) {
@@ -119,7 +149,15 @@ public class MinecraftMapMarkerAnnotation: NSObject, MKAnnotation {
         color: Color = .accentColor,
         clusterIdentifier: String = "cubiomeskit-default"
     ) {
-        self.init(marker: Marker(location: location, title: title, color: color, clusterIdentifier: clusterIdentifier))
+        self.init(
+            marker: Marker(
+                location: location,
+                title: title,
+                id: UUID(),
+                color: color,
+                clusterIdentifier: clusterIdentifier
+            )
+        )
     }
 
     public override func isEqual(_ object: Any?) -> Bool {
