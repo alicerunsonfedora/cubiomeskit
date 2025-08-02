@@ -59,6 +59,9 @@ extension MinecraftMapView {
         var annotationsToAppend = [any MKAnnotation]()
         var annotationsToRemove = [any MKAnnotation]()
 
+        let clusters = annotations.filter { $0 is MKClusterAnnotation }
+        removeAnnotations(clusters)
+
         let managedCollection = ManagedAnnotationCollection(annotations: annotations, contents: contents)
         let counts = managedCollection.countActions()
         logger
