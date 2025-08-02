@@ -69,6 +69,10 @@ extension MinecraftMapView {
         for (_, action) in managedCollection {
             switch action {
             case let .addition(managedAnnotation):
+                if annotations.contains(where: { $0.isEqual(managedAnnotation.annotation) }) {
+                    logger.error("🗃️ The specified annotation already exists.")
+                    continue
+                }
                 annotationsToAppend.append(managedAnnotation.annotation)
             case let .updateInPlace(managedAnnotation, atIndex):
                 guard annotations.indices.contains(atIndex) else {
@@ -86,6 +90,10 @@ extension MinecraftMapView {
                     }
                 }
             case let .remove(managedAnnotation):
+                guard annotations.contains(where: { $0.isEqual(managedAnnotation.annotation) }) else {
+                    logger.error("🗃️ The managed annotation doesn't exist.")
+                    continue
+                }
                 annotationsToRemove.append(managedAnnotation.annotation)
             }
         }
