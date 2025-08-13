@@ -39,6 +39,16 @@ struct ManagedAnnotationCollection {
         var inPlaceUpdates: Int
         var deletions: Int
         var ignored: Int
+
+        func formatted() -> String {
+            let added = AttributedString(localized: "^[\(additions) addition](inflect: true)")
+            let inPlace = AttributedString(localized: "^[\(inPlaceUpdates) update](inflect: true) in-place")
+            let removed = AttributedString(localized: "^[\(deletions) removal](inflect: true)")
+            let ignore = AttributedString(localized: "^[\(ignored) pass](inflect: true)")
+            return [added, inPlace, removed, ignore]
+                .map({ String($0.characters[...]) })
+                .joined(separator: ", ")
+        }
     }
 
     private var annotationLUT: [ManagedAnnotationID: Action]

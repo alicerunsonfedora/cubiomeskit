@@ -64,10 +64,7 @@ extension MinecraftMapView {
 
         let managedCollection = ManagedAnnotationCollection(annotations: annotations, contents: contents)
         let counts = managedCollection.countActions()
-        logger
-            .debug(
-                "🗃️ Managed annotations: \(counts.additions) additions, \(counts.inPlaceUpdates) in-place updates, \(counts.deletions) removals"
-            )
+        logger.debug("🗃️ Managed annotations: \(counts.formatted())")
 
         for (_, action) in managedCollection {
             switch action {
@@ -81,7 +78,8 @@ extension MinecraftMapView {
                 annotationsToAppend.append(managedAnnotation.annotation)
             case let .updateInPlace(managedAnnotation, atIndex):
                 guard annotations.indices.contains(atIndex) else {
-                    logger.error("🗃️ The managed annotation doesn't exist at index \(atIndex). Did you prematurely remove it?")
+                    logger.error(
+                        "🗃️ The managed annotation doesn't exist at index \(atIndex). Did you prematurely remove it?")
                     continue
                 }
                 switch managedAnnotation {
