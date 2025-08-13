@@ -95,11 +95,14 @@ extension MinecraftMapView {
                     }
                 }
             case let .remove(managedAnnotation):
-                guard annotations.contains(where: { $0.isEqual(managedAnnotation.annotation) }) else {
-                    logger.error("🗃️ The managed annotation doesn't exist.")
-                    continue
+                // NOTE(alicerunsonfedora): I don't really like doing this, since removals are now an O(n^2) operation,
+                // but oh well...
+                for annotation in annotations {
+                    if !annotation.isEqual(managedAnnotation.annotation) {
+                        continue
+                    }
+                    annotationsToRemove.append(annotation)
                 }
-                annotationsToRemove.append(managedAnnotation.annotation)
             }
         }
         addAnnotations(annotationsToAppend)
