@@ -21,24 +21,43 @@ public protocol MinecraftMapBuilderContent {
 /// A content builder used to generate Minecraft-based map annotations for map views from closures you provide.
 @resultBuilder
 public struct MinecraftMapContentBuilder {
-    public static func buildArray(_ components: [[MinecraftMapBuilderContent]]) -> [any MinecraftMapContent] {
-        components.flatMap { $0.map(\.content) }
+    public typealias Source = MinecraftMapBuilderContent
+    public typealias Destination = AnyMinecraftMapContent
+
+    public static func buildBlock(_ components: Source...) -> [Source] {
+        components
     }
 
-    public static func buildBlock(_ components: MinecraftMapBuilderContent...) -> [any MinecraftMapContent] {
-        components.map(\.content)
+    public static func buildBlock(_ components: [Source]...) -> [Source] {
+        components.flatMap { $0 }
     }
 
-    public static func buildBlock(_ components: [MinecraftMapBuilderContent]...) -> [any MinecraftMapContent] {
-        components.flatMap { $0.map(\.content) }
+    public static func buildExpression(_ expression: Source) -> [Source] {
+        [expression]
     }
 
-    public static func buildEither(first component: MinecraftMapBuilderContent) -> [any MinecraftMapContent] {
-        [component.content]
+    public static func buildExpression(_ expression: [Source]) -> [Source] {
+        expression
+    }
+    
+    public static func buildArray(_ components: [[Source]]) -> [Source] {
+        components.flatMap({ $0 })
     }
 
-    public static func buildEither(second component: MinecraftMapBuilderContent) -> [any MinecraftMapContent] {
-        [component.content]
+    public static func buildOptional(_ component: [Source]?) -> [Source] {
+        component ?? []
+    }
+
+    public static func buildEither(first component: [Source]) -> [Source] {
+        component
+    }
+
+    public static func buildEither(second component: [Source]) -> [Source] {
+        component
+    }
+
+    public static func buildFinalResult(_ component: [Source]) -> [Destination] {
+        component.map(\.content)
     }
 }
 
