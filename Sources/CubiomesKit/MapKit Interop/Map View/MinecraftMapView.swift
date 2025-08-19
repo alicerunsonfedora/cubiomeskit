@@ -163,6 +163,11 @@ public final class MinecraftMapView: MKMapView {
         guard let minecraftOverlay else { return }
         if let renderedOverlay = minecraftOverlay as? MinecraftRenderedTileOverlay {
             renderedOverlay.configuration.dimension = self.dimension
+
+            // NOTE(alicerunsonfedora): For some reason, a second cache flush is needed to get the map to fully clear
+            //out the tiles. Might be a beta SDK bug, or it could be some unintentional race condition caused by
+            // NSCache.
+            renderedOverlay.cache.flush()
         }
         if let renderer = renderer(for: minecraftOverlay) as? CachingTileOverlayRenderer {
             renderer.setNeedsDisplay()
