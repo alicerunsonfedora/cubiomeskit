@@ -9,6 +9,14 @@ Review the latest changes made to CubiomesKit.
 
 ## Unreleased
 
+### 19 Aug 2025
+
+#### MapKit Integration
+
+- The new ``Polyline`` and ``MinecraftPolyline`` overlays allow developers
+  to draw polygonal lines over the map to define regions, display roads,
+  and more.
+
 ### 2 Aug 2025
 
 #### MapKit Integration

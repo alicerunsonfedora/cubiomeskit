@@ -78,10 +78,18 @@ A map view can be displayed with either a ``MinecraftMap`` or
 - ``MinecraftMapMarkerAnnotation``
 - ``MinecraftMapPlayerMarkerAnnotation``
 
+### Map Overlays in AppKit/UIKit
+
+- ``MinecraftPolyline``
+
 ### Map Annotations in SwiftUI
 
 - ``Marker``
 - ``PlayerMarker``
+
+### Map Overlays in SwiftUI
+
+- ``Polyline``
 
 ### Point Projections and Conversions
 

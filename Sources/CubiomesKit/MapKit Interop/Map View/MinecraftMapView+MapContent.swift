@@ -29,8 +29,10 @@ extension MinecraftMapView {
                 addAnnotation(annotation)
             }
         case .overlay:
-            if let overlay = content as? MKOverlay {
-                addOverlay(overlay)
+            if let polyline = content as? MinecraftPolyline {
+                addOverlay(polyline.polyline, level: .aboveLabels)
+            } else if let overlay = content as? MKOverlay {
+                addOverlay(overlay, level: .aboveLabels)
             }
         }
     }
@@ -108,6 +110,12 @@ extension MinecraftMapView {
 
         let oldOverlays = self.overlays.filter { !($0 is MinecraftRenderedTileOverlay) }
         removeOverlays(oldOverlays)
+
+        for overlay in contents where overlay.contentType == .overlay {
+            if let polyline = overlay as? MinecraftPolyline {
+                addOverlay(polyline.polyline, level: .aboveLabels)
+            }
+        }
 
         mapContent = contents
     }

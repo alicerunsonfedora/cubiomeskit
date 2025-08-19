@@ -24,11 +24,16 @@ extension MinecraftMapView: MKMapViewDelegate {
     }
 
     public func mapView(_ mapView: MKMapView, rendererFor overlay: any MKOverlay) -> MKOverlayRenderer {
-        return switch overlay {
+        switch overlay {
         case let overlay as any MinecraftTileOverlay:
-            CachingTileOverlayRenderer(overlay: overlay)
+            return CachingTileOverlayRenderer(overlay: overlay)
+        case let polyline as MKColoredPolyline:
+            let renderer = MKPolylineRenderer(polyline: polyline)
+            renderer.strokeColor = polyline.color
+            renderer.lineWidth = 4
+            return renderer
         default:
-            MKOverlayRenderer(overlay: overlay)
+            return MKOverlayRenderer(overlay: overlay)
         }
     }
 
