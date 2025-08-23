@@ -96,3 +96,8 @@ extension MyView: MinecraftMapViewDelegate {
 - ``centerBlockCoordinate``
 - ``dimension``
 - ``world``
+
+### Displaying custom map content
+
+- ``registerView(for:build:)``
+- ``registerOverlay(for:build:)``

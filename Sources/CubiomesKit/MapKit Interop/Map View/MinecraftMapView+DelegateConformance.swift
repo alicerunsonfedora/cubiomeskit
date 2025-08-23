@@ -43,6 +43,16 @@ extension MinecraftMapView: MKMapViewDelegate {
             annotationView = markerAnnotationView(for: marker, in: mapView)
         } else if let player = annotation as? MinecraftMapPlayerMarkerAnnotation {
             annotationView = playerMarkerAnnotationView(for: player, in: mapView)
+        } else if let configurable = annotation as? any MinecraftMapContent {
+            let typeOfConfigurableView = type(of: configurable)
+            if let builder = configurableContentViews[ObjectIdentifier(typeOfConfigurableView.self)] {
+                switch builder {
+                case let .annotation(builder):
+                    annotationView = builder(annotation)
+                case .overlay:
+                    break
+                }
+            }
         }
 
         return annotationView

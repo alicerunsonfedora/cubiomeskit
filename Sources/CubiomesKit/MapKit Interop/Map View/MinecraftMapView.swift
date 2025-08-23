@@ -21,6 +21,11 @@ public final class MinecraftMapView: MKMapView {
     @available(*, deprecated, renamed: "MinecraftMapPreferredConfiguration.Ornaments")
     public typealias Ornaments = MinecraftMapPreferredConfiguration.Ornaments
 
+    enum ConfiguredContentView {
+        case annotation((any MKAnnotation) -> MKAnnotationView)
+        case overlay((any MKOverlay) -> MKOverlayRenderer)
+    }
+
     /// The center coordinate of the map view, represented as a Minecraft block coordinate.
     ///
     /// This closely resembles the `centerCoordinate` property. Setting this value will automatically update this value
@@ -89,6 +94,7 @@ public final class MinecraftMapView: MKMapView {
 
     var minecraftOverlay: (any MinecraftTileOverlay)!
     var mapContent: [any MinecraftMapContent] = []
+    var configurableContentViews: [ObjectIdentifier : ConfiguredContentView] = [:]
 
     var logger: Logger
 
@@ -125,6 +131,39 @@ public final class MinecraftMapView: MKMapView {
         self.minecraftOverlay = overlay
     }
 
+    /// Registers the annotation view that should appear on the map for the corresponding custom Minecraft map content.
+    ///
+    /// This should be used to provide views for custom Minecraft map content not already present in CubiomesKit.
+    ///
+    /// - Parameter annotationType: The annotation type to construct a view for.
+    /// - Parameter builder: A closure that build the corresponding annotation view for the provided Minecraft map
+    /// content.
+    public func registerView<T: MinecraftMapContent>(
+        for annotationType: T.Type,
+        build builder: @escaping (
+            any MKAnnotation
+        ) -> MKAnnotationView
+    ) {
+        configurableContentViews[ObjectIdentifier(annotationType)] = .annotation(builder)
+    }
+
+    /// Registers the overlay renderer that should appear on the map for the corresponding custom Minecraft map content.
+    ///
+    /// This should be used to provide overlay renderers for custom Minecraft map content not already present in
+    /// CubiomesKit.
+    ///
+    /// - Parameter overlayType: The annotation type to construct a renderer for.
+    /// - Parameter builder: A closure that build the corresponding overlay renderer for the provided Minecraft map
+    /// content.
+    public func registerOverlay<T: MinecraftMapContent>(
+        for overlayType: T.Type,
+        build builder: @escaping (
+            any MKOverlay
+        ) -> MKOverlayRenderer
+    ) {
+        configurableContentViews[ObjectIdentifier(overlayType)] = .overlay(builder)
+    }
+    
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

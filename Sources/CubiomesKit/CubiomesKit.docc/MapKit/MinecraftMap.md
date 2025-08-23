@@ -77,3 +77,8 @@ MinecraftMap(world: try MinecraftWorld(version: "1.21", seed: 123))
 - ``ColorScheme``
 - ``mapColorScheme(_:)``
 - ``dimensionDeterminesPreferredColorScheme(_:)``
+
+### Displaying custom map content
+
+- ``annotationView(for:build:)``
+- ``overlayRenderer(for:build:)``

@@ -61,6 +61,7 @@ public struct MinecraftMap {
     var annotations: [any MinecraftMapContent] = []
     var preferNaturalColors: Bool = false
     var automaticMapSystemAppearance: Bool = true
+    var configuredContentViews: [ObjectIdentifier: MinecraftMapView.ConfiguredContentView] = [:]
 
     /// Create a Minecraft map view.
     /// - Parameter world: The world to display in the map view.
@@ -100,7 +101,8 @@ public struct MinecraftMap {
         annotations: [any MinecraftMapContent] = [],
         dimension: MinecraftWorld.Dimension = .overworld,
         preferNaturalColors: Bool = false,
-        automaticMapSystemAppearance: Bool = true
+        automaticMapSystemAppearance: Bool = true,
+        configuredViews: [ObjectIdentifier: MinecraftMapView.ConfiguredContentView] = [:]
     ) {
         self.world = world
         self.ornaments = ornaments
@@ -109,6 +111,7 @@ public struct MinecraftMap {
         self.annotations = annotations
         self.preferNaturalColors = preferNaturalColors
         self.automaticMapSystemAppearance = automaticMapSystemAppearance
+        self.configuredContentViews = configuredViews
     }
 
     @MainActor
@@ -123,6 +126,7 @@ public struct MinecraftMap {
         } else {
             mapView.renderOptions.remove(.naturalColors)
         }
+        mapView.configurableContentViews = configuredContentViews
         return mapView
     }
 
@@ -130,6 +134,7 @@ public struct MinecraftMap {
     func updateMapView(_ mapView: MinecraftMapView) {
         mapView.mapConfiguration.ornaments = ornaments
         mapView.dimension = dimension
+        mapView.configurableContentViews = configuredContentViews
         if mapView.centerBlockCoordinate != centerCoordinate {
             mapView.centerBlockCoordinate = centerCoordinate
         }
@@ -151,7 +156,8 @@ public struct MinecraftMap {
             annotations: self.annotations,
             dimension: self.dimension,
             preferNaturalColors: self.preferNaturalColors,
-            automaticMapSystemAppearance: self.automaticMapSystemAppearance
+            automaticMapSystemAppearance: self.automaticMapSystemAppearance,
+            configuredViews: self.configuredContentViews
         )
     }
 
@@ -165,7 +171,8 @@ public struct MinecraftMap {
             annotations: self.annotations,
             dimension: self.dimension,
             preferNaturalColors: colorScheme == .natural,
-            automaticMapSystemAppearance: self.automaticMapSystemAppearance
+            automaticMapSystemAppearance: self.automaticMapSystemAppearance,
+            configuredViews: self.configuredContentViews
         )
     }
 
@@ -183,7 +190,61 @@ public struct MinecraftMap {
             annotations: self.annotations,
             dimension: self.dimension,
             preferNaturalColors: self.preferNaturalColors,
-            automaticMapSystemAppearance: allowed
+            automaticMapSystemAppearance: allowed,
+            configuredViews: self.configuredContentViews
+        )
+    }
+
+    /// Specifies the annotation view that should appear on the map for the corresponding custom Minecraft map content.
+    ///
+    /// This should be used to provide view for custom Minecraft map content not already present in CubiomesKit.
+    /// Default CubiomesKit content such as the ``Marker`` already have views defined and do not need to be redeclared.
+    ///
+    /// - Parameter annotationType: The annotation type to construct a view for.
+    /// - Parameter builder: A closure that build the corresponding annotation view for the provided Minecraft map
+    /// content.
+    public func annotationView<T: MinecraftMapContent>(
+        for annotationType: T.Type,
+        build builder: @escaping (any MKAnnotation) -> MKAnnotationView
+    ) -> MinecraftMap {
+        var newViews = configuredContentViews
+        newViews[ObjectIdentifier(annotationType)] = .annotation(builder)
+        return MinecraftMap(
+            world: self.world,
+            centerCoordinate: self._centerCoordinate,
+            ornaments: self.ornaments,
+            annotations: self.annotations,
+            dimension: self.dimension,
+            preferNaturalColors: self.preferNaturalColors,
+            automaticMapSystemAppearance: self.automaticMapSystemAppearance,
+            configuredViews: newViews
+        )
+    }
+
+    /// Specifies the overlay renderer that should appear on the map for the corresponding custom Minecraft map content.
+    ///
+    /// This should be used to provide an overlay renderer for custom Minecraft map content not already present in
+    /// CubiomesKit. Default CubiomesKit content such as the ``Polyline`` already have renderers defined and do not
+    /// need to be redeclared.
+    ///
+    /// - Parameter overlayType: The overlay type to construct a renderer for.
+    /// - Parameter builder: A closure that build the corresponding overlay renderer for the provided Minecraft map
+    /// content.
+    public func overlayRenderer<T: MinecraftMapContent>(
+        for overlayType: T.Type,
+        build builder: @escaping (any MKOverlay) -> MKOverlayRenderer
+    ) -> MinecraftMap {
+        var newViews = configuredContentViews
+        newViews[ObjectIdentifier(overlayType)] = .overlay(builder)
+        return MinecraftMap(
+            world: self.world,
+            centerCoordinate: self._centerCoordinate,
+            ornaments: self.ornaments,
+            annotations: self.annotations,
+            dimension: self.dimension,
+            preferNaturalColors: self.preferNaturalColors,
+            automaticMapSystemAppearance: self.automaticMapSystemAppearance,
+            configuredViews: newViews
         )
     }
 }

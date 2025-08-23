@@ -9,6 +9,17 @@ Review the latest changes made to CubiomesKit.
 
 ## Unreleased
 
+### 23 Aug 2025
+
+#### MapKit Integration
+
+- The ``MinecraftMap`` support providing custom annotation views and
+  overlays via the ``MinecraftMap/annotationView(for:build:)`` and
+  ``MinecraftMap/overlayRenderer(for:build:)`` modifiers.
+- ``MinecraftMapView`` supports providing custom annotation views and
+  overlays via the ``MinecraftMapView/registerView(for:build:)`` and the
+  ``MinecraftMapView/registerOverlay(for:build)`` methods.
+
 ### 19 Aug 2025
 
 #### MapKit Integration
