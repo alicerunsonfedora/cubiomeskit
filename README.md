@@ -16,6 +16,11 @@ maps, with support for AppKit/UIKit and SwiftUI.
 > Important: At this time, only words generated in Minecraft Java Edition
 > are supported.
 
+> Note: This source code repository for CubiomesKit is being migrated over
+> to [SkyVault](https://source.marquiskurt.net) as part of a larger effort
+> to guarantee long-term sustainability, independent of GitHub. However,
+> pull requests will still be accepted and welcomed on this mirror.
+
 ## Getting started
 
 ### Support
