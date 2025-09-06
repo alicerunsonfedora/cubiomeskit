@@ -7,9 +7,18 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
-## Unreleased
+## 2.0.0 (6 Sep 2025)
 
-### 23 Aug 2025
+#### Biome Generation
+
+- Biome generation now occurs on a separate actor. Any public-facing code
+  that interfaces with biome generation now works asynchronously to
+  prevent data races and crossing actor boundaries.
+
+#### Concurrency
+
+- The new ``MinecraftWorldRendererActor`` is used to isolate rendering
+  tasks, thereby improving the performance of rendering maps.
 
 #### MapKit Integration
 
@@ -19,29 +28,14 @@ Review the latest changes made to CubiomesKit.
 - ``MinecraftMapView`` supports providing custom annotation views and
   overlays via the ``MinecraftMapView/registerView(for:build:)`` and the
   ``MinecraftMapView/registerOverlay(for:build)`` methods.
-
-### 19 Aug 2025
-
-#### MapKit Integration
-
 - The new ``Polyline`` and ``MinecraftPolyline`` overlays allow developers
   to draw polygonal lines over the map to define regions, display roads,
   and more.
-
-### 2 Aug 2025
-
-#### MapKit Integration
-
 - Wherever possible, markers and player markers will try updating in place
   over deleting and re-inserting the annotation internally. This should
   allow for real-time updates.
 - ``PlayerMarker`` and ``Marker`` now conform to `Identifiable`. The
   ``Marker`` can be provided an ID, generally a UUID.
-
-### 1 Aug 2025
-
-#### MapKit Integration
-
 - ``MinecraftMapView`` maps can now provide a preferred configuration
   through the ``MinecraftMapView/mapConfiguration`` property. This
   configuration structure provides configurable map properties such as
@@ -55,35 +49,12 @@ Review the latest changes made to CubiomesKit.
   ``MinecraftMapView/mapConfiguration`` through the
   ``MinecraftMapPreferredConfiguration/dimensionDeterminesSystemAppearance``
   property.
-
-### 30 July 2025
-
-#### Biome Generation
-
-- Biome generation now occurs on a separate actor. Any public-facing code
-  that interfaces with biome generation now works asynchronously to
-  prevent data races and crossing actor boundaries.
-
-#### World Rendering
-
-- The `renderSynchronously(inRegion:scale:dimension)` method has been
-  removed in favor of a single asynchronous version.
-
-### 28 July 2025
-
-#### MapKit Integration
-
 - The ``MinecraftMapContent`` protocol now includes a typealias for a data
   model that is used to configure the content.
 - When updating map content in SwiftUI, it will attempt to update the
   positions of existing player marker annotations instead of rebuilding
   player markers. This should allow developers to display realtime player
   updates with minimal flickering effects.
-
-### 25 July 2025
-
-#### MapKit Integration
-
 - The ``Marker`` and ``MinecraftMapMarkerAnnotation`` annotation types
   now accept a ``Marker/clusteringIdentifier`` property to control
   clustering behaviors.
@@ -92,11 +63,6 @@ Review the latest changes made to CubiomesKit.
   remain visible over traditional markers.
 - The ``MinecraftMapView`` now supports providing a center coordinate in
   its initializer.
-
-### 15 July 2025
-
-#### MapKit Integration
-
 - The new ``PlayerMarker`` and ``MinecraftMapPlayerMarkerAnnotation``
   marker annotation types allow developers to display Minecraft players
   on the map. Heads of players specified by their Minecraft UUID are
@@ -112,6 +78,8 @@ Review the latest changes made to CubiomesKit.
 
 #### World Rendering
 
+- The `renderSynchronously(inRegion:scale:dimension)` method has been
+  removed in favor of a single asynchronous version.
 - The ``MinecraftWorldRenderer`` now uses a new renderer for translating
   biome ID data into appropriate pixel colors, written entirely in Swift.
 - The `renderSynchronously(inRegion:scale:dimension)` method has been
@@ -120,16 +88,6 @@ Review the latest changes made to CubiomesKit.
   temporary method that will fold into the general
   ``MinecraftWorldRenderer/render(inRegion:scale:dimension:)`` signature
   for both the synchronous and asynchronous variants.
-
-### 7 June 2025
-
-#### Concurrency
-
-- The new ``MinecraftWorldRendererActor`` is used to isolate rendering
-  tasks, thereby improving the performance of rendering maps.
-
-#### MapKit Integration
-
 - ``MinecraftMapView`` now leverages modern Swift concurrency features
   to significantly improve the initial load performance of map tiles.
 
