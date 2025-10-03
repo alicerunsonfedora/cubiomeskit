@@ -49,6 +49,9 @@ let package = Package(
                 "CubiomesKitCore",
                 .product(name: "CachingMapKitTileOverlay", package: "mapkit-caching-tile-overlay"),
             ],
+            resources: [
+                .process("Resources")
+            ],
         ),
         .target(
             name: "CubiomesKit",
