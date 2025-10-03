@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 02-08-2025.
 //
 
+import CubiomesKitCore
 import MapKit
 
 enum ManagedAnnotation: Hashable {

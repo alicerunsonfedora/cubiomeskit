@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 19-08-2025.
 //
 
+import CubiomesKitCore
 import MapKit
 import SwiftUI
 

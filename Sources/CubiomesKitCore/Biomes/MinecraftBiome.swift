@@ -48,7 +48,11 @@ public extension MinecraftBiome {
     /// - Parameter version: The Minecraft version relevant to the biome.
     func localizedString(for version: MinecraftVersion) -> String {
         guard let originalID = biome2str(version.versionValue, rawValue) else {
+            #if os(Linux) || os(Windows)
+            return "Unknown Biome"
+            #else
             return String(localized: "unknown_biome")
+            #endif
         }
         let idString = String(cString: originalID)
         var components = idString.components(separatedBy: "_")

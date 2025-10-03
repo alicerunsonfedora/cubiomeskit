@@ -6,6 +6,7 @@
 //
 
 import CachingMapKitTileOverlay
+import CubiomesKitCore
 import Foundation
 import MapKit
 import os
@@ -163,7 +164,7 @@ public final class MinecraftMapView: MKMapView {
     ) {
         configurableContentViews[ObjectIdentifier(overlayType)] = .overlay(builder)
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

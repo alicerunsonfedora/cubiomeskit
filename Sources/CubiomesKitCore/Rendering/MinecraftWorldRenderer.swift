@@ -7,7 +7,10 @@
 
 import CubiomesInternal
 import Foundation
+
+#if canImport(OSLog)
 import OSLog
+#endif
 
 /// A facility used to render Minecraft worlds as two-dimensional maps.
 @MinecraftWorldRendererActor

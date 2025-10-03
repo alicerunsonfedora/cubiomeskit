@@ -6,6 +6,7 @@
 //
 
 import CachingMapKitTileOverlay
+import CubiomesKitCore
 import MapKit
 import os
 

@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 14-07-2025.
 //
 
+import CubiomesKitCore
 import Foundation
 import MapKit
 import os
@@ -16,7 +17,7 @@ private typealias ImageType = UIImage
 #endif
 
 class MinecraftMapMarkerAnnotationView: MKAnnotationView {
-    var configuration: MinecraftMapPlayerMarkerAnnotation?    
+    var configuration: MinecraftMapPlayerMarkerAnnotation?
 
     private let logger = Logger(
         subsystem: "net.marquiskurt.cubiomes",
@@ -64,7 +65,7 @@ class MinecraftMapMarkerAnnotationView: MKAnnotationView {
                 }
                 return
             }
-            
+
             await MainActor.run {
                 let image = ImageType(data: data)
                 self.image = image
@@ -91,7 +92,7 @@ class MinecraftMapMarkerAnnotationView: MKAnnotationView {
         if image == nil {
             logger.error("🧑🏻‍🏭 Steve is missing. Is the file included in the xcassets?")
         }
-        
+
         self.image = image
     }
 }

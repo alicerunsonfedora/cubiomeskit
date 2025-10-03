@@ -6,6 +6,7 @@
 //
 
 import CachingMapKitTileOverlay
+import CubiomesKitCore
 import Foundation
 import MapKit
 import SwiftUI

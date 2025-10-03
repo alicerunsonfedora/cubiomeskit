@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 14-04-2025.
 //
 
+import CubiomesKitCore
 import Foundation
 import MapKit
 

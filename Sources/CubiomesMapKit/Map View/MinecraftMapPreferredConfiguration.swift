@@ -6,6 +6,7 @@
 //
 
 import CubiomesInternal
+import CubiomesKitCore
 import Foundation
 
 /// A structure used to configure a ``MinecraftMapView``.

@@ -6,6 +6,7 @@
 //
 
 import CubiomesInternal
+import CubiomesKitCore
 import MapKit
 
 public protocol ModeledAnnotation: MKAnnotation {

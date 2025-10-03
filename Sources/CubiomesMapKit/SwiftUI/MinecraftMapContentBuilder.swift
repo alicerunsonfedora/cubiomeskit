@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 03-04-2025.
 //
 
+import CubiomesKitCore
 import MapKit
 
 public typealias AnyMinecraftMapContent = any MinecraftMapContent
@@ -39,7 +40,7 @@ public struct MinecraftMapContentBuilder {
     public static func buildExpression(_ expression: [Source]) -> [Source] {
         expression
     }
-    
+
     public static func buildArray(_ components: [[Source]]) -> [Source] {
         components.flatMap({ $0 })
     }

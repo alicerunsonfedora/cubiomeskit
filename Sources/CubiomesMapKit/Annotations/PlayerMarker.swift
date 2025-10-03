@@ -5,6 +5,7 @@
 //  Created by Marquis Kurt on 14-07-2025.
 //
 
+import CubiomesKitCore
 import MapKit
 import SwiftUI
 
@@ -16,7 +17,7 @@ import SwiftUI
 /// username and their position on the map.
 public struct PlayerMarker: MinecraftMapBuilderContent, Equatable, Hashable, Identifiable {
     public var id: UUID { playerUUID }
-    
+
     /// The player's location on the map.
     public var location: CGPoint
 

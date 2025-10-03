@@ -6,13 +6,16 @@
 //
 
 import Foundation
+
+#if canImport(MapKit)
 import MapKit
+#endif
 
 /// A representation of a Minecraft world coordinate in three-dimensional space.
 ///
 /// The X and Z values refer to the positions along a two-dimensional plane, while the Y value refers to the position
 /// along the vertical axis.
-public typealias MinecraftPoint = CubiomesKit.Point3D<Int32>
+public typealias MinecraftPoint = CubiomesKitCore.Point3D<Int32>
 
 extension CGPoint {
     /// Initialize a CGPoint with an existing Minecraft coordinate.
@@ -25,6 +28,7 @@ extension CGPoint {
         self.init(x: Double(minecraftPoint.x), y: Double(minecraftPoint.z))
     }
 
+    #if canImport(MapKit)
     /// Initialize a CGPoint, performing a reverse projection of a Core Location coordinate.
     ///
     /// It is assumed this Core Location coordinate will cleanly be un-projected to a Minecraft world coordinate, where
@@ -34,8 +38,10 @@ extension CGPoint {
     public init(projectedFrom coordinate: CLLocationCoordinate2D) {
         self = CoordinateProjections.unproject(coordinate)
     }
+    #endif
 }
 
+#if canImport(MapKit)
 extension CLLocationCoordinate2D {
     /// Initializes a Core Location coordinate by projecting a CGPoint representing a Minecraft coordinate.
     ///
@@ -62,3 +68,4 @@ extension MinecraftPoint {
         self.z = Int32(cgPoint.y)
     }
 }
+#endif
