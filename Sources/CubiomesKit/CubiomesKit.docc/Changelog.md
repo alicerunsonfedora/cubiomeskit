@@ -7,6 +7,18 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## 3 Oct 2025
+
+### General
+
+- CubiomesKit is now being split up into multiple modules. This ensures
+  that CubiomesKit works across Apple platforms and other platforms like
+  Linux and Windows (CBK-5). Developers can still import CubiomesKit as
+  is, and all the relevant modules will be available.
+  - `CubiomesKitCore` contains the majority of the library code.
+  - `CubiomesMapKit` contains the MapKit integrations with
+    `CubiomesKitCore`.
+
 ## 2.0.0 (6 Sep 2025)
 
 #### Biome Generation
