@@ -7,7 +7,7 @@
 
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesKitCore
 
 struct MinecraftStructureTests {
     @Test(arguments: MinecraftStructure.allCases)

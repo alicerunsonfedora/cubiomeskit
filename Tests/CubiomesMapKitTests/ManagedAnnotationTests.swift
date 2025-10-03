@@ -5,11 +5,13 @@
 //  Created by Marquis Kurt on 02-08-2025.
 //
 
+#if canImport(MapKit)
+
 import Foundation
 import MapKit
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesMapKit
 
 struct ManagedAnnotationTests {
     @Test func zipsCorrectly() async throws {
@@ -32,5 +34,7 @@ struct ManagedAnnotationTests {
                 == ManagedAnnotationCollection
                 .Count(additions: 2, inPlaceUpdates: 0, deletions: 1, ignored: 1)
         )
-    }    
+    }
 }
+
+#endif

@@ -9,7 +9,7 @@ import CubiomesInternal
 import Foundation
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesKitCore
 
 struct MinecraftBiomeSearchingTests {
     @Test(.tags(.biomes))

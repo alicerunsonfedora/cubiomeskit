@@ -6,9 +6,10 @@
 //
 
 import CubiomesInternal
-import CubiomesKit
 import Foundation
 import Testing
+
+@testable import CubiomesKitCore
 
 struct MinecraftStructureProvidingTests {
     @Test func nearbyStructuresFound() async throws {

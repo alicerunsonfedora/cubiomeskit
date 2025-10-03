@@ -2,7 +2,7 @@ import CubiomesInternal
 import Foundation
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesKitCore
 
 extension Data {
     var bytes: [UInt8] { return [UInt8](self) }

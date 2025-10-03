@@ -5,9 +5,10 @@
 //  Created by Marquis Kurt on 04-02-2025.
 //
 
-import CubiomesKit
 import Foundation
 import Testing
+
+@testable import CubiomesKitCore
 
 struct Point3DTests {
     @Test func initFromCGPoint() async throws {

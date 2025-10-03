@@ -5,10 +5,12 @@
 //  Created by Marquis Kurt on 31-07-2025.
 //
 
+#if canImport(MapKit)
+
 import Foundation
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesMapKit
 
 @MainActor
 struct MinecraftMapViewContentTests {
@@ -151,3 +153,5 @@ struct MinecraftMapViewContentTests {
         }
     }
 }
+
+#endif

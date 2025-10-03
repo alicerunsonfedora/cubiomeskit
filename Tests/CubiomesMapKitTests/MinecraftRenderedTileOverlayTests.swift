@@ -5,11 +5,13 @@
 //  Created by Marquis Kurt on 05-04-2025.
 //
 
+#if canImport(MapKit)
+
 import Foundation
 import MapKit
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesMapKit
 
 @MainActor
 struct MinecraftRenderedTileOverlayTests {
@@ -36,3 +38,5 @@ struct MinecraftRenderedTileOverlayTests {
         }
     }
 }
+
+#endif

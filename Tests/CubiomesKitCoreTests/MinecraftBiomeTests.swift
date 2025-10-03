@@ -8,7 +8,7 @@
 import Foundation
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesKitCore
 
 struct MinecraftBiomeTests {
     @Test(.tags(.biomes))

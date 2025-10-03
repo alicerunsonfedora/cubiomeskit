@@ -5,12 +5,14 @@
 //  Created by Marquis Kurt on 05-04-2025.
 //
 
+#if canImport(MapKit)
+
 import CachingMapKitTileOverlay
 import MapKit
 import SwiftUI
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesMapKit
 
 @MainActor
 struct MinecraftMapViewTests {
@@ -47,7 +49,7 @@ struct MinecraftMapViewTests {
             mcMapView,
             viewFor: MinecraftMapMarkerAnnotation(location: .zero, title: "Spawn")
         )
-        
+
         #expect(annotationView != nil)
         #expect(annotationView is MKMarkerAnnotationView)
     }
@@ -75,3 +77,6 @@ struct MinecraftMapViewTests {
         #expect(mcMapView.minecraftOverlay?.cache.getValue(forPath: overlayPath, in: .overworld) == nil)
     }
 }
+
+
+#endif

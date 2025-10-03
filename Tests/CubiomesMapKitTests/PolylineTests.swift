@@ -5,11 +5,13 @@
 //  Created by Marquis Kurt on 19-08-2025.
 //
 
+#if canImport(MapKit)
+
 import MapKit
 import SwiftUI
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesMapKit
 
 struct PolylineTests {
     @Test func overlayInitFromModel() throws {
@@ -26,3 +28,5 @@ struct PolylineTests {
         #expect(polyline.content is MinecraftPolyline)
     }
 }
+
+#endif

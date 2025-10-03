@@ -8,7 +8,7 @@
 import Foundation
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesKitCore
 
 struct MinecraftBiomeColorMapTests {
     @Test(.tags(.render))
@@ -28,7 +28,7 @@ struct MinecraftBiomeColorMapTests {
         #expect(throws: ColorRGB.ParseError.invalidHexHeader) {
             try ColorRGB(hex: "lorelei")
         }
-        
+
         #expect(throws: ColorRGB.ParseError.invalidColorLength) {
             try ColorRGB(hex: "#00000000")
         }
@@ -41,7 +41,7 @@ struct MinecraftBiomeColorMapTests {
                 """
                 badlands #ba6322
                 badlands_plateau #9f5d3e
-                bamboo_jungle #3f5e03 
+                bamboo_jungle #3f5e03
                 """
         )
 

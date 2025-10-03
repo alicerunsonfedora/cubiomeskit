@@ -58,13 +58,22 @@ let package = Package(
             ],
         ),
         .testTarget(
-            name: "CubiomesKitTests",
+            name: "CubiomesKitCoreTests",
             dependencies: [
-                "CubiomesKit",
+                "CubiomesKitCore",
             ],
             resources: [
                 .process("__Snapshots__")
             ],
         ),
+        .testTarget(
+            name: "CubiomesMapKitTests",
+            dependencies: [
+                "CubiomesMapKit",
+            ]
+        ),
     ]
 )
+
+let appleRestrict = ["CubiomesMapKitTests"]
+package.targets.removeAll(where: { appleRestrict.contains($0.name) })

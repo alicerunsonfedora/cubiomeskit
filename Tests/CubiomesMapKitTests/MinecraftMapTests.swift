@@ -5,11 +5,13 @@
 //  Created by Marquis Kurt on 05-04-2025.
 //
 
+#if canImport(MapKit)
+
 import MapKit
 import SwiftUI
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesMapKit
 
 @MainActor
 struct MinecraftMapTests {
@@ -93,5 +95,7 @@ struct MinecraftMapTests {
         #expect(mapView.mapConfiguration.ornaments == .all)
         #expect(mapView.renderOptions.contains(.naturalColors))
         #expect(mapView.annotations.count == 1)
-    }    
+    }
 }
+
+#endif

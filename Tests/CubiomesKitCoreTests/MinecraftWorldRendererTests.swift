@@ -5,11 +5,14 @@
 //  Created by Marquis Kurt on 05-04-2025.
 //
 
+#if canImport(CryptoKit)
 import CryptoKit
+#endif
+
 import Foundation
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesKitCore
 
 struct MinecraftWorldRendererTests {
     @Test(.tags(.render, .biomes))
@@ -32,9 +35,13 @@ struct MinecraftWorldRendererTests {
                 scale: .init(length: 256, width: 256, height: 1)),
             dimension: .overworld)
 
-        let expectedHash = SHA256.hash(data: originalData)
-        let actualHash = SHA256.hash(data: data)
-        #expect(actualHash == expectedHash)
+        #if canImport(CryptoKit)
+            let expectedHash = SHA256.hash(data: originalData)
+            let actualHash = SHA256.hash(data: data)
+            #expect(actualHash == expectedHash)
+        #else
+            #expect(data == originalData)
+        #endif
 
         #if swift(>=6.2)
         Attachment.record(originalData, named: "original.ppm")

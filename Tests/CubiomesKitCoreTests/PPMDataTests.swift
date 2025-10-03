@@ -5,9 +5,10 @@
 //  Created by Marquis Kurt on 15-02-2025.
 //
 
-import CubiomesKit
 import Foundation
 import Testing
+
+@testable import CubiomesKitCore
 
 struct PPMDataTests {
     @Test(.tags(.render))

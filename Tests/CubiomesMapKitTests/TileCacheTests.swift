@@ -5,11 +5,13 @@
 //  Created by Marquis Kurt on 14-04-2025.
 //
 
+#if canImport(MapKit)
+
 import Foundation
 import MapKit
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesMapKit
 
 struct TileCacheTests {
     @Test func cacheKeying() throws {
@@ -62,3 +64,5 @@ struct TileCacheTests {
         }
     }
 }
+
+#endif

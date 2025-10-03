@@ -5,11 +5,14 @@
 //  Created by Marquis Kurt on 12-07-2025.
 //
 
+#if canImport(CryptoKit)
 import CryptoKit
+#endif
+
 import Foundation
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesKitCore
 
 @MinecraftWorldGeneratorActor
 struct MinecraftBiomeImageGeneratorTests {
@@ -44,7 +47,7 @@ struct MinecraftBiomeImageGeneratorTests {
 
         let biomeGenerator = MinecraftBiomeGenerator(world: world, dimension: .nether)
         let semanticIDs = biomeGenerator.generate(for: rect)
-        
+
         let actualData = MinecraftBiomeImageRenderer.image(
             for: semanticIDs,
             using: MinecraftBiomeColorMap.cubiomesDefault(),
@@ -53,11 +56,15 @@ struct MinecraftBiomeImageGeneratorTests {
             flipped: true
         )
 
-        let expectedHash = SHA256.hash(data: expectedData)
-        let actualHash = SHA256.hash(data: actualData)
+        #if canImport(CryptoKit)
+            let expectedHash = SHA256.hash(data: expectedData)
+            let actualHash = SHA256.hash(data: actualData)
 
-        #expect(expectedHash == actualHash)
+            #expect(expectedHash == actualHash)
+        #else
+            #expect(expectedData == actualData)
+        #endif
     }
 
-    
+
 }

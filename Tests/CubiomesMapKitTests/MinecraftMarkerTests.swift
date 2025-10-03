@@ -5,11 +5,13 @@
 //  Created by Marquis Kurt on 05-04-2025.
 //
 
+#if canImport(MapKit)
+
 import MapKit
 import SwiftUI
 import Testing
 
-@testable import CubiomesKit
+@testable import CubiomesMapKit
 
 struct MinecraftMarkerTests {
     @Test(.tags(.mapkit))
@@ -58,3 +60,5 @@ struct MinecraftMarkerTests {
         #expect(blockCoordinate == CGPoint(x: -1670.0, y: 1493.0))
     }
 }
+
+#endif
