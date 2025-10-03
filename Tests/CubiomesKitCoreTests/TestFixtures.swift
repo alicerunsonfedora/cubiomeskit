@@ -8,9 +8,6 @@
 import Testing
 
 extension Tag {
-    /// Tests that pertain to the MapKit integration.
-    @Tag static var mapkit: Self
-
     /// Tests that involve manipulating biome data.
     @Tag static var biomes: Self
 
