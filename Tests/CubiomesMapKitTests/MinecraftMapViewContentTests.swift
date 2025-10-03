@@ -7,6 +7,7 @@
 
 #if canImport(MapKit)
 
+import CubiomesKitCore
 import Foundation
 import Testing
 

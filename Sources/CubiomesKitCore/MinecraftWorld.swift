@@ -51,7 +51,7 @@ public struct MinecraftWorld: Sendable {
         self.seed = seed
     }
 
-    init(version: MinecraftVersion, seed: Int64) {
+    public init(version: MinecraftVersion, seed: Int64) {
         self.version = version
         self.seed = seed
     }
