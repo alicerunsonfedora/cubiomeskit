@@ -79,4 +79,7 @@ let package = Package(
 )
 
 let appleRestrict = ["CubiomesMapKitTests"]
-package.targets.removeAll(where: { appleRestrict.contains($0.name) })
+
+#if os(Linux) || os(Windows)
+    package.targets.removeAll(where: { appleRestrict.contains($0.name) })
+#endif
