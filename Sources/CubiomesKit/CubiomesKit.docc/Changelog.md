@@ -7,6 +7,15 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## 19 Oct 2025
+
+### Documentation
+
+- The documentation for CubiomesKit has been overhauled to address issues
+  with documentation comments not being properly exposed through DocC.
+  This uses an experimental Swift DocC plugin feature, which is aiming for
+  graduation in the near future.
+
 ## 3 Oct 2025
 
 ### General
@@ -29,53 +38,53 @@ Review the latest changes made to CubiomesKit.
 
 #### Concurrency
 
-- The new ``MinecraftWorldRendererActor`` is used to isolate rendering
+- The new `MinecraftWorldRendererActor` is used to isolate rendering
   tasks, thereby improving the performance of rendering maps.
 
 #### MapKit Integration
 
-- The ``MinecraftMap`` support providing custom annotation views and
-  overlays via the ``MinecraftMap/annotationView(for:build:)`` and
-  ``MinecraftMap/overlayRenderer(for:build:)`` modifiers.
-- ``MinecraftMapView`` supports providing custom annotation views and
-  overlays via the ``MinecraftMapView/registerView(for:build:)`` and the
-  ``MinecraftMapView/registerOverlay(for:build)`` methods.
-- The new ``Polyline`` and ``MinecraftPolyline`` overlays allow developers
+- The `MinecraftMap` support providing custom annotation views and
+  overlays via the `MinecraftMap.annotationView(for:build:)` and
+  `MinecraftMap.overlayRenderer(for:build:)` modifiers.
+- `MinecraftMapView` supports providing custom annotation views and
+  overlays via the `MinecraftMapView.registerView(for:build:)` and the
+  `MinecraftMapView.registerOverlay(for:build)` methods.
+- The new `Polyline` and `MinecraftPolyline` overlays allow developers
   to draw polygonal lines over the map to define regions, display roads,
   and more.
 - Wherever possible, markers and player markers will try updating in place
   over deleting and re-inserting the annotation internally. This should
   allow for real-time updates.
-- ``PlayerMarker`` and ``Marker`` now conform to `Identifiable`. The
-  ``Marker`` can be provided an ID, generally a UUID.
-- ``MinecraftMapView`` maps can now provide a preferred configuration
-  through the ``MinecraftMapView/mapConfiguration`` property. This
+- `PlayerMarker` and `Marker` now conform to `Identifiable`. The
+  `Marker` can be provided an ID, generally a UUID.
+- `MinecraftMapView` maps can now provide a preferred configuration
+  through the `MinecraftMapView.mapConfiguration` property. This
   configuration structure provides configurable map properties such as
   ephemeral rendering and ornaments.
-- The ``MinecraftMapView/ornaments`` and
-  ``MinecraftMapView/ephemeralRendering`` properties have been deprecated
-  in favor of the new ``MinecraftMapView/mapConfiguration`` property.
+- The `MinecraftMapView.ornaments` and
+  `MinecraftMapView.ephemeralRendering` properties have been deprecated
+  in favor of the new `MinecraftMapView.mapConfiguration` property.
 - By default, maps will pick the appropriate system appearance based on
-  the ``MinecraftMapView/dimension``, thereby making the map more
+  the `MinecraftMapView.dimension`, thereby making the map more
   accessible. This can be configured in the
-  ``MinecraftMapView/mapConfiguration`` through the
-  ``MinecraftMapPreferredConfiguration/dimensionDeterminesSystemAppearance``
+  `MinecraftMapView.mapConfiguration` through the
+  `MinecraftMapPreferredConfiguration.dimensionDeterminesSystemAppearance`
   property.
-- The ``MinecraftMapContent`` protocol now includes a typealias for a data
+- The `MinecraftMapContent` protocol now includes a typealias for a data
   model that is used to configure the content.
 - When updating map content in SwiftUI, it will attempt to update the
   positions of existing player marker annotations instead of rebuilding
   player markers. This should allow developers to display realtime player
   updates with minimal flickering effects.
-- The ``Marker`` and ``MinecraftMapMarkerAnnotation`` annotation types
-  now accept a ``Marker/clusteringIdentifier`` property to control
+- The `Marker` and `MinecraftMapMarkerAnnotation` annotation types
+  now accept a `Marker.clusteringIdentifier` property to control
   clustering behaviors.
 - Markers are now clustered by default in the map view.
 - Player markers are now displayed with a higher priority to ensure they
   remain visible over traditional markers.
-- The ``MinecraftMapView`` now supports providing a center coordinate in
+- The `MinecraftMapView` now supports providing a center coordinate in
   its initializer.
-- The new ``PlayerMarker`` and ``MinecraftMapPlayerMarkerAnnotation``
+- The new `PlayerMarker` and `MinecraftMapPlayerMarkerAnnotation`
   marker annotation types allow developers to display Minecraft players
   on the map. Heads of players specified by their Minecraft UUID are
   fetched from the [MC-Heads API](https://mc-heads.net), defaulting to
@@ -85,30 +94,22 @@ Review the latest changes made to CubiomesKit.
 - The Y levels for each dimension has been adjusted to be more accurate to
   the respective sea levels. The Overworld will now render at Y=62, the
   Nether will render at Y=31, and the End will render at Y=48.
-- ``MinecraftMapView`` instances that have ephemeral rendering disabled
+- `MinecraftMapView` instances that have ephemeral rendering disabled
   should now properly refresh whenever the dimension changes.
 
 #### World Rendering
 
-- The `renderSynchronously(inRegion:scale:dimension)` method has been
-  removed in favor of a single asynchronous version.
-- The ``MinecraftWorldRenderer`` now uses a new renderer for translating
+- The `MinecraftWorldRenderer` now uses a new renderer for translating
   biome ID data into appropriate pixel colors, written entirely in Swift.
-- The `renderSynchronously(inRegion:scale:dimension)` method has been
-  introduced to maintain compatibility with existing codebases that have
-  not been rendering their world map content concurrently. This is a
-  temporary method that will fold into the general
-  ``MinecraftWorldRenderer/render(inRegion:scale:dimension:)`` signature
-  for both the synchronous and asynchronous variants.
-- ``MinecraftMapView`` now leverages modern Swift concurrency features
+- `MinecraftMapView` now leverages modern Swift concurrency features
   to significantly improve the initial load performance of map tiles.
 
 ## 1.0.1 (3 May 2025)
 
 ### MapKit Integration
 
-- ``MinecraftMapView`` map views should now properly invalidate the
-  rendering cache when the ``MinecraftMapView/renderOptions`` has been
+- `MinecraftMapView` map views should now properly invalidate the
+  rendering cache when the `MinecraftMapView.renderOptions` has been
   changed.
 
 ## 1.0.0 (19 April 2025)
@@ -119,7 +120,7 @@ Review the latest changes made to CubiomesKit.
   updating map content has been further optimized to ensure that updates
   occur only when necessary, versus all the time.
 
-> Important: ``MinecraftMapContent`` now requires conformance to the
+> Important: `MinecraftMapContent` now requires conformance to the
 > `Equatable` protocol. For types that inherit or conform to `NSObject`,
 > you may need to override `isEqual(_:)` to ensure equality checks operate
 > correctly.
@@ -142,24 +143,24 @@ Review the latest changes made to CubiomesKit.
 
 ### MapKit Integration
 
-- The `centerCoordinate` property of the ``MinecraftMap`` should now
+- The `centerCoordinate` property of the `MinecraftMap` should now
   properly relay changes made from the map view back, instead of being
   unchanged.
-- The ``MinecraftMapViewDelegate`` exposes the
-  ``MinecraftMapViewDelegate/mapViewDidChangeVisibleRegion(_:)-36zql`` to
-  respond to the map view's visible region changes.
+- The `MinecraftMapViewDelegate` exposes the
+  `mapViewDidChangeVisibleRegion(_:)` to respond to the map view's visible
+  region changes.
 
 #### Tile caching and ephemeral rendering
 
-- The ``MinecraftMapView`` and ``MinecraftMap`` will now automatically
+- The `MinecraftMapView` and `MinecraftMap` will now automatically
   cache rendered tile data instead of re-calculating the data every time
   the renderer requests it. This can be disabled with the
-  ``MinecraftMapView/ephemeralRendering`` property.
-- The ``MinecraftMapViewDelegate`` includes a new method
-  ``MinecraftMapViewDelegate/mapView(_:didChangeEphemeralRendering:)`` to
-  listen for when ephemeral rendering was changed.
+  `MinecraftMapView.ephemeralRendering` property.
+- The `MinecraftMapViewDelegate` includes a new method
+  `mapView(_:didChangeEphemeralRendering:)` to listen for when ephemeral
+  rendering was changed.
 
-> Important: Ephemeral rendering cannot be enabled on the ``MinecraftMap``
+> Important: Ephemeral rendering cannot be enabled on the `MinecraftMap`
 > SwiftUI view. If you need this functionality in the SwiftUI version,
-> create a wrapper around the ``MinecraftMapView`` with the option
+> create a wrapper around the `MinecraftMapView` with the option
 > enabled.

@@ -23,43 +23,18 @@ and SwiftUI.
 > Important: At this time, only worlds generated in Minecraft Java Edition
 > are supported.
 
-## Topics
+## Get started with CubiomesKit
 
-### Getting Started
+CubiomesKit is split up into several packages, each serving their own
+purposes:
 
-- <doc:Changelog>
+- **CubiomesKitCore** is the core package for interacting with Minecraft
+  worlds.
+- **CubiomesMapKit** is the package that provides integrations with MapKit
+  to display map views on macOS, iOS, and iPadOS apps.
+- **CubiomesKit** is the main package that imports all relevant packages
+  for a clean call site in client implementations.
 
-### Generating Minecraft Worlds
-
-Generate Minecraft worlds with a given version and seed.
-
-- ``MinecraftWorld``
-- ``MinecraftVersion``
-
-### Querying World Information
-
-Query information about a Minecraft world, such as nearby biomes and
-structures.
-
-- ``MinecraftBiome``
-- ``MinecraftBiomeSearching``
-- ``MinecraftStructure``
-- ``MinecraftStructureSearching``
-
-### Rendering Map Tiles
-
-Render map images of Minecraft worlds.
-
-- ``MinecraftWorldRenderer``
-- ``MinecraftWorldRendererActor``
-- ``PPMData``
-
-### MapKit Integration
-
-- <doc:MapKit> 
-
-### Point and Space Representations
-
-- ``Point3D``
-- ``MinecraftPoint``
-- ``MinecraftWorldRect``
+Each provide their own sets of documentation which can be loaded on the
+documentation website at https://cubiomeskit.alidade.dev, and they are
+listed individually inside the Developer Documentation window in Xcode.

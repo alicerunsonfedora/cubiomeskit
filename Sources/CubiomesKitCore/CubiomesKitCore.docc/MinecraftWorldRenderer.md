@@ -2,7 +2,7 @@
 
 The world renderer is used to generate map tiles into portable pixmap
 data (PPM) that can be saved to a file or rendered directly in views, as
-with ``MinecraftMapView``.
+with `MinecraftMapView`.
 
 ```swift
 let renderer = MinecraftWorldRenderer(world: world)

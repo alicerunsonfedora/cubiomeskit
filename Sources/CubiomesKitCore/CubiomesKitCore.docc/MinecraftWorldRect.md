@@ -17,7 +17,7 @@ outside, radiating from the center. However, in some instances, the origin
 can be treated as the top left corner of the rectangle. Such examples
 include:
 
-- Map tiles in ``MinecraftMapView``
+- Map tiles in `MinecraftMapView`
 - Images generated with the ``MinecraftWorldRenderer``, unless
   ``MinecraftWorldRenderer/Options-swift.struct/centerPositions`` is
   specified.

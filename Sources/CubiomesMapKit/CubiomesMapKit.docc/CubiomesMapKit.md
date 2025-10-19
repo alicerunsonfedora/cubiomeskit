@@ -1,4 +1,4 @@
-# MapKit for CubiomesKit
+# ``CubiomesMapKit``
 
 Display and interact with Minecraft world maps using a purpose-built
 MapKit view.
@@ -93,5 +93,5 @@ A map view can be displayed with either a ``MinecraftMap`` or
 
 ### Point Projections and Conversions
 
-- ``Point3D/init(projectedFrom:)``
-- ``CoreLocation/CLLocationCoordinate2D/init(projecting:)``
+- ``CubiomesKitCore/Point3D/init(projectedFrom:)``
+- ``_LocationEssentials/CLLocationCoordinate2D/init(projecting:)``
