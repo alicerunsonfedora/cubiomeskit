@@ -32,9 +32,9 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Set Swift version
-        uses: vapor/swiftly-action@v0.2
+        uses: beeauvin/swiftly-swift@v1
         with:
-          toolchain: main-snapshot-2025-10-02
+          swift-version: main-snapshot-2025-10-02
       - name: Build DocC
         run: |
           swift package --disable-sandbox \
