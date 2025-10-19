@@ -12,7 +12,7 @@ import SwiftUI
 /// A map view of a Minecraft world that can be navigated and interacted with.
 ///
 /// This map view supports typical map interactions such as panning and zooming while displaying content from a
-/// Minecraft world. Tiles are dynamically loaded in with a ``MinecraftWorldRenderer``.
+/// Minecraft world. Tiles are dynamically loaded in with a `MinecraftWorldRenderer`.
 ///
 /// - SeeAlso: For use in AppKit/UIKit views, use the ``MinecraftMapView``.
 public struct MinecraftMap {

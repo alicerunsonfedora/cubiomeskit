@@ -21,7 +21,8 @@ let package = Package(
             targets: ["CubiomesKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/stadiamaps/mapkit-caching-tile-overlay", from: "1.1.0")
+        .package(url: "https://github.com/stadiamaps/mapkit-caching-tile-overlay", from: "1.1.0"),
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.0"),
     ],
     targets: [
         .target(
@@ -51,15 +52,13 @@ let package = Package(
             ],
             resources: [
                 .process("Resources")
-            ],
-        ),
+            ]),
         .target(
             name: "CubiomesKit",
             dependencies: [
                 "CubiomesKitCore",
                 .target(name: "CubiomesMapKit", condition: .when(platforms: [.macOS, .iOS, .tvOS, .visionOS])),
-            ],
-        ),
+            ]),
         .testTarget(
             name: "CubiomesKitCoreTests",
             dependencies: [
@@ -67,14 +66,12 @@ let package = Package(
             ],
             resources: [
                 .process("__Snapshots__")
-            ],
-        ),
+            ]),
         .testTarget(
             name: "CubiomesMapKitTests",
             dependencies: [
                 "CubiomesMapKit",
-            ]
-        ),
+            ]),
     ]
 )
 

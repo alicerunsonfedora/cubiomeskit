@@ -14,7 +14,7 @@ import os
 /// A map view of a Minecraft world that can be navigated and interacted with.
 ///
 /// This map view supports typical map interactions such as panning and zooming while displaying content from a
-/// Minecraft world. Tiles are dynamically loaded in with a ``MinecraftWorldRenderer`` as a tile overlay. The map view
+/// Minecraft world. Tiles are dynamically loaded in with a `MinecraftWorldRenderer` as a tile overlay. The map view
 /// also supports standard MapKit annotations, along with the new Minecraft map annotations.
 ///
 /// - SeeAlso: For use in SwiftUI views, use the ``MinecraftMap`` view.

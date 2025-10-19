@@ -1,5 +1,5 @@
 {
-  "originHash" : "8e2c79b80be45de11208a4005cae2500f2e5ccec40bf55b22ed80334e11c065f",
+  "originHash" : "0b1e7318c593db79b142ce13f4b4e7e2015550e1cca20dea233ca9714c610bde",
   "pins" : [
     {
       "identity" : "mapkit-caching-tile-overlay",
@@ -8,6 +8,24 @@
       "state" : {
         "revision" : "600f218ccc090678ab46bab162a82f63949eb04f",
         "version" : "1.1.0"
+      }
+    },
+    {
+      "identity" : "swift-docc-plugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-docc-plugin",
+      "state" : {
+        "revision" : "3e4f133a77e644a5812911a0513aeb7288b07d06",
+        "version" : "1.4.5"
+      }
+    },
+    {
+      "identity" : "swift-docc-symbolkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-docc-symbolkit",
+      "state" : {
+        "revision" : "b45d1f2ed151d057b54504d653e0da5552844e34",
+        "version" : "1.0.0"
       }
     }
   ],

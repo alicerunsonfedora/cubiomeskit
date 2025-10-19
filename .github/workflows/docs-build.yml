@@ -31,19 +31,21 @@ jobs:
           submodules: recursive
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Select Xcode
-        uses: maxim-lobanov/setup-xcode@v1
+      - name: Set Swift version
+      - uses: vapor/swiftly-action@v0.2
         with:
-          xcode-version: '26.0.1'
+          toolchain: main-snapshot-2025-10-02
       - name: Build DocC
         run: |
-          xcodebuild clean -scheme "CubiomesKit" -derivedDataPath /tmp/docbuild -destination "generic/platform=macOS"
-          xcodebuild docbuild -scheme "CubiomesKit" -derivedDataPath /tmp/docbuild -destination 'generic/platform=macOS' -skipPackagePluginValidation CODE_SIGNING_ALLOWED=NO;
-          
-          $(xcrun --find docc) process-archive \
-            transform-for-static-hosting /tmp/docbuild/Build/Products/Debug/CubiomesKit.doccarchive \
-            --output-path docs \
-            --hosting-base-path '.';
+          swift package --disable-sandbox \
+            generate-documentation \
+            --enable-experimental-combined-documentation \
+            --target CubiomesKit \
+            --target CubiomesKitCore \
+            --target CubiomesMapKit \
+            --output-path "docs" \
+            --transform-for-static-hosting \
+            --hosting-base-path '.'
           
           echo "<script>window.location.href += \"/documentation/cubiomeskit\"</script>" > docs/index.html;
       - name: Upload artifact
