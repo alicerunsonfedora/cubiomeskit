@@ -11,10 +11,14 @@ programmatically in your macOS, iOS, and iPadOS apps. It leverages the
 generation, searches, and rendering map images.
 
 CubiomesKit also supports integration with MapKit to display interactive
-maps, with support for AppKit/UIKit and SwiftUI.
+maps, with support for AppKit/UIKit and SwiftUI. And, for Linux and Windows,
+it integrates with GTK4, libadwaita, and Shumate for interactive maps.
 
 > Important: At this time, only words generated in Minecraft Java Edition
 > are supported.
+
+> Important: Adwaita support is experimental and should not be used for
+> production apps at this time.
 
 > Note: This source code repository for CubiomesKit is being migrated over
 > to [SkyVault](https://source.marquiskurt.net) as part of a larger effort
@@ -31,6 +35,12 @@ CubiomesKit guarantees support for the following platforms:
 - iOS 16 or later
 - tvOS 16 or later
 - watchOS 8 or later
+
+CubiomesKit should also work on the following platforms, but support isn't
+guaranteed:
+
+- Linux (via Flatpak)
+- Windows
 
 ### Getting started
 

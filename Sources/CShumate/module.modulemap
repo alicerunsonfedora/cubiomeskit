@@ -1,0 +1,5 @@
+module CShumate [system] {
+    header "shim.h"
+    link "shumate-1.0"
+    export *
+}

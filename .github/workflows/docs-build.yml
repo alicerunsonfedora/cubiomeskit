@@ -35,6 +35,10 @@ jobs:
         uses: beeauvin/swiftly-swift@v1
         with:
           swift-version: main-snapshot-2025-10-02
+      - name: Install Brew Packages
+        run: |
+          brew update
+          brew install libadwaita-devel libshumate
       - name: Build DocC
         run: |
           swift package --disable-sandbox \
@@ -43,6 +47,7 @@ jobs:
             --target CubiomesKit \
             --target CubiomesKitCore \
             --target CubiomesMapKit \
+            --target CubiomesKitAdwaita \
             --output-path "docs" \
             --transform-for-static-hosting \
             --hosting-base-path '.'

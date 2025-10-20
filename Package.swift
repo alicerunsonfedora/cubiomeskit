@@ -23,8 +23,13 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/stadiamaps/mapkit-caching-tile-overlay", from: "1.1.0"),
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.0"),
+        .package(url: "https://git.aparoksha.dev/aparoksha/adwaita-swift", branch: "main"),
     ],
     targets: [
+        .systemLibrary(
+            name: "CShumate",
+            pkgConfig: "shumate-1.0"
+        ),
         .target(
             name: "Cubiomes",
             exclude: ["docs", "tests.c"],
@@ -54,10 +59,24 @@ let package = Package(
                 .process("Resources")
             ]),
         .target(
+            name: "CubiomesKitAdwaita",
+            dependencies: [
+                "CubiomesKitCore",
+                .product(name: "Adwaita", package: "adwaita-swift"),
+                .target(name: "CShumate", condition: .when(platforms: [.linux, .windows])),
+            ]),
+        .target(
             name: "CubiomesKit",
             dependencies: [
                 "CubiomesKitCore",
                 .target(name: "CubiomesMapKit", condition: .when(platforms: [.macOS, .iOS, .tvOS, .visionOS])),
+                .target(name: "CubiomesKitAdwaita", condition: .when(platforms: [.linux, .windows])),
+            ]),
+        .executableTarget(
+            name: "CubiomesKitAdwaitaDemo",
+            dependencies: [
+                .product(name: "Adwaita", package: "adwaita-swift"),
+                "CubiomesKit",
             ]),
         .testTarget(
             name: "CubiomesKitCoreTests",
@@ -76,7 +95,10 @@ let package = Package(
 )
 
 let appleRestrict = ["CubiomesMapKitTests"]
+let adwaitaRestrict = ["CubiomesKitAdwaitaDemo"]
 
 #if os(Linux) || os(Windows)
     package.targets.removeAll(where: { appleRestrict.contains($0.name) })
+#else
+    package.targets.removeAll(where: { adwaitaRestrict.contains($0.name) })
 #endif
