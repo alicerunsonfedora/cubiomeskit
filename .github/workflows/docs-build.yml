@@ -41,7 +41,7 @@ jobs:
           brew install libadwaita-devel libshumate
       - name: Build DocC
         run: |
-          swift package --disable-sandbox \
+          swift package --disable-sandbox --traits Adwaita \
             generate-documentation \
             --enable-experimental-combined-documentation \
             --target CubiomesKit \

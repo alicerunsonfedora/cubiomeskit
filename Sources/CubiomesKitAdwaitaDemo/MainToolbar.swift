@@ -1,3 +1,5 @@
+#if Adwaita
+
 import Adwaita
 
 struct MainToolbar: View {
@@ -39,3 +41,5 @@ struct MainToolbar: View {
         }
     }
 }
+
+#endif

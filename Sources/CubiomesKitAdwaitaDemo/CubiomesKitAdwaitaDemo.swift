@@ -1,3 +1,5 @@
+#if Adwaita
+
 import Adwaita
 import CubiomesKit
 
@@ -15,3 +17,5 @@ struct CubiomesKitAdwaitaDemo: App {
         }
     }
 }
+
+#endif

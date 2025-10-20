@@ -4,6 +4,6 @@
 @_exported import CubiomesMapKit
 #endif
 
-#if canImport(CubiomesKitAdwaita)
+#if Adwaita
 @_exported import CubiomesKitAdwaita
 #endif

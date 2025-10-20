@@ -1,4 +1,7 @@
+#if Adwaita
+
 import Adwaita
+import CAdw
 import CShumate
 import CubiomesKitCore
 import Foundation
@@ -14,3 +17,5 @@ public struct MinecraftMap: AdwaitaWidget {
         return map
     }
 }
+
+#endif
