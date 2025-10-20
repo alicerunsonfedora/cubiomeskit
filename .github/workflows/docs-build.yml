@@ -38,7 +38,7 @@ jobs:
       - name: Install Brew Packages
         run: |
           brew update
-          brew install libadwaita-devel libshumate
+          brew install libadwaita libshumate
       - name: Build DocC
         run: |
           swift package --disable-sandbox --traits Adwaita \
