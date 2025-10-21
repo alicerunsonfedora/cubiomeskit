@@ -7,14 +7,21 @@ import CubiomesKitCore
 import Foundation
 
 public struct MinecraftMap: AdwaitaWidget {
-    public init() {}
+    var world: MinecraftWorld
+
+    public init(world: MinecraftWorld) {
+        self.world = world
+    }
 
     public func initializeWidget() -> Any {
         let map = shumate_simple_map_new() as OpaquePointer?
         let registry = shumate_map_source_registry_new_with_defaults()
         let source = shumate_map_source_registry_get_by_id(registry, SHUMATE_MAP_SOURCE_OSM_MAPNIK)
+
+        shumate_map_source_set_min_zoom_level(source, 5)
+        shumate_map_source_set_max_zoom_level(source, 10)
         shumate_simple_map_set_map_source(map, source)
-        return map
+        return map as Any
     }
 }
 

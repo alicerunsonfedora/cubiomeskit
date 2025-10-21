@@ -57,6 +57,15 @@ dependencies: [
 Or go to **File -> Add Package Dependencies...** in Xcode to add the
 dependency.
 
+#### Adwaita support
+
+If you plan to work with Adwaita, you will need to have the following
+dependencies pre-installed and/or exposed through your Flatpak manifest
+configuration:
+
+- `libadwaita`
+- `libshumate`
+
 ## License
 
 CubiomesKit is free and open-source software licensed under the Mozilla

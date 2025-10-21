@@ -105,7 +105,3 @@ let adwaitaRestrict = ["CubiomesKitAdwaitaDemo"]
 #if os(Linux) || os(Windows)
     package.targets.removeAll(where: { appleRestrict.contains($0.name) })
 #endif
-
-#if !Adwaita
-    package.targets.removeAll(where: { adwaitaRestrict.contains($0.name) })
-#endif

@@ -1,7 +1,7 @@
 {
   "app-id": "dev.alidade.cubiomeskit.adwaita-demo",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "49",
+  "runtime-version": "48",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.swift6"
@@ -82,7 +82,7 @@
         }
       ],
       "build-commands": [
-        "swift build -c debug --static-swift-stdlib",
+        "swift build -c debug --static-swift-stdlib --traits Adwaita",
         "install -Dm755 .build/debug/CubiomesKitAdwaitaDemo /app/bin/CubiomesKitAdwaitaDemo"
       ]
     }

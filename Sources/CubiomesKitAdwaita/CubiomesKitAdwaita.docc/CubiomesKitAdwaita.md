@@ -10,12 +10,13 @@ CubiomesKitAdwaita provides map views and facilities similar to
 leverages the Adwaita for Swift and Shumate projects to create a
 consistent mapping experience.
 
-> Note: `CubiomesKitAdwaita` is available for the Linux and Windows
-> targets. For Apple platforms, please use `CubiomesMapKit` instead, which
-> provides a native mapping experience via MapKit.
-
 > Important: `CubiomesKitAdwaita` is highly experimental and should not be
-> used for production apps. Proceed at your own risk. 
+> used for production apps. Proceed at your own risk.
+
+### Enabling Adwaita support
+
+To maximize backwards compatibility, support for Adwatia and Shumate is
+gated behind the `Adwaita` Swift package trait.
 
 ## Topics
 

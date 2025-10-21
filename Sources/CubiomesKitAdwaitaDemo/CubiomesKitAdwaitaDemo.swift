@@ -9,12 +9,14 @@ struct CubiomesKitAdwaitaDemo: App {
 
     var scene: Scene {
         Window(id: "main") { window in
-            MinecraftMap()
+            MinecraftMap(world: try! MinecraftWorld(version: "1.21", seed: 123))
+                .frame(minWidth: 640, minHeight: 480)
                 .topToolbar {
                     MainToolbar(app: app, window: window)
                 }
                 .topBarStyle(.raised)
         }
+        .defaultSize(width: 800, height: 600)
     }
 }
 
