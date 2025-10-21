@@ -39,7 +39,7 @@ CubiomesKit guarantees support for the following platforms:
 CubiomesKit should also work on the following platforms, but support isn't
 guaranteed:
 
-- Linux (via Flatpak)
+- Linux
 - Windows
 
 ### Getting started
