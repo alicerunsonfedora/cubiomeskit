@@ -38,3 +38,10 @@ purposes:
 Each provide their own sets of documentation which can be loaded on the
 documentation website at https://cubiomeskit.alidade.dev, and they are
 listed individually inside the Developer Documentation window in Xcode.
+
+## Topics
+
+### Get started with CubiomesKit
+
+- <doc:MeetCubiomesKit>
+- <doc:Changelog>

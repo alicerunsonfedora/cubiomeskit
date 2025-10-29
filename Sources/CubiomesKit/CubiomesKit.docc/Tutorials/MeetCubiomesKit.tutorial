@@ -1,0 +1,17 @@
+@Tutorials(name: "CubiomesKit") {
+    @Intro(title: "Meet CubiomesKit") {
+        Start creating and inspecting worlds for _Minecraft: Java Edition_ using the CubiomesKit library and some
+        sample projects.
+
+        @Image(source: "Alidade", alt: "The CubiomesKit logo")
+    }
+
+    @Chapter(name: "CubiomesKit Fundamentals") {
+        Start working with the fundamental concepts of CubiomesKit.
+
+        @Image(source: "Icon", alt: "The CubiomesKit logo")
+
+        @TutorialReference(tutorial: "doc:Introduction")
+        @TutorialReference(tutorial: "doc:RenderWorlds")
+    }
+}

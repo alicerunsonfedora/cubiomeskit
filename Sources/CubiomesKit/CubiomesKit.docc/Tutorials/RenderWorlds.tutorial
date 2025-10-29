@@ -1,0 +1,85 @@
+@Tutorial(time: 10, projectFiles: "RenderWorldsSample.zip") {
+    @Intro(title: "Render maps of Minecraft worlds") {
+        Create images of Minecraft worlds suitable for maps.
+    }
+
+    @Section(title: "Define a region") {
+        Before we can start rendering map tiles, it is best to first define the region we would like to render.
+
+        @Steps {
+            @Step {
+                In `main.swift`, define a starting point where we will be rendering tiles.
+
+                @Code(name: "main.swift", file: "main-AddedOrigin.swift", previousFile: "main-Original.swift")
+            }
+            @Step {
+                Define a size for the region. Ideally, we would want a square region, where each side length matches
+                each other.
+
+                @Code(name: "main.swift", file: "main-DefinedSize.swift")
+            }
+            @Step {
+                Finally, create a ``MinecraftWorldRect`` using our origin point and size.
+
+                @Code(name: "main.swift", file: "main-CreatedRect.swift")
+            }
+        }
+    }
+
+    @Section(title: "Using the renderer") {
+        Now that we have our region define, we can create a renderer and generate map tile images.
+
+        @Steps {
+            @Step {
+                Create a new ``MinecraftWorldRenderer``, providing the world from earlier.
+
+                Because rendering can be an expensive operating, the renderer uses a separate actor to handle rendering
+                tasks.
+
+                @Code(name: "main.swift", file: "main-CreatedRenderer.swift", previousFile: "main-PreRenderer.swift")
+            }
+            @Step {
+                Set `mapTile` to the output of `render(inRange:)` and run the project.
+
+                You should see a new `tile.ppm` file in the directory that opens in Finder.
+
+                @Code(name: "main.swift", file: "main-RenderedTile.swift") {
+                    @Image(source: "RenderWorlds-FirstTile.png", alt: "The new tile from the first run of the app.")
+                }
+            }
+            @Step {
+                CubiomesKit uses a color scheme similar to that of [Amidst](https://github.com/toolbox4minecraft/amidst)
+                by default. However, this can be adjusted.
+
+                In the renderer, provide the `.naturalColors` and `.centerPositions` options.
+
+                @Code(name: "main.swift", file: "main-NaturalColors.swift") {
+                    @Image(source: "RenderWorlds-NaturalTile.png", alt: "The same tile with natural colors.")
+                }
+            }
+        }
+    }
+
+    @Assessments {
+        @MultipleChoice {
+            **True or False**: World rendering is a synchronous operations that blocks the main thread.
+
+            @Choice(isCorrect: false) {
+                True
+
+                @Justification(reaction: "Try again!") {
+                    Revisit the notes in "Using the renderer".
+                }
+            }
+
+            @Choice(isCorrect: true) {
+                False
+
+                @Justification(reaction: "That's right!") {
+                    World rendering happens asynchronously on a separate actor to ensure that the main thread is not
+                    blocked.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,133 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Start working with CubiomesKit") {
+        Add CubiomesKit to a sample project and start working with the API.
+    }
+
+    @Section(title: "Add CubiomesKit to a Swift package") {
+        CubiomesKit can be added to any Swift package or project easily. We'll create a sample executable that uses the
+        CubiomesKit APIs.
+
+        @Steps {
+            @Step {
+                In Xcode, create a new Swift package called `MyCubiomesKitSample`.
+
+                Alternatively, you can create one from the command line with `swift package init`.
+
+                @Image(source: "XcodeNewPackage", alt: "Xcode prompting to create a new package.")
+            }
+            @Step {
+                In the `Package.swift` file, add CubiomesKit as a dependency.
+
+                > Note: Because CubiomesKit uses unsafe build flags, we use the branch with commit `80f2f5ba38` instead
+                > of the tag `2.0.0` directly. This shouldn't be necessary for Xcode projects, however, and can be added
+                > normally.
+
+                @Code(name: "Package.swift",
+                      file: "Package-DependencyAdded.swift",
+                      previousFile: "Package-Original.swift")
+            }
+            @Step {
+                Set up the package to make an executable target and add CubiomesKit as a product dependency.
+
+                > Note: CubiomesKit officially supports macOS 13 and later, iOS 16 and later, visionOS 1 and later, and
+                > watchOS 9 and later.
+
+                @Code(name: "Package.swift", file: "Package-UpdatedMetadata.swift")
+            }
+        }
+    }
+
+    @Section(title: "Create a Minecraft world") {
+        Now that CubiomesKit has been added to the project, let's start using it.
+
+        @Steps {
+            @Step {
+                Create a new `main.swift` file in `Sources/MyCubiomesKitSample` and import CubiomesKit.
+
+                @Code(name: "main.swift", file: "main-ImportedPackage.swift")
+            }
+
+            @Step {
+                Create a new `MinecraftWorld` for version `1.21 WD` with the seed `12345`. The initializer can throw,
+                but we're making it return `nil` in the event it fails.
+
+                > Note: `1.21 WD` encapsulates 1.21.3-1.21.10, which covers updates like _The Garden Awakens_,
+                > _Chase the Skies_, and _The Copper Age_.
+
+                @Code(name: "main.swift", file: "main-CreatedWorld.swift")
+            }
+        }
+    }
+
+    @Section(title: "Search for a biome") {
+        CubiomesKit offers the ability to search for biomes relative to a Minecraft coordinate. Let's use this to
+        search for a plains biome.
+
+        @Steps {
+            @Step {
+                Create a Minecraft point at X=16, Z=16 and call `findBiomes(ofType:at:)` to find all the plains biomes
+                near our new point.
+
+                > Note: By default, it will search within a 4000 block radius in the overworld.
+
+                @Code(name: "main.swift", file: "main-BiomeSearch.swift", previousFile: "main-CreatedWorld.swift")
+            }
+
+            @Step {
+                Run our new executable with either `swift run` or by pressing the Run button in the Xcode toolbar.
+
+                @Image(source: "RunSampleProject-Introduction", alt: "The terminal with the output of the sample app.")
+            }
+        }    
+    }
+
+    @Assessments {
+        @MultipleChoice {
+            **True or False**: CubiomesKit requires the latest macOS version.
+
+            @Choice(isCorrect: false) {
+                True
+
+                @Justification(reaction: "Try again!") {
+                    Revisit the comments in "Add CubiomesKit to a Swift package".
+                }
+            }
+
+            @Choice(isCorrect: true) {
+                False
+
+                @Justification(reaction: "That's right!") {
+                    CubiomesKit supports macOS 13.0 Ventura and later.
+                }
+            }
+        }
+
+        @MultipleChoice {
+            Which method was used to search for a biome in a Minecraft world?
+
+            @Choice(isCorrect: false) {
+                `MinecraftWorldFinder.searchForBiome(_:at:)`
+
+                @Justification(reaction: "Try again!") {
+                    Biomes are considered a part of the world. Check "Search for a biome".
+                }
+            }
+
+            @Choice(isCorrect: true) {
+                `MinecraftWorld.findBiomes(ofType:at:)`
+
+                @Justification(reaction: "That's right!") {
+                    `findBiomes(ofType:at:)` are part of a Minecraft world.
+                }
+            }
+
+            @Choice(isCorrect: false) {
+                `MinecraftWorld.search(forBiome:near:)`
+
+                @Justification(reaction: "Not quite!") {
+                    Check "Search for a biome" to revisit the function signature.
+                }
+            }
+        }
+    }
+}
