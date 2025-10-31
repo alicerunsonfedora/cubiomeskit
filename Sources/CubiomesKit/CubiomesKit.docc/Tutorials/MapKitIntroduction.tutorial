@@ -1,0 +1,112 @@
+@Tutorial(time: 30, projectFiles: "HermitcraftMaps.zip") {
+    @Intro(title: "Display interactive maps on iOS, iPadOS, and macOS") {
+        Display an interactive map of a Minecraft world using CubiomesKit, MapKit, and SwiftUI.
+    }
+
+    @Section(title: "Add a map to Hermitcraft Maps") {
+        A ``MinecraftMap`` view allows you to insert a map of a Minecraft world into an existing SwiftUI view, and it
+        functions like a MapKit map.
+
+        @Steps {
+            @Step {
+                Open the sample project in Xcode.
+            }
+            @Step {
+                In `HermitcraftMap.swift`, create a `MinecraftWorld` using the Hermitcraft seed.
+
+                @Code(name: "HermitcraftMap.swift",
+                      file: "HermitcraftMap-AddedWorld.swift",
+                      previousFile: "HermitcraftMap-Original.swift")
+            }
+            @Step {
+                Create a `MinecraftMap` with the world we created as an argument.
+
+                > Tip: To hide the title bar, use `.windowStyle(.hiddenTitleBar)` on the WindowGroup in
+                > `HermitcraftMapsApp.swift`
+
+                @Code(name: "HermitcraftMap.swift", file: "HermitcraftMap-AddedMap.swift") {
+                    @Image(source: "HermitcraftMap-AddedMapVisual",
+                           alt: "The Hermitcraft Maps app with the map loaded.")
+                }
+            }
+            
+        }
+    }
+    @Section(title: "Customize the map") {
+        The map provides a lot of functionality out of the box, such as tiling, panning, and zooming. We can customize
+        the experience even further to better suit our use case.
+
+        @Steps {
+            @Step {
+                Use the `mapColorScheme(_:)` modifier to use a more natural color scheme that resembles the real
+                Minecraft terrain.
+
+                @Code(name: "HermitcraftMap.swift",
+                      file: "HermitcraftMap-ColorSchemes.swift",
+                      previousFile: "HermitcraftMap-AddedMap.swift") {
+                    @Image(source: "HermitcraftMap-NaturalColors",
+                           alt: "The Hermitcraft Maps app with a more natural color scheme.")
+                }
+            }
+            @Step {
+                Add an `ornaments(_:)` modifier and include the zoom and compass controls. These will display on the map
+                to allow players to interact with the map in other ways.
+
+                @Code(name: "HermitcraftMap.swift", file: "HermitcraftMap-AddedOrnaments.swift") {
+                    @Image(source: "HermitcraftMap-MapControls", alt: "The Hermitcraft Maps app with map controls.")
+                }
+            }
+        }
+    }
+    @Assessments {
+        @MultipleChoice {
+            Which SwiftUI view displays a Minecraft world map?
+
+            @Choice(isCorrect: false) {
+                `MinecraftWorldMap`
+
+                @Justification(reaction: "Not quite!") {
+                    Refer to the "Add a map to Hermitcraft Maps" section.
+                }
+            }
+
+            @Choice(isCorrect: true) {
+                `MinecraftMap`
+
+                @Justification(reaction: "That's right!") {
+                    The ``MinecraftMap`` view allows displaying Minecraft world maps.
+                }
+            }
+
+            @Choice(isCorrect: false) {
+                `Map`
+
+                @Justification(reaction: "Try again!") {
+                    Refer to the "Add a map to Hermitcraft Maps" section.
+                }
+            }
+        }
+
+        @MultipleChoice {
+            **True or False**: To change the map's color scheme, the `colorScheme(_:)` modifier can be used.
+
+            @Choice(isCorrect: false) {
+                True 
+
+                @Justification(reaction: "Try again!") {
+                    Consider what the `colorScheme(_:)` modifier does in SwiftUI and revisit the "Customize the map"
+                    section.
+                }
+            }
+
+            @Choice(isCorrect: true) {
+                False
+
+                @Justification(reaction: "That's right!") {
+                    `colorScheme(_:)` is used to control the view's preferred color scheme and is a default modifier of
+                    SwiftUI. To change the map's color scheme, use `mapColorScheme(_:)`.
+                }
+            }
+        }
+    }
+}

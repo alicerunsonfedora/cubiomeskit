@@ -14,4 +14,12 @@
         @TutorialReference(tutorial: "doc:Introduction")
         @TutorialReference(tutorial: "doc:RenderWorlds")
     }
+
+    @Chapter(name: "Map Experiences with CubiomesKit") {
+        Create interactive mapping experiences using maps views in CubiomesKit.
+
+        @Image(source: "Icon", alt: "The CubiomesKit logo")
+        
+        @TutorialReference(tutorial: "doc:MapKitIntroduction")
+    }
 }
