@@ -19,9 +19,9 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: recursive
-    - uses: vapor/swiftly-action@v0.2
+    - uses: swift-actions/setup-swift@v3
       with:
-        toolchain: main-snapshot-2025-10-02
+        swift-version: main-snapshot-2025-10-02
     - name: Build
       run: swift build -v
     - name: Run tests
