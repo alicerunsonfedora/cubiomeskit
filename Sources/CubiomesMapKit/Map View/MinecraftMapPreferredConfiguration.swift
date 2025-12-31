@@ -38,6 +38,9 @@ public struct MinecraftMapPreferredConfiguration {
         }
     }
 
+    /// Whether to let users draw on the map through PencilKit.
+    public var allowPencilKitDrawings = false
+
     /// Whether the current world dimension determines the appropriate system appearance for the map view.
     ///
     /// Some world dimensions such as the overworld might provide inaccessible experiences when using the default
@@ -67,10 +70,12 @@ public struct MinecraftMapPreferredConfiguration {
     /// - Parameter ephemeralRendering: Whether to use ephemeral rendering.
     /// - Parameter ornaments: The ornaments that should be displayed on the map.
     public init(
+        allowDrawingWithPencilKit: Bool = false,
         dimensionDeterminesSystemAppearance: Bool,
         ephemeralRendering: Bool,
         ornaments: Ornaments
     ) {
+        self.allowPencilKitDrawings = allowDrawingWithPencilKit
         self.dimensionDeterminesSystemAppearance = dimensionDeterminesSystemAppearance
         self.ephemeralRendering = ephemeralRendering
         self.ornaments = ornaments
@@ -81,6 +86,7 @@ public extension MinecraftMapPreferredConfiguration {
     /// The default preferred configuration.
     static func preferredDefault() -> Self {
         MinecraftMapPreferredConfiguration(
+            allowDrawingWithPencilKit: false,
             dimensionDeterminesSystemAppearance: true,
             ephemeralRendering: false,
             ornaments: [.compass]

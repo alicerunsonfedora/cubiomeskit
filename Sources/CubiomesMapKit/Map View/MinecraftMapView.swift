@@ -10,6 +10,11 @@ import CubiomesKitCore
 import Foundation
 import MapKit
 import os
+import PencilKit
+
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// A map view of a Minecraft world that can be navigated and interacted with.
 ///
@@ -19,9 +24,6 @@ import os
 ///
 /// - SeeAlso: For use in SwiftUI views, use the ``MinecraftMap`` view.
 public final class MinecraftMapView: MKMapView {
-    @available(*, deprecated, renamed: "MinecraftMapPreferredConfiguration.Ornaments")
-    public typealias Ornaments = MinecraftMapPreferredConfiguration.Ornaments
-
     enum ConfiguredContentView {
         case annotation((any MKAnnotation) -> MKAnnotationView)
         case overlay((any MKOverlay) -> MKOverlayRenderer)
@@ -55,21 +57,6 @@ public final class MinecraftMapView: MKMapView {
         }
     }
 
-    /// Whether Minecraft map tiles should be rendered ephemerally (i.e., without caching).
-    ///
-    /// By default, the tile overlay renderer will create and use a cache to store generated tiles to improve
-    /// performance, rather than regenerating the tile every time it is requested. However, this behavior can be
-    /// disabled for debugging purposes or for other reasons.
-    ///
-    /// - Note: This option will always return false in the ``MinecraftMap`` view. If you need the SwiftUI view to
-    ///   leverage ephemeral rendering, create a wrapper around ``MinecraftMapView``.
-    /// - Important: To improve performance in your apps, it is recommended to keep this option disabled.
-    @available(*, deprecated, renamed: "mapConfiguration.ephemeralRendering")
-    public var ephemeralRendering: Bool {
-        get { return mapConfiguration.ephemeralRendering }
-        set { mapConfiguration.ephemeralRendering = newValue }
-    }
-
     /// The rendering options to the map's renderer.
     public var renderOptions: MinecraftWorldRenderer.Options = [] {
         didSet {
@@ -77,15 +64,11 @@ public final class MinecraftMapView: MKMapView {
         }
     }
 
-    /// The ornaments that should be displayed on top of the map view.
-    @available(*, deprecated, renamed: "mapConfiguration.ornaments")
-    public var ornaments: Ornaments {
-        get { return mapConfiguration.ornaments }
-        set { mapConfiguration.ornaments = newValue }
-    }
-
     /// The world the map view will render.
     public var world: MinecraftWorld
+
+    /// The drawings visible on the map.
+    public var drawings: [MinecraftMapDrawing]? = nil
 
     /// The delegate for handling interaction events.
     ///
@@ -93,12 +76,38 @@ public final class MinecraftMapView: MKMapView {
     /// delegate to display Minecraft tiles.
     public weak var mcMapViewDelegate: (any MinecraftMapViewDelegate)?
 
+    #if canImport(UIKit)
+    lazy var addDrawingButton: UIBarButtonItem = {
+        UIBarButtonItem(
+            title: "Add Drawing",
+            image: UIImage(systemName: "plus"),
+            target: self,
+            action: #selector(addCurrentDrawing))
+    }()
+
+    lazy var drawingCanvas: TransientDrawingCanvas = {
+        let canvas = TransientDrawingCanvas(frame: frame)
+        canvas.allowsDrawing = false
+        canvas.translatesAutoresizingMaskIntoConstraints = false
+        canvas.isOpaque = false
+        canvas.backgroundColor = .clear
+        canvas.isHidden = !mapConfiguration.allowPencilKitDrawings
+        return canvas
+    }()
+    #endif
+
+    var configurableContentViews: [ObjectIdentifier : ConfiguredContentView] = [:]
+    var isDrawing = false {
+        didSet { didChangeIsDrawing() }
+    }
+    var logger: Logger
     var minecraftOverlay: (any MinecraftTileOverlay)!
     var mapContent: [any MinecraftMapContent] = []
-    var configurableContentViews: [ObjectIdentifier : ConfiguredContentView] = [:]
 
-    var logger: Logger
-
+    #if canImport(UIKit)
+    var toolPicker = PKToolPicker()
+    #endif
+    
     /// Initialize a map view for a specified Minecraft world in a given frame.
     ///
     /// - Parameter world: The Minecraft world to be rendered on the map.
@@ -120,16 +129,9 @@ public final class MinecraftMapView: MKMapView {
         super.init(frame: frame)
         self.delegate = self
 
-        self.registerAnnotationView(of: MKMarkerAnnotationView.self)
-        self.registerAnnotationView(of: MinecraftMapMarkerAnnotationView.self)
-
         self.configureMapView()
         self.setViableAppearanceForDimension()
         self.centerCoordinate = CLLocationCoordinate2D(projecting: centerCoordinate)
-
-        let overlay = MinecraftRenderedTileOverlay(world: world, dimension: dimension)
-        self.addOverlay(overlay, level: .aboveLabels)
-        self.minecraftOverlay = overlay
     }
 
     /// Registers the annotation view that should appear on the map for the corresponding custom Minecraft map content.
@@ -178,6 +180,17 @@ public final class MinecraftMapView: MKMapView {
         self.isPitchEnabled = false
         self.isZoomEnabled = true
         self.isRotateEnabled = false
+
+        self.registerAnnotationView(of: MKMarkerAnnotationView.self)
+        self.registerAnnotationView(of: MinecraftMapMarkerAnnotationView.self)
+
+        let overlay = MinecraftRenderedTileOverlay(world: world, dimension: dimension)
+        self.addOverlay(overlay, level: .aboveLabels)
+        self.minecraftOverlay = overlay
+
+        #if canImport(UIKit)
+        setupPencilKitSupportIfAvailable()
+        #endif
     }
 
     func reconfigureOrnaments() {
@@ -199,65 +212,18 @@ public final class MinecraftMapView: MKMapView {
         }
     }
 
-    func redrawDimensionIfNeeded() {
-        guard let minecraftOverlay else { return }
-        if let renderedOverlay = minecraftOverlay as? MinecraftRenderedTileOverlay {
-            renderedOverlay.configuration.dimension = self.dimension
-
-            // NOTE(alicerunsonfedora): For some reason, a second cache flush is needed to get the map to fully clear
-            //out the tiles. Might be a beta SDK bug, or it could be some unintentional race condition caused by
-            // NSCache.
-            renderedOverlay.cache.flush()
-        }
-        if let renderer = renderer(for: minecraftOverlay) as? CachingTileOverlayRenderer {
-            renderer.setNeedsDisplay()
-        }
-        self.setViableAppearanceForDimension()
-    }
-
-    func setViableAppearanceForDimension() {
-        guard mapConfiguration.dimensionDeterminesSystemAppearance else {
-            #if os(macOS)
-            self.appearance = .currentDrawing()
-            #else
-            self.overrideUserInterfaceStyle = .unspecified
-            #endif
-            return
-        }
-
-        switch dimension {
-        case .overworld, .end:
-            #if os(macOS)
-            self.appearance = NSAppearance(named: .aqua)
-            #else
-            self.overrideUserInterfaceStyle = .light
-            #endif
-        default:
-            #if os(macOS)
-            self.appearance = .currentDrawing()
-            #else
-            self.overrideUserInterfaceStyle = .dark
-            #endif
-        }
-    }
-
     func didChangeMapConfiguration() {
         if let overlay = minecraftOverlay as? MinecraftRenderedTileOverlay {
             overlay.ephemeral = mapConfiguration.ephemeralRendering
         }
         mcMapViewDelegate?.mapView(self, didChangeEphemeralRendering: mapConfiguration.ephemeralRendering)
         reconfigureOrnaments()
+        drawingCanvas.isHidden = !mapConfiguration.allowPencilKitDrawings
     }
 }
 
 extension MinecraftMapView {
     func registerAnnotationView<T: NSObject>(of type: T.Type) {
         self.register(type, forAnnotationViewWithReuseIdentifier: "\(type)")
-    }
-}
-
-extension CLLocationCoordinate2D: @retroactive Equatable {
-    public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
-        return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
     }
 }

@@ -52,14 +52,22 @@ public struct MinecraftMap {
                 parent.centerCoordinate = mapView.centerBlockCoordinate
             }
         }
+
+        public func mapView(_ mapView: MinecraftMapView, addedDrawing drawing: MinecraftMapDrawing) {
+            self.parent.addedDrawingCallback?(drawing)
+        }
     }
 
     @Binding var centerCoordinate: CGPoint
+    @Binding var isDrawing: Bool
+    
     var world: MinecraftWorld
 
+    var addedDrawingCallback: ((MinecraftMapDrawing) -> Void)?
     var dimension: MinecraftWorld.Dimension = .overworld
     var ornaments: Ornaments = []
     var annotations: [any MinecraftMapContent] = []
+    var pencilKitSupported = false
     var preferNaturalColors: Bool = false
     var automaticMapSystemAppearance: Bool = true
     var configuredContentViews: [ObjectIdentifier: MinecraftMapView.ConfiguredContentView] = [:]
@@ -76,6 +84,7 @@ public struct MinecraftMap {
         self.world = world
         self.dimension = dimension
         self._centerCoordinate = centerCoordinate ?? Binding.constant(.zero)
+        self._isDrawing = Binding.constant(false)
     }
 
     /// Create a Minecraft map view with additional annotations.
@@ -92,33 +101,15 @@ public struct MinecraftMap {
         self.world = world
         self.dimension = dimension
         self._centerCoordinate = centerCoordinate ?? Binding.constant(.zero)
+        self._isDrawing = Binding.constant(false)
         self.annotations = annotations()
-    }
-
-    init(
-        world: MinecraftWorld,
-        centerCoordinate: Binding<CGPoint>? = nil,
-        ornaments: Ornaments = [],
-        annotations: [any MinecraftMapContent] = [],
-        dimension: MinecraftWorld.Dimension = .overworld,
-        preferNaturalColors: Bool = false,
-        automaticMapSystemAppearance: Bool = true,
-        configuredViews: [ObjectIdentifier: MinecraftMapView.ConfiguredContentView] = [:]
-    ) {
-        self.world = world
-        self.ornaments = ornaments
-        self._centerCoordinate = centerCoordinate ?? Binding.constant(.zero)
-        self.dimension = dimension
-        self.annotations = annotations
-        self.preferNaturalColors = preferNaturalColors
-        self.automaticMapSystemAppearance = automaticMapSystemAppearance
-        self.configuredContentViews = configuredViews
     }
 
     @MainActor
     func createMapView() -> MinecraftMapView {
         let mapView = MinecraftMapView(world: world, frame: .zero, centerCoordinate: centerCoordinate)
         mapView.mapConfiguration.ornaments = ornaments
+        mapView.mapConfiguration.allowPencilKitDrawings = pencilKitSupported
         mapView.dimension = dimension
         mapView.addMapContents(annotations)
         mapView.mapContent = annotations
@@ -134,6 +125,8 @@ public struct MinecraftMap {
     @MainActor
     func updateMapView(_ mapView: MinecraftMapView) {
         mapView.mapConfiguration.ornaments = ornaments
+        mapView.mapConfiguration.allowPencilKitDrawings = pencilKitSupported
+        mapView.isDrawing = isDrawing
         mapView.dimension = dimension
         mapView.configurableContentViews = configuredContentViews
         if mapView.centerBlockCoordinate != centerCoordinate {
@@ -150,31 +143,17 @@ public struct MinecraftMap {
 
     /// Determines the map control ornaments that should be displayed on the map.
     public func ornaments(_ ornaments: Ornaments) -> MinecraftMap {
-        MinecraftMap(
-            world: self.world,
-            centerCoordinate: self._centerCoordinate,
-            ornaments: ornaments,
-            annotations: self.annotations,
-            dimension: self.dimension,
-            preferNaturalColors: self.preferNaturalColors,
-            automaticMapSystemAppearance: self.automaticMapSystemAppearance,
-            configuredViews: self.configuredContentViews
-        )
+        var newSelf = self
+        newSelf.ornaments = ornaments
+        return newSelf
     }
 
     /// Specify the color scheme to be used in the map view.
     /// - Parameter colorScheme: The color scheme to use in the map view.
     public func mapColorScheme(_ colorScheme: MinecraftMap.ColorScheme) -> MinecraftMap {
-        MinecraftMap(
-            world: self.world,
-            centerCoordinate: self._centerCoordinate,
-            ornaments: self.ornaments,
-            annotations: self.annotations,
-            dimension: self.dimension,
-            preferNaturalColors: colorScheme == .natural,
-            automaticMapSystemAppearance: self.automaticMapSystemAppearance,
-            configuredViews: self.configuredContentViews
-        )
+        var newSelf = self
+        newSelf.preferNaturalColors = colorScheme == .natural
+        return newSelf
     }
 
     /// Determines whether the map view's preferred color scheme is inferred from the world dimension instead of the
@@ -184,16 +163,9 @@ public struct MinecraftMap {
     /// dimension provided to ensure legibility. Setting this modifier to false disables the behavior, falling back to
     /// the parent view's ``MinecraftMap/preferredColorScheme(_:)``.
     public func dimensionDeterminesPreferredColorScheme(_ allowed: Bool = true) -> MinecraftMap {
-        MinecraftMap(
-            world: self.world,
-            centerCoordinate: self._centerCoordinate,
-            ornaments: self.ornaments,
-            annotations: self.annotations,
-            dimension: self.dimension,
-            preferNaturalColors: self.preferNaturalColors,
-            automaticMapSystemAppearance: allowed,
-            configuredViews: self.configuredContentViews
-        )
+        var newSelf = self
+        newSelf.automaticMapSystemAppearance = allowed
+        return newSelf
     }
 
     /// Specifies the annotation view that should appear on the map for the corresponding custom Minecraft map content.
@@ -208,18 +180,11 @@ public struct MinecraftMap {
         for annotationType: T.Type,
         build builder: @escaping (any MKAnnotation) -> MKAnnotationView
     ) -> MinecraftMap {
+        var newSelf = self
         var newViews = configuredContentViews
         newViews[ObjectIdentifier(annotationType)] = .annotation(builder)
-        return MinecraftMap(
-            world: self.world,
-            centerCoordinate: self._centerCoordinate,
-            ornaments: self.ornaments,
-            annotations: self.annotations,
-            dimension: self.dimension,
-            preferNaturalColors: self.preferNaturalColors,
-            automaticMapSystemAppearance: self.automaticMapSystemAppearance,
-            configuredViews: newViews
-        )
+        newSelf.configuredContentViews = newViews
+        return newSelf
     }
 
     /// Specifies the overlay renderer that should appear on the map for the corresponding custom Minecraft map content.
@@ -235,19 +200,37 @@ public struct MinecraftMap {
         for overlayType: T.Type,
         build builder: @escaping (any MKOverlay) -> MKOverlayRenderer
     ) -> MinecraftMap {
+        var newSelf = self
         var newViews = configuredContentViews
         newViews[ObjectIdentifier(overlayType)] = .overlay(builder)
-        return MinecraftMap(
-            world: self.world,
-            centerCoordinate: self._centerCoordinate,
-            ornaments: self.ornaments,
-            annotations: self.annotations,
-            dimension: self.dimension,
-            preferNaturalColors: self.preferNaturalColors,
-            automaticMapSystemAppearance: self.automaticMapSystemAppearance,
-            configuredViews: newViews
-        )
+        newSelf.configuredContentViews = newViews
+        return newSelf
     }
+
+    #if canImport(UIKit)
+    /// Allows the map to support drawing via PencilKit.
+    public func allowsPencilKitDrawings(_ active: Bool = true) -> Self {
+        var newSelf = self
+        newSelf.pencilKitSupported = active
+        return newSelf
+    }
+
+    /// Listens for whenever a drawing has been added to the map.
+    /// - Parameter callback: The callback to execute when a drawing has been added.
+    public func addedMapDrawing(_ callback: @escaping (MinecraftMapDrawing) -> Void) -> Self {
+        var newSelf = self
+        newSelf.addedDrawingCallback = callback
+        return newSelf
+    }
+
+    /// Tells the map view to activate the drawing canvas.
+    /// - Parameter isDrawing: Whether the canvas should be active.
+    public func activateDrawingCanvas(isDrawing: Binding<Bool>) -> Self {
+        var newSelf = self
+        newSelf._isDrawing = isDrawing
+        return newSelf
+    }
+    #endif
 }
 
 // MARK: - View Representable Conformance

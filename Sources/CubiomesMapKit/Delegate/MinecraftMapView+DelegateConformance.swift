@@ -33,6 +33,8 @@ extension MinecraftMapView: MKMapViewDelegate {
             renderer.strokeColor = polyline.color
             renderer.lineWidth = 4
             return renderer
+        case let mapDrawing as MinecraftDrawingOverlay:
+            return MinecraftMapDrawingOverlayRenderer(overlay: mapDrawing)
         default:
             return MKOverlayRenderer(overlay: overlay)
         }

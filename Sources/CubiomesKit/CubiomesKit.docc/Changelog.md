@@ -7,6 +7,14 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## 31 Dec 2025
+
+### MapKit
+
+- The `MinecraftMapView` and `MinecraftMap` now officially include support
+  for PencilKit, allowing users to draw directly on the map and create
+  custom overlays with Apple Pencil.
+
 ## 19 Oct 2025
 
 ### Documentation

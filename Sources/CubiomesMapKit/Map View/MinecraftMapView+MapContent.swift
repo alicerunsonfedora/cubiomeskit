@@ -118,6 +118,13 @@ extension MinecraftMapView {
             }
         }
 
+        if let drawings {
+            for drawing in drawings {
+                let overlay = MinecraftDrawingOverlay(model: drawing)
+                addOverlay(overlay, level: .aboveLabels)
+            }
+        }
+
         mapContent = contents
     }
 

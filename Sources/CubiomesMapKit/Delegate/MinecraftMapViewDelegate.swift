@@ -35,6 +35,12 @@ public protocol MinecraftMapViewDelegate: AnyObject {
     ///
     /// - Parameter mapView: The Minecraft map view that had its visible region changed.
     func mapViewDidChangeVisibleRegion(_ mapView: MinecraftMapView)
+
+    /// An event that occurs when the map has added a drawing to the map
+    /// .
+    /// - Parameter mapView: The Minecraft map view that added a drawing.
+    /// - Parameter drawing: The drawing that was added to map.
+    func mapView(_ mapView: MinecraftMapView, addedDrawing drawing: MinecraftMapDrawing)
 }
 
 extension MinecraftMapViewDelegate {
@@ -42,4 +48,5 @@ extension MinecraftMapViewDelegate {
     public func mapView(_ mapView: MinecraftMapView, didSelect view: MKAnnotationView) {}
     public func mapView(_ mapView: MinecraftMapView, didChangeEphemeralRendering ephemeral: Bool) {}
     public func mapViewDidChangeVisibleRegion(_ mapView: MinecraftMapView) {}
+    public func mapView(_ mapView: MinecraftMapView, addedDrawing drawing: MinecraftMapDrawing) {}
 }
