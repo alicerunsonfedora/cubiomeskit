@@ -126,7 +126,9 @@ public struct MinecraftMap {
     func updateMapView(_ mapView: MinecraftMapView) {
         mapView.mapConfiguration.ornaments = ornaments
         mapView.mapConfiguration.allowPencilKitDrawings = pencilKitSupported
-        mapView.isDrawing = isDrawing
+        #if canImport(UIKit)
+            mapView.isDrawing = isDrawing
+        #endif
         mapView.dimension = dimension
         mapView.configurableContentViews = configuredContentViews
         if mapView.centerBlockCoordinate != centerCoordinate {

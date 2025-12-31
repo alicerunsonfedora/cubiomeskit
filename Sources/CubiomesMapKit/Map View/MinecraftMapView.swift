@@ -9,11 +9,11 @@ import CachingMapKitTileOverlay
 import CubiomesKitCore
 import Foundation
 import MapKit
-import os
 import PencilKit
+import os
 
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #endif
 
 /// A map view of a Minecraft world that can be navigated and interacted with.
@@ -77,37 +77,39 @@ public final class MinecraftMapView: MKMapView {
     public weak var mcMapViewDelegate: (any MinecraftMapViewDelegate)?
 
     #if canImport(UIKit)
-    lazy var addDrawingButton: UIBarButtonItem = {
-        UIBarButtonItem(
-            title: "Add Drawing",
-            image: UIImage(systemName: "plus"),
-            target: self,
-            action: #selector(addCurrentDrawing))
-    }()
+        lazy var addDrawingButton: UIBarButtonItem = {
+            UIBarButtonItem(
+                title: "Add Drawing",
+                image: UIImage(systemName: "plus"),
+                target: self,
+                action: #selector(addCurrentDrawing)
+            )
+        }()
 
-    lazy var drawingCanvas: TransientDrawingCanvas = {
-        let canvas = TransientDrawingCanvas(frame: frame)
-        canvas.allowsDrawing = false
-        canvas.translatesAutoresizingMaskIntoConstraints = false
-        canvas.isOpaque = false
-        canvas.backgroundColor = .clear
-        canvas.isHidden = !mapConfiguration.allowPencilKitDrawings
-        return canvas
-    }()
+        lazy var drawingCanvas: TransientDrawingCanvas = {
+            let canvas = TransientDrawingCanvas(frame: frame)
+            canvas.allowsDrawing = false
+            canvas.translatesAutoresizingMaskIntoConstraints = false
+            canvas.isOpaque = false
+            canvas.backgroundColor = .clear
+            canvas.isHidden = !mapConfiguration.allowPencilKitDrawings
+            return canvas
+        }()
     #endif
 
-    var configurableContentViews: [ObjectIdentifier : ConfiguredContentView] = [:]
-    var isDrawing = false {
-        didSet { didChangeIsDrawing() }
-    }
+    var configurableContentViews: [ObjectIdentifier: ConfiguredContentView] = [:]
     var logger: Logger
     var minecraftOverlay: (any MinecraftTileOverlay)!
     var mapContent: [any MinecraftMapContent] = []
 
     #if canImport(UIKit)
-    var toolPicker = PKToolPicker()
+        var isDrawing = false {
+            didSet { didChangeIsDrawing() }
+        }
+
+        var toolPicker = PKToolPicker()
     #endif
-    
+
     /// Initialize a map view for a specified Minecraft world in a given frame.
     ///
     /// - Parameter world: The Minecraft world to be rendered on the map.
@@ -143,9 +145,10 @@ public final class MinecraftMapView: MKMapView {
     /// content.
     public func registerView<T: MinecraftMapContent>(
         for annotationType: T.Type,
-        build builder: @escaping (
-            any MKAnnotation
-        ) -> MKAnnotationView
+        build builder:
+            @escaping (
+                any MKAnnotation
+            ) -> MKAnnotationView
     ) {
         configurableContentViews[ObjectIdentifier(annotationType)] = .annotation(builder)
     }
@@ -160,9 +163,10 @@ public final class MinecraftMapView: MKMapView {
     /// content.
     public func registerOverlay<T: MinecraftMapContent>(
         for overlayType: T.Type,
-        build builder: @escaping (
-            any MKOverlay
-        ) -> MKOverlayRenderer
+        build builder:
+            @escaping (
+                any MKOverlay
+            ) -> MKOverlayRenderer
     ) {
         configurableContentViews[ObjectIdentifier(overlayType)] = .overlay(builder)
     }
@@ -189,7 +193,7 @@ public final class MinecraftMapView: MKMapView {
         self.minecraftOverlay = overlay
 
         #if canImport(UIKit)
-        setupPencilKitSupportIfAvailable()
+            setupPencilKitSupportIfAvailable()
         #endif
     }
 
@@ -218,7 +222,9 @@ public final class MinecraftMapView: MKMapView {
         }
         mcMapViewDelegate?.mapView(self, didChangeEphemeralRendering: mapConfiguration.ephemeralRendering)
         reconfigureOrnaments()
-        drawingCanvas.isHidden = !mapConfiguration.allowPencilKitDrawings
+        #if canImport(UIKit)
+            drawingCanvas.isHidden = !mapConfiguration.allowPencilKitDrawings
+        #endif
     }
 }
 
