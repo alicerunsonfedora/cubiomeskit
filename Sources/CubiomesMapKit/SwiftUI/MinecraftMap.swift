@@ -47,7 +47,7 @@ public struct MinecraftMap {
         }
 
         @MainActor
-        public func mapView(_ mapView: MinecraftMapView, regionDidChangeAnimated animated: Bool) {
+        public func mapViewDidChangeVisibleRegion(_ mapView: MinecraftMapView) {
             DispatchQueue.main.async { [self] in
                 parent.centerCoordinate = mapView.centerBlockCoordinate
             }

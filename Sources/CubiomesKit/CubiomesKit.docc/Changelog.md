@@ -7,15 +7,6 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
-## 2 Jan 2025
-
-### MapKit
-
-- `MinecraftMap` now reports the change in the center map coordinate after
-  the view finishes changing, instead of immediately on drag. This should
-  improve general performance when dragging around maps and listening to
-  the center coordinate.
-
 ## 31 Dec 2025
 
 ### MapKit
