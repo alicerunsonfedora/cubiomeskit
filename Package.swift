@@ -20,20 +20,11 @@ let package = Package(
             name: "CubiomesKit",
             targets: ["CubiomesKit"])
     ],
-    traits: [
-        .default(enabledTraits: []),
-        .trait(name: "Adwaita", description: "Used to enable Adwaita features.")
-    ],
     dependencies: [
         .package(url: "https://github.com/stadiamaps/mapkit-caching-tile-overlay", from: "1.1.0"),
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.0"),
-        .package(url: "https://git.aparoksha.dev/aparoksha/adwaita-swift", branch: "main"),
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.0")
     ],
     targets: [
-        .systemLibrary(
-            name: "CShumate",
-            pkgConfig: "shumate-1.0",
-        ),
         .target(
             name: "Cubiomes",
             exclude: ["docs", "tests.c"],
@@ -63,25 +54,10 @@ let package = Package(
                 .process("Resources")
             ]),
         .target(
-            name: "CubiomesKitAdwaita",
-            dependencies: [
-                "CubiomesKitCore",
-                .targetItem(name: "CShumate", condition: .when(traits: ["Adwaita"])),
-                .product(name: "Adwaita", package: "adwaita-swift", condition: .when(traits: ["Adwaita"])),
-                .product(name: "CAdw", package: "adwaita-swift", condition: .when(traits: ["Adwaita"])),
-            ]),
-        .target(
             name: "CubiomesKit",
             dependencies: [
                 "CubiomesKitCore",
-                .target(name: "CubiomesKitAdwaita", condition: .when(traits: ["Adwaita"])),
                 .target(name: "CubiomesMapKit", condition: .when(platforms: [.macOS, .iOS, .tvOS, .visionOS])),
-            ]),
-        .executableTarget(
-            name: "CubiomesKitAdwaitaDemo",
-            dependencies: [
-                .product(name: "Adwaita", package: "adwaita-swift", condition: .when(traits: ["Adwaita"])),
-                "CubiomesKit",
             ]),
         .testTarget(
             name: "CubiomesKitCoreTests",
@@ -100,8 +76,6 @@ let package = Package(
 )
 
 let appleRestrict = ["CubiomesMapKitTests"]
-let adwaitaRestrict = ["CubiomesKitAdwaitaDemo"]
-
 #if os(Linux) || os(Windows)
     package.targets.removeAll(where: { appleRestrict.contains($0.name) })
 #endif

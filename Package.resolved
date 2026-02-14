@@ -1,24 +1,6 @@
 {
-  "originHash" : "9289a2d8ae79655592be0734965c3bf5e8ae6d079a5b040ebf897c078f38ba15",
+  "originHash" : "9cad508c8de273ce147f386597c3c2b08af8652d70af74c3b87bd57b73cb0698",
   "pins" : [
-    {
-      "identity" : "adwaita-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://git.aparoksha.dev/aparoksha/adwaita-swift",
-      "state" : {
-        "branch" : "main",
-        "revision" : "5b9047ea8563edd3640dd6502c14689286e16e9c"
-      }
-    },
-    {
-      "identity" : "levenshtein-transformations",
-      "kind" : "remoteSourceControl",
-      "location" : "https://git.aparoksha.dev/aparoksha/levenshtein-transformations",
-      "state" : {
-        "branch" : "main",
-        "revision" : "24f7840b9b244dd361696783c30fbc56c137e06a"
-      }
-    },
     {
       "identity" : "mapkit-caching-tile-overlay",
       "kind" : "remoteSourceControl",
@@ -26,33 +8,6 @@
       "state" : {
         "revision" : "600f218ccc090678ab46bab162a82f63949eb04f",
         "version" : "1.1.0"
-      }
-    },
-    {
-      "identity" : "meta",
-      "kind" : "remoteSourceControl",
-      "location" : "https://git.aparoksha.dev/aparoksha/meta",
-      "state" : {
-        "branch" : "main",
-        "revision" : "3b2f8f926cb255ddcb8da7b21f6456d3a489340a"
-      }
-    },
-    {
-      "identity" : "meta-sqlite",
-      "kind" : "remoteSourceControl",
-      "location" : "https://git.aparoksha.dev/aparoksha/meta-sqlite",
-      "state" : {
-        "revision" : "cd48784024e43db8f1ac32572b052ed388dd9c42",
-        "version" : "0.1.0"
-      }
-    },
-    {
-      "identity" : "sqlite.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/stephencelis/SQLite.swift",
-      "state" : {
-        "revision" : "392dd6058624d9f6c5b4c769d165ddd8c7293394",
-        "version" : "0.15.4"
       }
     },
     {
@@ -71,15 +26,6 @@
       "state" : {
         "revision" : "b45d1f2ed151d057b54504d653e0da5552844e34",
         "version" : "1.0.0"
-      }
-    },
-    {
-      "identity" : "swift-toolchain-sqlite",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-toolchain-sqlite",
-      "state" : {
-        "revision" : "b626d3002773b1a1304166643e7f118f724b2132",
-        "version" : "1.0.4"
       }
     }
   ],
