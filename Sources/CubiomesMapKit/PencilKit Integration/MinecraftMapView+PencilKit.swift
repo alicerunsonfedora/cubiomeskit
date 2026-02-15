@@ -29,14 +29,27 @@ extension MinecraftMapView {
     }
 
     func didChangeIsDrawing() {
-        drawingCanvas.allowsDrawing = mapConfiguration.allowPencilKitDrawings && isDrawing
-        if drawingCanvas.allowsDrawing {
-            drawingCanvas.becomeFirstResponder()
-        } else {
+        switch mapConfiguration.allowPencilKitDrawings {
+        case .enabled(let autoclear):
+            toggleResponderState(autoclear: autoclear)
+        case .disabled:
+            drawingCanvas.allowsDrawing = false
             drawingCanvas.resignFirstResponder()
         }
     }
 
+    private func toggleResponderState(autoclear: Bool) {
+        drawingCanvas.allowsDrawing = isDrawing
+        if isDrawing {
+            drawingCanvas.becomeFirstResponder()
+            return
+        }
+        drawingCanvas.resignFirstResponder()
+        if autoclear {
+            drawingCanvas.drawing = PKDrawing()
+        }
+    }
+    
     @objc func addCurrentDrawing() {
         let drawing = drawingCanvas.drawing
 

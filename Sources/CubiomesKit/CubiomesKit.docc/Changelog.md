@@ -7,6 +7,14 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## 14 Feb 2026
+
+### MapKit
+
+- `MinecraftMapView` and `MinecraftMap` can now specify whether the
+  PencilKit drawing canvas should be cleared after resigning from first
+  responder status.
+
 ## 31 Dec 2025
 
 ### MapKit

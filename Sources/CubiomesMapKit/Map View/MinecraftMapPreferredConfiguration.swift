@@ -38,8 +38,22 @@ public struct MinecraftMapPreferredConfiguration {
         }
     }
 
+    public enum PencilKitSupport: Sendable, ExpressibleByBooleanLiteral, Equatable {
+        case enabled(autoclear: Bool)
+        case disabled
+
+        public init(booleanLiteral value: BooleanLiteralType) {
+            switch value {
+            case true:
+                self = .enabled(autoclear: true)
+            case false:
+                self = .disabled
+            }
+        }
+    }
+
     /// Whether to let users draw on the map through PencilKit.
-    public var allowPencilKitDrawings = false
+    public var allowPencilKitDrawings: PencilKitSupport = false
 
     /// Whether the current world dimension determines the appropriate system appearance for the map view.
     ///
@@ -70,7 +84,7 @@ public struct MinecraftMapPreferredConfiguration {
     /// - Parameter ephemeralRendering: Whether to use ephemeral rendering.
     /// - Parameter ornaments: The ornaments that should be displayed on the map.
     public init(
-        allowDrawingWithPencilKit: Bool = false,
+        allowDrawingWithPencilKit: PencilKitSupport = false,
         dimensionDeterminesSystemAppearance: Bool,
         ephemeralRendering: Bool,
         ornaments: Ornaments

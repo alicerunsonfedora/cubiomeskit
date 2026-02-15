@@ -58,19 +58,28 @@ public struct MinecraftMap {
         }
     }
 
-    @Binding var centerCoordinate: CGPoint
-    @Binding var isDrawing: Bool
-    
+    @Binding package var centerCoordinate: CGPoint
+    @Binding package var isDrawing: Bool
+
     var world: MinecraftWorld
 
     var addedDrawingCallback: ((MinecraftMapDrawing) -> Void)?
-    var dimension: MinecraftWorld.Dimension = .overworld
-    var ornaments: Ornaments = []
     var annotations: [any MinecraftMapContent] = []
-    var pencilKitSupported = false
-    var preferNaturalColors: Bool = false
     var automaticMapSystemAppearance: Bool = true
     var configuredContentViews: [ObjectIdentifier: MinecraftMapView.ConfiguredContentView] = [:]
+    var dimension: MinecraftWorld.Dimension = .overworld
+    var ornaments: Ornaments = []
+    var pencilKitSupported = false
+    var pencilKitDrawingsDismissWhenToggled = false
+    var preferNaturalColors: Bool = false
+
+    private var pencilKitSupport: MinecraftMapPreferredConfiguration.PencilKitSupport {
+        if pencilKitSupported {
+            return .enabled(autoclear: pencilKitDrawingsDismissWhenToggled)
+        } else {
+            return .disabled
+        }
+    }
 
     /// Create a Minecraft map view.
     /// - Parameter world: The world to display in the map view.
@@ -109,7 +118,7 @@ public struct MinecraftMap {
     func createMapView() -> MinecraftMapView {
         let mapView = MinecraftMapView(world: world, frame: .zero, centerCoordinate: centerCoordinate)
         mapView.mapConfiguration.ornaments = ornaments
-        mapView.mapConfiguration.allowPencilKitDrawings = pencilKitSupported
+        mapView.mapConfiguration.allowPencilKitDrawings = pencilKitSupport
         mapView.dimension = dimension
         mapView.addMapContents(annotations)
         mapView.mapContent = annotations
@@ -125,7 +134,7 @@ public struct MinecraftMap {
     @MainActor
     func updateMapView(_ mapView: MinecraftMapView) {
         mapView.mapConfiguration.ornaments = ornaments
-        mapView.mapConfiguration.allowPencilKitDrawings = pencilKitSupported
+        mapView.mapConfiguration.allowPencilKitDrawings = pencilKitSupport
         #if canImport(UIKit)
             mapView.isDrawing = isDrawing
         #endif
@@ -208,73 +217,34 @@ public struct MinecraftMap {
         newSelf.configuredContentViews = newViews
         return newSelf
     }
-
-    #if canImport(UIKit)
-    /// Allows the map to support drawing via PencilKit.
-    public func allowsPencilKitDrawings(_ active: Bool = true) -> Self {
-        var newSelf = self
-        newSelf.pencilKitSupported = active
-        return newSelf
-    }
-
-    /// Listens for whenever a drawing has been added to the map.
-    /// - Parameter callback: The callback to execute when a drawing has been added.
-    public func addedMapDrawing(_ callback: @escaping (MinecraftMapDrawing) -> Void) -> Self {
-        var newSelf = self
-        newSelf.addedDrawingCallback = callback
-        return newSelf
-    }
-
-    /// Tells the map view to activate the drawing canvas.
-    /// - Parameter isDrawing: Whether the canvas should be active.
-    public func activateDrawingCanvas(isDrawing: Binding<Bool>) -> Self {
-        var newSelf = self
-        newSelf._isDrawing = isDrawing
-        return newSelf
-    }
-    #endif
 }
 
-// MARK: - View Representable Conformance
-
-#if canImport(AppKit)
-    extension MinecraftMap: NSViewRepresentable {
-        public typealias UIViewType = MinecraftMapView
-
-        public func makeCoordinator() -> Coordinator {
-            Coordinator(parent: self)
-        }
-
-        public func makeNSView(context: Context) -> MinecraftMapView {
-            let mapView = createMapView()
-            mapView.mcMapViewDelegate = context.coordinator
-            return mapView
-        }
-
-        public func updateNSView(_ nsView: MinecraftMapView, context: Context) {
-            context.coordinator.parent = self
-            updateMapView(nsView)
-        }
-    }
-#endif
+// MARK: - PencilKit Support
 
 #if canImport(UIKit)
-    extension MinecraftMap: UIViewRepresentable {
-        public typealias UIViewType = MinecraftMapView
-
-        public func makeCoordinator() -> Coordinator {
-            Coordinator(parent: self)
+    extension MinecraftMap {
+        /// Allows the map to support drawing via PencilKit.
+        public func allowsPencilKitDrawings(_ active: Bool = true) -> Self {
+            var newSelf = self
+            newSelf.pencilKitSupported = active
+            return newSelf
         }
 
-        public func makeUIView(context: Context) -> MinecraftMapView {
-            let mapView = createMapView()
-            mapView.mcMapViewDelegate = context.coordinator
-            return mapView
+        /// Listens for whenever a drawing has been added to the map.
+        /// - Parameter callback: The callback to execute when a drawing has been added.
+        public func addedMapDrawing(_ callback: @escaping (MinecraftMapDrawing) -> Void) -> Self {
+            var newSelf = self
+            newSelf.addedDrawingCallback = callback
+            return newSelf
         }
 
-        public func updateUIView(_ uiView: MinecraftMapView, context: Context) {
-            context.coordinator.parent = self
-            updateMapView(uiView)
+        /// Tells the map view to activate the drawing canvas.
+        /// - Parameter isDrawing: Whether the canvas should be active.
+        public func activateDrawingCanvas(isDrawing: Binding<Bool>, clearWhenDismissed autoclear: Bool = true) -> Self {
+            var newSelf = self
+            newSelf._isDrawing = isDrawing
+            newSelf.pencilKitDrawingsDismissWhenToggled = autoclear
+            return newSelf
         }
     }
 #endif

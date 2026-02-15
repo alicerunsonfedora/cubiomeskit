@@ -92,7 +92,7 @@ public final class MinecraftMapView: MKMapView {
             canvas.translatesAutoresizingMaskIntoConstraints = false
             canvas.isOpaque = false
             canvas.backgroundColor = .clear
-            canvas.isHidden = !mapConfiguration.allowPencilKitDrawings
+            canvas.isHidden = mapConfiguration.allowPencilKitDrawings == .disabled
             return canvas
         }()
     #endif
@@ -223,7 +223,7 @@ public final class MinecraftMapView: MKMapView {
         mcMapViewDelegate?.mapView(self, didChangeEphemeralRendering: mapConfiguration.ephemeralRendering)
         reconfigureOrnaments()
         #if canImport(UIKit)
-            drawingCanvas.isHidden = !mapConfiguration.allowPencilKitDrawings
+            drawingCanvas.isHidden = mapConfiguration.allowPencilKitDrawings == .disabled
         #endif
     }
 }
