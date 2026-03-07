@@ -219,6 +219,50 @@ public struct MinecraftMap {
     }
 }
 
+// MARK: - View Representable
+
+#if canImport(AppKit)
+    extension MinecraftMap: NSViewRepresentable {
+        public typealias UIViewType = MinecraftMapView
+
+        public func makeCoordinator() -> Coordinator {
+            Coordinator(parent: self)
+        }
+
+        public func makeNSView(context: Context) -> MinecraftMapView {
+            let mapView = createMapView()
+            mapView.mcMapViewDelegate = context.coordinator
+            return mapView
+        }
+
+        public func updateNSView(_ nsView: MinecraftMapView, context: Context) {
+            context.coordinator.parent = self
+            updateMapView(nsView)
+        }
+    }
+#endif
+
+#if canImport(UIKit)
+    extension MinecraftMap: UIViewRepresentable {
+        public typealias UIViewType = MinecraftMapView
+
+        public func makeCoordinator() -> Coordinator {
+            Coordinator(parent: self)
+        }
+
+        public func makeUIView(context: Context) -> MinecraftMapView {
+            let mapView = createMapView()
+            mapView.mcMapViewDelegate = context.coordinator
+            return mapView
+        }
+
+        public func updateUIView(_ uiView: MinecraftMapView, context: Context) {
+            context.coordinator.parent = self
+            updateMapView(uiView)
+        }
+    }
+#endif
+
 // MARK: - PencilKit Support
 
 #if canImport(UIKit)
