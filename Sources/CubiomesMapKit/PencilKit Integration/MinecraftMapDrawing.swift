@@ -9,7 +9,7 @@ import MapKit
 import PencilKit
 
 public struct MinecraftMapDrawing: Sendable, Codable, Hashable, Identifiable {
-    public var id: UUID = UUID()
+    public var id: UUID
 
     /// The drawing being displayed on the map.
     public var drawing: PKDrawing
@@ -20,7 +20,8 @@ public struct MinecraftMapDrawing: Sendable, Codable, Hashable, Identifiable {
     /// The drawing's map bounds.
     public var mapRect: MKMapRect
 
-    public init(drawing: PKDrawing, location: CLLocationCoordinate2D, mapRect: MKMapRect) {
+    public init(id: UUID = UUID(), drawing: PKDrawing, location: CLLocationCoordinate2D, mapRect: MKMapRect) {
+        self.id = id
         self.drawing = drawing
         self.location = location
         self.mapRect = mapRect
