@@ -29,7 +29,7 @@ class MinecraftMapDrawingOverlayRenderer: MKOverlayRenderer {
             UIGraphicsPushContext(context)
         #elseif canImport(AppKit)
             NSGraphicsContext.saveGraphicsState()
-            let newContext = NSGraphicsContext(cgContext: context, flipped: false)
+            let newContext = NSGraphicsContext(cgContext: context, flipped: true)
             NSGraphicsContext.current = newContext
         #endif
 
