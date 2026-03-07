@@ -25,20 +25,9 @@ class MinecraftMapDrawingOverlayRenderer: MKOverlayRenderer {
         let rect = self.rect(for: model.mapRect)
         let drawing = model.drawing
 
-        #if canImport(UIKit)
-            UIGraphicsPushContext(context)
-        #elseif canImport(AppKit)
-            NSGraphicsContext.saveGraphicsState()
-            let newContext = NSGraphicsContext(cgContext: context, flipped: true)
-            NSGraphicsContext.current = newContext
-        #endif
-
-        drawing.image(from: drawing.bounds, scale: contentScaleFactor).draw(in: rect)
-
-        #if canImport(UIKit)
-            UIGraphicsPopContext()
-        #elseif canImport(AppKit)
-            NSGraphicsContext.restoreGraphicsState()
-        #endif
+        withGraphicsContext(context) { [weak self] in
+            guard let self else { return }
+            drawing.image(from: drawing.bounds, scale: contentScaleFactor).draw(in: rect)
+        }
     }
 }
