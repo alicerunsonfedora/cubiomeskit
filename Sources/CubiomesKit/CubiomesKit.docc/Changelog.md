@@ -13,6 +13,8 @@ Review the latest changes made to CubiomesKit.
 
 - Resolves potential AttributeGraph cycles when toggling between the
   PencilKit overlays on iOS and iPadOS.
+- The new `MinecraftDrawing` overlay allows developers to display drawings
+  on their maps directly.
 
 ## 14 Feb 2026
 
