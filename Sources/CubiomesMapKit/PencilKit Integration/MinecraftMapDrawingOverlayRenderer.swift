@@ -27,12 +27,17 @@ class MinecraftMapDrawingOverlayRenderer: MKOverlayRenderer {
 
         #if canImport(UIKit)
             UIGraphicsPushContext(context)
+        #elseif canImport(AppKit)
+            NSGraphicsContext.saveGraphicsState()
+            let newContext = NSGraphicsContext(cgContext: context, flipped: false)
         #endif
 
         drawing.image(from: drawing.bounds, scale: contentScaleFactor).draw(in: rect)
 
         #if canImport(UIKit)
             UIGraphicsPopContext()
+        #elseif canImport(AppKit)
+            NSGraphicsContext.restoreGraphicsState()
         #endif
     }
 }
