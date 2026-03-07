@@ -115,6 +115,8 @@ extension MinecraftMapView {
         for overlay in contents where overlay.contentType == .overlay {
             if let polyline = overlay as? MinecraftPolyline {
                 addOverlay(polyline.polyline, level: .aboveLabels)
+            } else if let drawing = overlay as? MinecraftDrawingOverlay {
+                addOverlay(drawing, level: .aboveLabels)
             }
         }
 
