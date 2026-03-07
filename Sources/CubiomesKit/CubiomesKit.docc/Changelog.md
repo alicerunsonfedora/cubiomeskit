@@ -7,6 +7,13 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## 6 Mar 2026
+
+### MapKit
+
+- Resolves potential AttributeGraph cycles when toggling between the
+  PencilKit overlays on iOS and iPadOS.
+
 ## 14 Feb 2026
 
 ### MapKit

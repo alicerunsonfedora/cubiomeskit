@@ -41,12 +41,16 @@ extension MinecraftMapView {
     private func toggleResponderState(autoclear: Bool) {
         drawingCanvas.allowsDrawing = isDrawing
         if isDrawing {
-            drawingCanvas.becomeFirstResponder()
+            Task { @MainActor in
+                drawingCanvas.becomeFirstResponder()
+            }
             return
         }
-        drawingCanvas.resignFirstResponder()
-        if autoclear {
-            drawingCanvas.drawing = PKDrawing()
+        Task { @MainActor in
+            drawingCanvas.resignFirstResponder()
+            if autoclear {
+                drawingCanvas.drawing = PKDrawing()
+            }
         }
     }
     
