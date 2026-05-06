@@ -7,6 +7,15 @@ Review the latest changes made to CubiomesKit.
     @PageColor(purple)
 }
 
+## 6 May 2026
+
+### MapKit
+
+- PencilKit feature settings have been updated to allow developers to
+  automatically have any drawings on the canvas be added to the map
+  whenever a player stops drawing. This is disabled by default but can be
+  enabled by setting the `autosubmit` parameter in `PencilKitSupport`.
+
 ## 6 Mar 2026
 
 ### MapKit

@@ -6,90 +6,102 @@
 //
 
 #if canImport(UIKit)
-import MapKit
-import PencilKit
-import UIKit
+    import MapKit
+    import PencilKit
+    import UIKit
 
-extension MinecraftMapView {
-    func setupPencilKitSupportIfAvailable() {
-        addSubview(drawingCanvas)
+    extension MinecraftMapView {
+        func setupPencilKitSupportIfAvailable() {
+            addSubview(drawingCanvas)
 
-        NSLayoutConstraint.activate([
-            drawingCanvas.topAnchor.constraint(equalTo: topAnchor),
-            drawingCanvas.leftAnchor.constraint(equalTo: leftAnchor),
-            drawingCanvas.rightAnchor.constraint(equalTo: rightAnchor),
-            drawingCanvas.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
+            NSLayoutConstraint.activate([
+                drawingCanvas.topAnchor.constraint(equalTo: topAnchor),
+                drawingCanvas.leftAnchor.constraint(equalTo: leftAnchor),
+                drawingCanvas.rightAnchor.constraint(equalTo: rightAnchor),
+                drawingCanvas.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
 
-        if #available(iOS 18, macOS 15, *) {
-            toolPicker.accessoryItem = addDrawingButton
+            let autosubmits =
+                switch mapConfiguration.allowPencilKitDrawings {
+                case .enabled(_, autosubmit: true): true
+                default: false
+                }
+            
+            if autosubmits, #available(iOS 18, macOS 15, *) {
+                toolPicker.accessoryItem = addDrawingButton
+            }
+            toolPicker.addObserver(drawingCanvas)
+            toolPicker.setVisible(true, forFirstResponder: drawingCanvas)
         }
-        toolPicker.addObserver(drawingCanvas)
-        toolPicker.setVisible(true, forFirstResponder: drawingCanvas)
-    }
 
-    func didChangeIsDrawing() {
-        switch mapConfiguration.allowPencilKitDrawings {
-        case .enabled(let autoclear):
-            toggleResponderState(autoclear: autoclear)
-        case .disabled:
-            drawingCanvas.allowsDrawing = false
-            drawingCanvas.resignFirstResponder()
+        func didChangeIsDrawing() {
+            switch mapConfiguration.allowPencilKitDrawings {
+            case .enabled(let autoclear, let autosubmit):
+                toggleResponderState(autoclear: autoclear, autosubmit: autosubmit)
+            case .disabled:
+                drawingCanvas.allowsDrawing = false
+                drawingCanvas.resignFirstResponder()
+            }
         }
-    }
 
-    private func toggleResponderState(autoclear: Bool) {
-        drawingCanvas.allowsDrawing = isDrawing
-        if isDrawing {
+        private func toggleResponderState(autoclear: Bool, autosubmit: Bool) {
+            drawingCanvas.allowsDrawing = isDrawing
+            if isDrawing {
+                Task { @MainActor in
+                    drawingCanvas.becomeFirstResponder()
+                }
+                return
+            }
             Task { @MainActor in
-                drawingCanvas.becomeFirstResponder()
+                drawingCanvas.resignFirstResponder()
+                if autosubmit, !drawingCanvas.drawing.strokes.isEmpty {
+                    self.addCurrentDrawing()
+                }
+                if autoclear {
+                    drawingCanvas.drawing = PKDrawing()
+                }
             }
-            return
         }
-        Task { @MainActor in
-            drawingCanvas.resignFirstResponder()
-            if autoclear {
-                drawingCanvas.drawing = PKDrawing()
-            }
-        }
-    }
-    
-    @objc func addCurrentDrawing() {
-        let drawing = drawingCanvas.drawing
 
-        let drawingCenter = CGPoint(x: drawing.bounds.midX, y: drawing.bounds.midY)
-        let coordinate = convert(drawingCenter, toCoordinateFrom: drawingCanvas)
+        @objc func addCurrentDrawing() {
+            let drawing = drawingCanvas.drawing
 
-        let mapRegion = convert(drawing.bounds, toRegionFrom: drawingCanvas)
-        let topLeft = CLLocationCoordinate2D(
-            latitude: mapRegion.center.latitude + (mapRegion.span.latitudeDelta / 2),
-            longitude: mapRegion.center.longitude - (mapRegion.span.longitudeDelta / 2)
-        )
-        let bottomRight = CLLocationCoordinate2D(
-            latitude: mapRegion.center.latitude - (mapRegion.span.latitudeDelta / 2),
-            longitude: mapRegion.center.longitude + (mapRegion.span.longitudeDelta / 2)
-        )
+            let drawingCenter = CGPoint(x: drawing.bounds.midX, y: drawing.bounds.midY)
+            let coordinate = convert(drawingCenter, toCoordinateFrom: drawingCanvas)
 
-        let topLeftPoint = MKMapPoint(topLeft)
-        let bottomRightPoint = MKMapPoint(bottomRight)
-
-        let mapRect = MKMapRect(
-            origin: MKMapPoint(x: min(topLeftPoint.x, bottomRightPoint.x), y: min(topLeftPoint.y, bottomRightPoint.y)),
-            size: MKMapSize(
-                width: abs(topLeftPoint.x - bottomRightPoint.x),
-                height: abs(topLeftPoint.y - bottomRightPoint.y)
+            let mapRegion = convert(drawing.bounds, toRegionFrom: drawingCanvas)
+            let topLeft = CLLocationCoordinate2D(
+                latitude: mapRegion.center.latitude + (mapRegion.span.latitudeDelta / 2),
+                longitude: mapRegion.center.longitude - (mapRegion.span.longitudeDelta / 2)
             )
-        )
+            let bottomRight = CLLocationCoordinate2D(
+                latitude: mapRegion.center.latitude - (mapRegion.span.latitudeDelta / 2),
+                longitude: mapRegion.center.longitude + (mapRegion.span.longitudeDelta / 2)
+            )
 
-        let mapDrawing = MinecraftMapDrawing(drawing: drawing, location: coordinate, mapRect: mapRect)
-        drawings?.append(mapDrawing)
-        mcMapViewDelegate?.mapView(self, addedDrawing: mapDrawing)
+            let topLeftPoint = MKMapPoint(topLeft)
+            let bottomRightPoint = MKMapPoint(bottomRight)
 
-        let overlay = MinecraftDrawingOverlay(model: mapDrawing)
-        addOverlay(overlay, level: .aboveLabels)
-        
-        drawingCanvas.drawing = PKDrawing()
+            let mapRect = MKMapRect(
+                origin: MKMapPoint(
+                    x: min(topLeftPoint.x, bottomRightPoint.x),
+                    y: min(topLeftPoint.y, bottomRightPoint.y)
+                ),
+                size: MKMapSize(
+                    width: abs(topLeftPoint.x - bottomRightPoint.x),
+                    height: abs(topLeftPoint.y - bottomRightPoint.y)
+                )
+            )
+
+            let mapDrawing = MinecraftMapDrawing(drawing: drawing, location: coordinate, mapRect: mapRect)
+            drawings?.append(mapDrawing)
+            mcMapViewDelegate?.mapView(self, addedDrawing: mapDrawing)
+
+            let overlay = MinecraftDrawingOverlay(model: mapDrawing)
+            addOverlay(overlay, level: .aboveLabels)
+
+            drawingCanvas.drawing = PKDrawing()
+        }
     }
-}
 
 #endif

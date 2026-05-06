@@ -71,11 +71,15 @@ public struct MinecraftMap {
     var ornaments: Ornaments = []
     var pencilKitSupported = false
     var pencilKitDrawingsDismissWhenToggled = false
+    var pencilKitDrawingAutosubmitWhenToggled = false
     var preferNaturalColors: Bool = false
 
     private var pencilKitSupport: MinecraftMapPreferredConfiguration.PencilKitSupport {
         if pencilKitSupported {
-            return .enabled(autoclear: pencilKitDrawingsDismissWhenToggled)
+            return .enabled(
+                autoclear: pencilKitDrawingsDismissWhenToggled,
+                autosubmit: pencilKitDrawingAutosubmitWhenToggled
+            )
         } else {
             return .disabled
         }
@@ -284,10 +288,17 @@ public struct MinecraftMap {
 
         /// Tells the map view to activate the drawing canvas.
         /// - Parameter isDrawing: Whether the canvas should be active.
-        public func activateDrawingCanvas(isDrawing: Binding<Bool>, clearWhenDismissed autoclear: Bool = true) -> Self {
+        /// - Parameter autoclear: Whether the canvas is automatically cleared when the player stops drawing on the map.
+        /// - Parameter autosubmit: Whether the canvas should automatically submit the current drawing when the player stops drawing on the map.
+        public func activateDrawingCanvas(
+            isDrawing: Binding<Bool>,
+            clearWhenDismissed autoclear: Bool = true,
+            autosubmitsWhenDismissed autosubmit: Bool = false
+        ) -> Self {
             var newSelf = self
             newSelf._isDrawing = isDrawing
             newSelf.pencilKitDrawingsDismissWhenToggled = autoclear
+            newSelf.pencilKitDrawingAutosubmitWhenToggled = autosubmit
             return newSelf
         }
     }

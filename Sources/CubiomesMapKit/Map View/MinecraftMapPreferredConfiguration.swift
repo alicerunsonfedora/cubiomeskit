@@ -39,13 +39,13 @@ public struct MinecraftMapPreferredConfiguration {
     }
 
     public enum PencilKitSupport: Sendable, ExpressibleByBooleanLiteral, Equatable {
-        case enabled(autoclear: Bool)
+        case enabled(autoclear: Bool, autosubmit: Bool)
         case disabled
 
         public init(booleanLiteral value: BooleanLiteralType) {
             switch value {
             case true:
-                self = .enabled(autoclear: true)
+                self = .enabled(autoclear: true, autosubmit: false)
             case false:
                 self = .disabled
             }
